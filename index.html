@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MamaCare — Pregnancy Mood Support</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --rose:     #e8a0a8;
+    --blush:    #f5d5d8;
+    --peach:    #f7c4a8;
+    --cream:    #fdf6f0;
+    --warm:     #4a2c2a;
+    --muted:    #9a7070;
+    --accent:   #c97b7b;
+    --green:    #a8c5a0;
+    --lavender: #b8a8d0;
+    --gold:     #d4a853;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--warm);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── AMBIENT BACKGROUND ── */
+  .bg-orbs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .orb {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb-1 { width:500px;height:500px;background:var(--blush);top:-100px;left:-150px;animation-duration:14s; }
+  .orb-2 { width:400px;height:400px;background:var(--peach);bottom:-80px;right:-100px;animation-duration:11s;animation-delay:-4s; }
+  .orb-3 { width:300px;height:300px;background:var(--lavender);top:40%;left:60%;animation-duration:16s;animation-delay:-7s; }
+  @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(30px,25px) scale(1.08)} }
+
+  /* ── LAYOUT ── */
+  .wrap { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:0 20px 80px; }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+  .logo-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; border: 1.5px solid var(--blush);
+    border-radius: 50px; padding: 8px 20px; margin-bottom: 28px;
+    font-size: 13px; color: var(--muted); letter-spacing: .04em;
+    box-shadow: 0 2px 16px rgba(200,120,120,.12);
+  }
+  .logo-pill span { font-size:18px; }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 300; line-height: 1.15;
+    color: var(--warm);
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .tagline {
+    margin-top: 14px; font-size: 15px; color: var(--muted);
+    font-weight: 300; line-height: 1.7; max-width: 480px; margin-inline: auto;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 400;
+    margin-bottom: 20px; color: var(--warm);
+  }
+  .section-label small {
+    display: block; font-family: 'DM Sans', sans-serif;
+    font-size: 12px; color: var(--muted); letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 4px; font-weight: 400;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(232,160,168,.25);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 32px rgba(200,100,100,.08);
+    transition: box-shadow .3s;
+  }
+  .card:hover { box-shadow: 0 8px 40px rgba(200,100,100,.13); }
+
+  /* ── MOOD GRID ── */
+  .mood-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px; margin-top: 8px;
+  }
+  .mood-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 16px 10px; border-radius: 18px;
+    border: 1.5px solid transparent;
+    background: var(--cream); cursor: pointer;
+    transition: all .25s; font-size: 12px; font-weight: 500;
+    color: var(--muted);
+  }
+  .mood-btn .emoji { font-size: 28px; }
+  .mood-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+  .mood-btn.active {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #fce8e8, #fdf0e8);
+    color: var(--warm);
+    box-shadow: 0 4px 16px rgba(201,123,123,.25);
+    transform: translateY(-3px) scale(1.04);
+  }
+
+  /* ── SOLUTION PANEL ── */
+  #solution-panel { display: none; animation: fadeUp .4s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+  .solution-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px 24px; border-radius: 16px;
+    background: linear-gradient(135deg, #fce8e8 0%, #fdf5ee 100%);
+    margin-bottom: 20px;
+  }
+  .sol-emoji { font-size: 36px; }
+  .sol-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--warm); }
+  .sol-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  .tips-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:560px){.tips-grid{grid-template-columns:1fr;}}
+  .tip-card {
+    background: white; border-radius: 14px; padding: 16px 18px;
+    border-left: 3px solid var(--rose);
+    font-size: 13.5px; line-height: 1.6; color: var(--warm);
+  }
+  .tip-card b { display:block; font-size:11px; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--accent); margin-bottom:4px; }
+
+  /* ── BREATHING ── */
+  .breathe-wrap { text-align:center; padding: 24px 0; }
+  .breathe-ring {
+    width: 120px; height: 120px; margin: 0 auto 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--blush) 0%, var(--rose) 60%, transparent 100%);
+    display: flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:500; color:var(--warm);
+    cursor:pointer; user-select:none;
+    transition: transform .3s;
+    box-shadow: 0 0 0 8px rgba(232,160,168,.18), 0 0 0 16px rgba(232,160,168,.08);
+  }
+  .breathe-ring.inhale  { animation: expandRing 4s ease-in-out forwards; }
+  .breathe-ring.hold    { animation: none; }
+  .breathe-ring.exhale  { animation: shrinkRing 4s ease-in-out forwards; }
+  @keyframes expandRing { to{transform:scale(1.5);box-shadow:0 0 0 20px rgba(232,160,168,.22),0 0 0 40px rgba(232,160,168,.08);} }
+  @keyframes shrinkRing { to{transform:scale(1);} }
+  .breathe-status { font-size:14px; color:var(--muted); height:22px; }
+  .breathe-count { font-size:12px;color:var(--muted);margin-top:6px; }
+  #startBreath {
+    margin-top:16px; padding:10px 28px; border-radius:50px;
+    background:linear-gradient(135deg,var(--rose),var(--peach));
+    border:none; color:white; font-size:13px; font-weight:500;
+    cursor:pointer; transition:all .2s;
+    box-shadow: 0 4px 14px rgba(200,100,100,.25);
+  }
+  #startBreath:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,100,100,.35);}
+
+  /* ── AFFIRMATIONS ── */
+  .affirmation-box {
+    text-align:center; padding:24px;
+    background:linear-gradient(135deg,#fef0f5,#fdf5ee);
+    border-radius:18px; position:relative; overflow:hidden;
+  }
+  .affirmation-box::before {
+    content:'"'; position:absolute; top:-10px;left:10px;
+    font-family:'Cormorant Garamond',serif; font-size:100px;
+    color:rgba(232,160,168,.2); line-height:1;
+  }
+  #affirmText {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.25rem; font-weight:400; font-style:italic;
+    color:var(--warm); line-height:1.6; position:relative; z-index:1;
+  }
+  #newAffirm {
+    margin-top:16px; font-size:12px; color:var(--muted);
+    background:none; border:1px solid var(--blush); border-radius:50px;
+    padding:6px 18px; cursor:pointer; transition:.2s;
+  }
+  #newAffirm:hover{background:var(--blush);color:var(--warm);}
+
+  /* ── AI CHAT ── */
+  .chat-wrap {
+    display:flex; flex-direction:column; gap:0;
+    height:340px; overflow-y:auto;
+    padding:16px; border-radius:16px;
+    background:rgba(255,255,255,.6);
+    border:1px solid rgba(232,160,168,.2);
+    scroll-behavior:smooth;
+  }
+  .chat-wrap::-webkit-scrollbar{width:4px;}
+  .chat-wrap::-webkit-scrollbar-thumb{background:var(--blush);border-radius:4px;}
+
+  .msg {
+    max-width:82%; padding:12px 16px; border-radius:18px;
+    font-size:13.5px; line-height:1.65; margin-bottom:10px;
+    animation: fadeUp .3s ease;
+  }
+  .msg.user {
+    align-self:flex-end;
+    background:linear-gradient(135deg,var(--rose),var(--peach));
+    color:white; border-bottom-right-radius:4px;
+  }
+  .msg.bot {
+    align-self:flex-start;
+    background:white; color:var(--warm);
+    border:1px solid rgba(232,160,168,.25);
+    border-bottom-left-radius:4px;
+  }
+  .msg.typing { color:var(--muted); font-style:italic; }
+
+  .chat-input-row {
+    display:flex; gap:10px; margin-top:14px;
+  }
+  #chatInput {
+    flex:1; padding:13px 18px; border-radius:50px;
+    border:1.5px solid var(--blush); font-size:13.5px;
+    font-family:'DM Sans',sans-serif; color:var(--warm);
+    background:white; outline:none; transition:.2s;
+  }
+  #chatInput:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,160,168,.2);}
+  #sendBtn {
+    padding:12px 22px; border-radius:50px;
+    background:linear-gradient(135deg,var(--accent),var(--rose));
+    border:none; color:white; font-size:13px; font-weight:500;
+    cursor:pointer; transition:.2s; white-space:nowrap;
+    box-shadow:0 3px 12px rgba(200,100,100,.28);
+  }
+  #sendBtn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(200,100,100,.38);}
+  #sendBtn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+  /* ── FOOTER ── */
+  footer {
+    text-align:center; padding:40px 20px;
+    font-size:12px; color:var(--muted); line-height:1.8;
+  }
+  footer strong{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-pill"><span>🌸</span> MamaCare</div>
+    <h1>Pregnancy mein <em>mood swings</em><br>normal hain, aap akeli nahi</h1>
+    <p class="tagline">Apna mood chuniye — hum aapko sahi support, breathing exercise, aur ek caring AI companion denge.</p>
+  </header>
+
+  <!-- MOOD SELECTOR -->
+  <div class="card">
+    <div class="section-label">
+      <small>Step 1</small>
+      Abhi aap kaisi feel kar rahi hain?
+    </div>
+    <div class="mood-grid" id="moodGrid">
+      <button class="mood-btn" data-mood="anxious" onclick="selectMood(this)"><span class="emoji">😰</span>Anxious / Ghabhrahat</button>
+      <button class="mood-btn" data-mood="sad" onclick="selectMood(this)"><span class="emoji">😢</span>Udaas / Sad</button>
+      <button class="mood-btn" data-mood="angry" onclick="selectMood(this)"><span class="emoji">😤</span>Gussa / Irritated</button>
+      <button class="mood-btn" data-mood="tired" onclick="selectMood(this)"><span class="emoji">😴</span>Thakaan / Exhausted</button>
+      <button class="mood-btn" data-mood="overwhelmed" onclick="selectMood(this)"><span class="emoji">🌊</span>Overwhelmed</button>
+      <button class="mood-btn" data-mood="lonely" onclick="selectMood(this)"><span class="emoji">🥺</span>Akela / Lonely</button>
+      <button class="mood-btn" data-mood="scared" onclick="selectMood(this)"><span class="emoji">😨</span>Dara hua / Fear</button>
+      <button class="mood-btn" data-mood="happy" onclick="selectMood(this)"><span class="emoji">😊</span>Khush / Happy</button>
+    </div>
+  </div>
+
+  <!-- SOLUTION PANEL -->
+  <div id="solution-panel" class="card">
+    <div class="section-label">
+      <small>Aapke liye tips</small>
+      <span id="moodTitle">—</span>
+    </div>
+    <div id="moodBanner" class="solution-header">
+      <div class="sol-emoji" id="solEmoji">🌸</div>
+      <div>
+        <div class="sol-title" id="solTitle">—</div>
+        <div class="sol-sub" id="solSub">—</div>
+      </div>
+    </div>
+    <div class="tips-grid" id="tipsGrid"></div>
+  </div>
+
+  <!-- BREATHING EXERCISE -->
+  <div class="card">
+    <div class="section-label">
+      <small>Quick Relief</small>
+      4-4-4 Breathing Exercise
+    </div>
+    <div class="breathe-wrap">
+      <div class="breathe-ring" id="breatheRing">Tap to start</div>
+      <div class="breathe-status" id="breatheStatus">Yeh exercise anxiety aur tension ko 2 minutes mein kam karti hai</div>
+      <div class="breathe-count" id="breatheCount"></div>
+      <button id="startBreath" onclick="startBreathing()">🌬️ Breathing Shuru Karein</button>
+    </div>
+  </div>
+
+  <!-- AFFIRMATIONS -->
+  <div class="card">
+    <div class="section-label">
+      <small>Positive Energy</small>
+      Aaj ki Affirmation
+    </div>
+    <div class="affirmation-box">
+      <p id="affirmText">Loading your affirmation...</p>
+      <button id="newAffirm" onclick="newAffirmation()">✨ Nayi Affirmation</button>
+    </div>
+  </div>
+
+  <!-- AI COMPANION -->
+  <div class="card">
+    <div class="section-label">
+      <small>24/7 Support</small>
+      MamaCare AI Companion
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Kuch bhi share karein — judge nahi karega, bas sunega aur support karega 🌸</p>
+    <div class="chat-wrap" id="chatWrap">
+      <div class="msg bot">Namaste! 🌸 Main MamaCare AI hun. Aaj aap kaisa feel kar rahi hain? Kuch bhi share karein — main yahan hun aapke liye.</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Apni baat share karein..." onkeydown="if(event.key==='Enter')sendMessage()" />
+      <button id="sendBtn" onclick="sendMessage()">Send 💌</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>MamaCare</strong> — Pregnancy support companion<br>
+  Yeh app medical advice nahi deta. Kisi bhi serious concern ke liye apne doctor se milein. 💗
+</footer>
+
+<script>
+// ── MOOD DATA ──
+const moodData = {
+  anxious: {
+    emoji: '😰', title: 'Ghabhrahat / Anxiety',
+    sub: 'Pregnancy mein anxiety bahut common hai — hormones aur naye changes ki wajah se',
+    tips: [
+      { label: 'Saans ka jaadu', text: '4 sec saans lo, 4 sec roko, 4 sec chhodho. Isse nervous system turant shant hota hai.' },
+      { label: 'Body scan karo', text: 'Ankhein band karo. Pair se sir tak har muscle ko consciously dheel do.' },
+      { label: 'Grounding technique', text: '5 cheezein dekho, 4 chho lo, 3 suno, 2 sungo, 1 taste karo. Anxiety bhag jaati hai.' },
+      { label: 'Apne partner/saheli se baat karo', text: 'Akele mat raho. Ek trusted insaan ko batao ki tum kya feel kar rahi ho.' },
+    ]
+  },
+  sad: {
+    emoji: '😢', title: 'Udaasi / Sadness',
+    sub: 'Rone ka mann ho toh rone do — emotions ko bahar aane do',
+    tips: [
+      { label: 'Cry karo, seriously', text: 'Aansu rokna mat. Rone ke baad body "feel-good" hormones release karti hai.' },
+      { label: 'Warm hug ya blanket', text: 'Warmth oxytocin badhata hai. Apne aap ko cozy rakhna mental health ke liye zaruri hai.' },
+      { label: 'Roshni mein baitho', text: 'Subah ki dhoop 10-15 min lena — serotonin naturally boost hota hai.' },
+      { label: 'Journaling', text: 'Jo dil mein aaye woh likh do — koi format nahi chahiye. Sirf man ka bojh kam karo.' },
+    ]
+  },
+  angry: {
+    emoji: '😤', title: 'Gussa / Irritability',
+    sub: 'Progesterone aur estrogen ke changes irritability badhate hain — aap galat nahi hain',
+    tips: [
+      { label: 'STOP technique', text: 'S-Top, T-ake a breath, O-bserve, P-roceed. Reaction se pehle 10 second ka gap do.' },
+      { label: 'Cold water', text: 'Haath ya chehra thande paani se dhona immediately gusse ki intensity kam karta hai.' },
+      { label: 'Reasons likh do', text: '"Mujhe kya trigger kiya?" likho — pattern samajhne se future mein prepare hote hain.' },
+      { label: 'Physical release', text: 'Pillow mein cheekhna ya walk karna adrenaline naturally khatam karta hai.' },
+    ]
+  },
+  tired: {
+    emoji: '😴', title: 'Thakaan / Exhaustion',
+    sub: 'Pehli aur teesri trimester mein extreme fatigue bilkul normal hai',
+    tips: [
+      { label: '20 min nap', text: 'Research kehti hai 20-min nap full alertness wapas laati hai bina grogginess ke.' },
+      { label: 'Iron check karo', text: 'Pregnancy mein anemia common cause hai. Doctor se haemoglobin test karwao.' },
+      { label: 'Hydration first', text: 'Dehydration fatigue ka #1 hidden reason hai. Hар ghante ek glass paani peeo.' },
+      { label: 'Gentle stretching', text: '5 min light yoga ya stretch karna blood flow badhata hai aur energy wapas laata hai.' },
+    ]
+  },
+  overwhelmed: {
+    emoji: '🌊', title: 'Overwhelmed Feel',
+    sub: 'Ek saath bahut saari zimmedaariyan — normal hai yeh feeling',
+    tips: [
+      { label: 'Brain dump karo', text: 'Saari chintayein ek kagaz par likh do. Dimaag se bahar aane par bahut better lagta hai.' },
+      { label: 'Teen priorities', text: 'Aaj sirf 3 kaam karo — baaki kal ke liye. Har kaam important nahi hota.' },
+      { label: '"No" kehna seekho', text: 'Pregnancy mein "No" kehna self-care hai, selfishness nahi. Boundaries zaruri hain.' },
+      { label: 'Help maango', text: 'Support maangna weakness nahi — it\'s wisdom. Pati, maa, saheli — kisi ek se help lo.' },
+    ]
+  },
+  lonely: {
+    emoji: '🥺', title: 'Akela Mehsoos Karna',
+    sub: 'Loneliness pregnancy ka ek underrated challenge hai',
+    tips: [
+      { label: 'Pregnancy group join karo', text: 'Facebook ya WhatsApp par local pregnancy groups hain — wahan sab same situation mein hain.' },
+      { label: 'Video call karo', text: 'Kisi bachpan ki saheli ko call karo — bas baat karo, koi agenda nahi chahiye.' },
+      { label: 'Baby se baat karo', text: 'Pet pe haath rakh ke baby se baat karo — oxytocin badhta hai aur loneliness kam hoti hai.' },
+      { label: 'Creative hobby', text: 'Kuch banana — rangoli, knitting, journaling — akele time ko meaningful bana deta hai.' },
+    ]
+  },
+  scared: {
+    emoji: '😨', title: 'Dar / Fear',
+    sub: 'Delivery ka dar, baby ki health ka dar — yeh sab valid feelings hain',
+    tips: [
+      { label: 'Information = power', text: 'Reputable sources se delivery process ke baare mein padho. Unknown cheez zyada scary lagti hai.' },
+      { label: 'Birth plan banao', text: 'Apne doctor se milke birth plan discuss karo — control feel karne se dar kam hota hai.' },
+      { label: 'Positive birth stories', text: 'YouTube par positive delivery stories dekho — real women, real success stories.' },
+      { label: 'Fears likh ke therapist se milein', text: 'Pregnancy anxiety real condition hai — professional help lena bahut smart decision hai.' },
+    ]
+  },
+  happy: {
+    emoji: '😊', title: 'Khushi / Happiness',
+    sub: 'Yeh feeling capture karo — aur ise aur badhao!',
+    tips: [
+      { label: 'Gratitude journal', text: 'Aaj ki 3 achhi cheezein likh lo — brain ko happiness ko "notice" karna sikhata hai.' },
+      { label: 'Photo lena', text: 'Baby bump photos lena mat bhulo — yeh yaadein life bhar kaam aayengi.' },
+      { label: 'Baby ke liye kuch karo', text: 'Nursery decor, naam sochna, playlist banana — yeh connection badhata hai.' },
+      { label: 'Yeh feeling share karo', text: 'Partner ke saath, family ke saath — khushi share karne se dooni hoti hai!' },
+    ]
+  }
+};
+
+// ── AFFIRMATIONS ──
+const affirmations = [
+  "Mera sharir ek miracle perform kar raha hai — main strong aur capable hun.",
+  "Har pal main apne baby ke liye best kar rahi hun.",
+  "Meri feelings valid hain — main inhe acknowledge karti hun aur aage badhti hun.",
+  "Main perfect nahi hun, lekin main enough hun — aaj ke liye, aur hamesha ke liye.",
+  "Yeh pregnancy journey unique hai meri — main ise apne terms par ji rahi hun.",
+  "Mera baby safe hai, main safe hun. Sab theek hai.",
+  "Main jitna kar sakti hun, utna kaafee hai. Khud par bharosa rakhna zaroori hai.",
+  "Premi log mere aaspaas hain — main akeli nahi hun is safar mein.",
+  "Mera body har din kaafi strong hai is naye life ko nurture karne ke liye.",
+  "Aaj ka din gift hai — main ise ek ek pal feel karti hun.",
+];
+let affirmIdx = Math.floor(Math.random() * affirmations.length);
+document.getElementById('affirmText').textContent = affirmations[affirmIdx];
+function newAffirmation() {
+  affirmIdx = (affirmIdx + 1) % affirmations.length;
+  const el = document.getElementById('affirmText');
+  el.style.opacity = 0;
+  setTimeout(() => { el.textContent = affirmations[affirmIdx]; el.style.opacity = 1; el.style.transition = 'opacity .4s'; }, 200);
+}
+
+// ── MOOD SELECTOR ──
+function selectMood(btn) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const mood = btn.dataset.mood;
+  const data = moodData[mood];
+  document.getElementById('moodTitle').textContent = data.title;
+  document.getElementById('solEmoji').textContent = data.emoji;
+  document.getElementById('solTitle').textContent = data.title;
+  document.getElementById('solSub').textContent = data.sub;
+  const grid = document.getElementById('tipsGrid');
+  grid.innerHTML = data.tips.map(t => `<div class="tip-card"><b>${t.label}</b>${t.text}</div>`).join('');
+  const panel = document.getElementById('solution-panel');
+  panel.style.display = 'block';
+  panel.style.animation = 'none';
+  void panel.offsetWidth;
+  panel.style.animation = 'fadeUp .4s ease';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── BREATHING ──
+let breathPhase = null, breathTimer = null, breathCount = 0;
+function startBreathing() {
+  if (breathTimer) { clearTimeout(breathTimer); breathTimer = null; }
+  breathCount = 0;
+  runBreath();
+}
+function runBreath() {
+  const ring = document.getElementById('breatheRing');
+  const status = document.getElementById('breatheStatus');
+  const count = document.getElementById('breatheCount');
+  const phases = [
+    { text: '🌬️ Saans lo...', cls: 'inhale', dur: 4000 },
+    { text: '⏸️ Roko...', cls: 'hold', dur: 4000 },
+    { text: '😮‍💨 Chhodho...', cls: 'exhale', dur: 4000 },
+  ];
+  let i = 0;
+  function next() {
+    if (i >= phases.length) {
+      breathCount++;
+      count.textContent = `Round ${breathCount} complete ✓`;
+      if (breathCount < 4) { i = 0; next(); } 
+      else { ring.className = 'breathe-ring'; ring.textContent = '✅ Done!'; status.textContent = 'Bahut achha kiya! Aap better feel kar rahi hongi 🌸'; count.textContent = '4 rounds complete'; return; }
+      return;
+    }
+    const p = phases[i];
+    ring.className = 'breathe-ring ' + p.cls;
+    ring.textContent = ['Inhale','Hold','Exhale'][i];
+    status.textContent = p.text;
+    i++;
+    breathTimer = setTimeout(next, p.dur);
+  }
+  next();
+}
+
+// ── AI CHAT ──
+const chatWrap = document.getElementById('chatWrap');
+let chatHistory = [];
+
+function appendMsg(text, role) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.textContent = text;
+  chatWrap.appendChild(div);
+  chatWrap.scrollTop = chatWrap.scrollHeight;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('sendBtn');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  appendMsg(text, 'user');
+  chatHistory.push({ role: 'user', content: text });
+  btn.disabled = true;
+
+  const typing = document.createElement('div');
+  typing.className = 'msg bot typing';
+  typing.textContent = 'Soch rahi hun... 💭';
+  chatWrap.appendChild(typing);
+  chatWrap.scrollTop = chatWrap.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are MamaCare — a warm, empathetic pregnancy support companion. You speak in Hinglish (mix of Hindi and English), are deeply caring, non-judgmental, and knowledgeable about pregnancy, mood swings, and emotional wellness.
+
+Your tone: like a caring elder sister who is also a nurse. Never clinical, always warm.
+- Always validate feelings first before giving advice
+- Keep responses concise (2-4 sentences max) and emotionally supportive
+- Use soft emojis naturally (🌸💗✨😊)
+- Recommend consulting a doctor for medical concerns
+- Never dismiss or minimize feelings
+- Speak in Hinglish naturally: mix Hindi words with English seamlessly`,
+        messages: chatHistory,
+      })
+    });
+    const data = await res.json();
+    typing.remove();
+    const reply = data.content?.[0]?.text || 'Kuch technical issue aa gaya — thodi der baad try karein 🌸';
+    appendMsg(reply, 'bot');
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch (e) {
+    typing.remove();
+    appendMsg('Network issue aa gaya. Internet check karein aur dobara try karein 🌸', 'bot typing');
+  }
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>

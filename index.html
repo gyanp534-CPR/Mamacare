@@ -3,819 +3,826 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MamaCare — Pregnancy Mood & Wellness Support</title>
+<title>MamaCare — Complete Pregnancy Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --rose:#e8a0a8;--blush:#f5d5d8;--peach:#f7c4a8;--cream:#fdf6f0;
   --warm:#4a2c2a;--muted:#9a7070;--accent:#c97b7b;--green:#6ab89a;
-  --lavender:#b8a8d0;--gold:#d4a853;--blue:#7ab8d4;--navy:#2c3a4a;
+  --lavender:#b8a8d0;--gold:#d4a853;--blue:#7ab8d4;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--warm);overflow-x:hidden;}
-
-/* ── AMBIENT ── */
 .bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.28;animation:drift 14s ease-in-out infinite alternate;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.25;animation:drift 14s ease-in-out infinite alternate;}
 .orb-1{width:600px;height:600px;background:var(--blush);top:-150px;left:-200px;animation-duration:15s;}
 .orb-2{width:450px;height:450px;background:var(--peach);bottom:-100px;right:-120px;animation-duration:12s;animation-delay:-5s;}
 .orb-3{width:350px;height:350px;background:var(--lavender);top:45%;left:55%;animation-duration:18s;animation-delay:-8s;}
-.orb-4{width:250px;height:250px;background:#c8e8d8;top:20%;right:10%;animation-duration:20s;animation-delay:-3s;}
 @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(35px,28px) scale(1.1)}}
 
-/* ── NAV ── */
-nav{
-  position:sticky;top:0;z-index:100;
-  background:rgba(253,246,240,.88);backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(232,160,168,.2);
-  padding:0 24px;
-}
-.nav-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--warm);text-decoration:none;}
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(253,246,240,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,160,168,.2);}
+.nav-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--warm);text-decoration:none;white-space:nowrap;}
 .nav-logo span{color:var(--accent);}
-.nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;}
+.nav-tabs{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;padding:4px 0;}
 .nav-tabs::-webkit-scrollbar{display:none;}
-.nav-tab{
-  padding:7px 14px;border-radius:50px;border:none;
-  background:none;font-size:12.5px;font-family:'DM Sans',sans-serif;
-  color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500;
-  transition:.2s;
-}
+.nav-tab{padding:6px 13px;border-radius:50px;border:none;background:none;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500;transition:.2s;}
 .nav-tab:hover{background:var(--blush);color:var(--warm);}
 .nav-tab.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;box-shadow:0 2px 10px rgba(200,100,100,.25);}
 
-/* ── LAYOUT ── */
-.page{display:none;position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:32px 20px 80px;}
-.page.active{display:block;animation:fadeUp .35s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* LAYOUT */
+.page{display:none;position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:28px 18px 80px;}
+.page.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── HERO ── */
-.hero{text-align:center;padding:50px 20px 36px;}
-.logo-pill{display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:8px 22px;margin-bottom:26px;font-size:13px;color:var(--muted);letter-spacing:.04em;box-shadow:0 2px 16px rgba(200,120,120,.12);}
-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:300;line-height:1.15;color:var(--warm);}
-h1 em{font-style:italic;color:var(--accent);}
-.tagline{margin-top:14px;font-size:15px;color:var(--muted);font-weight:300;line-height:1.7;max-width:500px;margin-inline:auto;}
+/* CARD */
+.card{background:rgba(255,255,255,.75);backdrop-filter:blur(20px);border:1.5px solid rgba(232,160,168,.2);border-radius:22px;padding:24px;margin-bottom:22px;box-shadow:0 4px 24px rgba(200,100,100,.07);}
 
-/* ── SECTION TITLE ── */
-.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:400;margin-bottom:6px;color:var(--warm);}
-.sec-sub{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px;}
+/* TYPOGRAPHY */
+.sec-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:400;margin-bottom:16px;color:var(--warm);}
 
-/* ── CARD ── */
-.card{background:rgba(255,255,255,.74);backdrop-filter:blur(20px);border:1.5px solid rgba(232,160,168,.22);border-radius:24px;padding:28px 28px;margin-bottom:24px;box-shadow:0 4px 28px rgba(200,100,100,.07);transition:box-shadow .3s;}
-.card:hover{box-shadow:0 8px 36px rgba(200,100,100,.12);}
-
-/* ── MOOD GRID ── */
-.mood-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:11px;}
-.mood-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:15px 8px;border-radius:18px;border:1.5px solid transparent;background:var(--cream);cursor:pointer;transition:all .22s;font-size:11.5px;font-weight:500;color:var(--muted);}
-.mood-btn .em{font-size:27px;}
-.mood-btn:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.07);}
-.mood-btn.active{border-color:var(--accent);background:linear-gradient(135deg,#fce8e8,#fdf0e8);color:var(--warm);box-shadow:0 4px 14px rgba(201,123,123,.22);transform:translateY(-3px) scale(1.04);}
-#solution-panel{display:none;animation:fadeUp .4s ease;}
-.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:540px){.tips-grid{grid-template-columns:1fr;}}
-.tip-card{background:white;border-radius:14px;padding:15px 17px;border-left:3px solid var(--rose);font-size:13px;line-height:1.65;color:var(--warm);}
-.tip-card b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px;}
-.sol-header{display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:16px;background:linear-gradient(135deg,#fce8e8,#fdf5ee);margin-bottom:18px;}
-
-/* ── BREATHING ── */
-.breathe-wrap{text-align:center;padding:20px 0;}
-.breathe-ring{width:120px;height:120px;margin:0 auto 14px;border-radius:50%;background:radial-gradient(circle,var(--blush) 0%,var(--rose) 60%,transparent 100%);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:500;color:var(--warm);cursor:pointer;user-select:none;box-shadow:0 0 0 8px rgba(232,160,168,.18),0 0 0 18px rgba(232,160,168,.08);}
-.breathe-ring.inhale{animation:expandR 4s ease-in-out forwards;}
-.breathe-ring.exhale{animation:shrinkR 4s ease-in-out forwards;}
-@keyframes expandR{to{transform:scale(1.5);box-shadow:0 0 0 22px rgba(232,160,168,.2),0 0 0 44px rgba(232,160,168,.07);}}
-@keyframes shrinkR{to{transform:scale(1);}}
-
-/* ── AFFIRMATION ── */
-.affirm-box{text-align:center;padding:26px 22px;background:linear-gradient(135deg,#fef0f5,#fdf5ee);border-radius:18px;position:relative;overflow:hidden;}
-.affirm-box::before{content:'"';position:absolute;top:-8px;left:8px;font-family:'Cormorant Garamond',serif;font-size:110px;color:rgba(232,160,168,.18);line-height:1;}
-#affirmText{font-family:'Cormorant Garamond',serif;font-size:1.22rem;font-weight:400;font-style:italic;color:var(--warm);line-height:1.65;position:relative;z-index:1;transition:opacity .3s;}
-
-/* ── TRIMESTER ── */
-.trimester-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
-.tri-tab{padding:9px 20px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:.2s;}
-.tri-tab.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-color:transparent;box-shadow:0 3px 12px rgba(200,100,100,.22);}
-.week-search{display:flex;gap:10px;margin-bottom:22px;}
-.week-search input{flex:1;padding:11px 18px;border-radius:50px;border:1.5px solid var(--blush);font-size:13.5px;font-family:'DM Sans',sans-serif;color:var(--warm);background:white;outline:none;}
-.week-search input:focus{border-color:var(--rose);}
-.week-search button{padding:11px 22px;border-radius:50px;background:linear-gradient(135deg,var(--accent),var(--rose));border:none;color:white;font-size:13px;cursor:pointer;}
-.week-card{background:white;border-radius:18px;padding:22px;border:1.5px solid rgba(232,160,168,.2);display:none;}
-.week-card.show{display:block;animation:fadeUp .3s ease;}
-.week-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
-.week-badge{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--peach));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:white;flex-shrink:0;}
-.week-info h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;}
-.week-info p{font-size:12px;color:var(--muted);}
-.week-sections{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-@media(max-width:600px){.week-sections{grid-template-columns:1fr;}}
-.week-sec{background:var(--cream);border-radius:13px;padding:14px;}
-.week-sec h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:7px;}
-.week-sec p{font-size:12.5px;line-height:1.65;color:var(--warm);}
-.mood-tip-box{margin-top:14px;background:linear-gradient(135deg,#fce8e8,#fef0f0);border-radius:13px;padding:14px 16px;font-size:13px;line-height:1.65;}
-.mood-tip-box b{color:var(--accent);}
-
-/* ── KICK COUNTER ── */
-.kick-display{text-align:center;padding:16px 0 24px;}
-.kick-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;color:var(--accent);line-height:1;}
-.kick-label{font-size:13px;color:var(--muted);margin-top:4px;}
-.kick-btn{width:160px;height:160px;border-radius:50%;border:none;background:linear-gradient(145deg,var(--rose),var(--peach));color:white;font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;box-sizing:border-box;box-shadow:0 6px 24px rgba(200,100,100,.3);margin:20px auto;display:block;}
-.kick-btn:active{transform:scale(.93);box-shadow:0 2px 10px rgba(200,100,100,.2);}
-.kick-log{max-height:160px;overflow-y:auto;margin-top:8px;}
-.kick-log-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:10px;background:white;margin-bottom:6px;font-size:13px;}
-.kick-log-item .kt{color:var(--muted);font-size:11.5px;}
-.kick-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;}
-.kick-stat{background:white;border-radius:14px;padding:14px;text-align:center;}
-.kick-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--accent);}
-.kick-stat .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
-.kick-alert{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.6;margin-top:12px;display:none;}
-.kick-alert.warn{background:#fff3cd;border:1px solid #ffc107;color:#856404;}
-.kick-alert.ok{background:#d4edda;border:1px solid #28a745;color:#155724;}
-
-/* ── CONTRACTION TIMER ── */
-.contraction-display{text-align:center;padding:10px 0 20px;}
-.con-clock{font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:300;color:var(--warm);line-height:1;}
-.con-status{font-size:14px;color:var(--muted);margin-top:6px;height:20px;}
-.con-btns{display:flex;gap:12px;justify-content:center;margin:20px 0;}
-.con-btn-start{padding:16px 36px;border-radius:50px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;}
-.con-btn-start.idle{background:linear-gradient(135deg,#6ab89a,#4da888);color:white;box-shadow:0 4px 16px rgba(100,180,140,.3);}
-.con-btn-start.active{background:linear-gradient(135deg,#e87a7a,#c97b7b);color:white;box-shadow:0 4px 16px rgba(220,100,100,.3);}
-.con-btn-reset{padding:14px 22px;border-radius:50px;font-size:13px;font-weight:500;border:1.5px solid var(--blush);background:white;color:var(--muted);cursor:pointer;transition:.2s;}
-.con-btn-reset:hover{background:var(--blush);}
-.contraction-list{margin-top:6px;}
-.con-header{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:8px;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
-.con-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:8px;padding:10px 12px;background:white;border-radius:12px;margin-bottom:6px;font-size:13px;align-items:center;}
-.con-row:first-child{background:linear-gradient(135deg,#fce8e8,#fdf5ee);}
-.con-summary{margin-top:16px;padding:16px;border-radius:14px;background:white;font-size:13px;line-height:1.7;}
-.con-summary b{color:var(--accent);}
-.hospital-alert{margin-top:14px;padding:14px 18px;border-radius:14px;background:linear-gradient(135deg,#ffe8e8,#fff5e8);border:1.5px solid #f0a0a0;display:none;}
-.hospital-alert h4{font-size:14px;font-weight:600;color:#c0392b;margin-bottom:4px;}
-.hospital-alert p{font-size:12.5px;color:var(--warm);line-height:1.6;}
-
-/* ── PARTNER ── */
-.partner-hero{text-align:center;padding:20px;background:linear-gradient(135deg,#eef5ff,#f0e8ff);border-radius:20px;margin-bottom:24px;}
-.partner-hero .icon{font-size:48px;margin-bottom:10px;}
-.partner-hero h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:6px;}
-.partner-hero p{font-size:13px;color:var(--muted);line-height:1.7;max-width:440px;margin:0 auto;}
-.partner-phases{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
-@media(max-width:560px){.partner-phases{grid-template-columns:1fr;}}
-.phase-card{background:white;border-radius:16px;padding:18px;border-top:3px solid var(--rose);transition:.2s;}
-.phase-card:nth-child(2){border-top-color:var(--peach);}
-.phase-card:nth-child(3){border-top-color:var(--lavender);}
-.phase-card h4{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--warm);}
-.phase-card ul{list-style:none;padding:0;}
-.phase-card ul li{font-size:12.5px;color:var(--muted);padding:4px 0;border-bottom:1px solid #f5eded;line-height:1.55;}
-.phase-card ul li:last-child{border:none;}
-.phase-card ul li::before{content:"💗 ";font-size:10px;}
-.dos-donts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
-@media(max-width:500px){.dos-donts{grid-template-columns:1fr;}}
-.do-col,.dont-col{background:white;border-radius:16px;padding:18px;}
-.do-col h4{color:var(--green);font-size:13px;font-weight:600;margin-bottom:10px;}
-.dont-col h4{color:var(--accent);font-size:13px;font-weight:600;margin-bottom:10px;}
-.do-col li,.dont-col li{font-size:12.5px;color:var(--muted);margin-bottom:6px;line-height:1.55;list-style:none;padding-left:16px;position:relative;}
-.do-col li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700;}
-.dont-col li::before{content:"×";position:absolute;left:0;color:var(--accent);font-weight:700;}
-.partner-quiz .quiz-q{font-size:14px;font-weight:500;color:var(--warm);margin-bottom:12px;line-height:1.5;}
-.quiz-options{display:flex;flex-direction:column;gap:8px;}
-.quiz-opt{padding:11px 16px;border-radius:12px;border:1.5px solid var(--blush);background:white;font-size:13px;color:var(--warm);cursor:pointer;text-align:left;transition:.2s;font-family:'DM Sans',sans-serif;}
-.quiz-opt:hover{border-color:var(--rose);background:#fdf5f5;}
-.quiz-opt.correct{background:#e8f5e9;border-color:#66bb6a;color:#2e7d32;}
-.quiz-opt.wrong{background:#ffebee;border-color:#ef9a9a;color:#c62828;}
-.quiz-result{margin-top:14px;padding:14px;border-radius:12px;font-size:13px;line-height:1.65;display:none;}
-
-/* ── AI CHAT ── */
-.chat-wrap{display:flex;flex-direction:column;height:320px;overflow-y:auto;padding:14px;border-radius:16px;background:rgba(255,255,255,.6);border:1px solid rgba(232,160,168,.2);scroll-behavior:smooth;}
-.chat-wrap::-webkit-scrollbar{width:3px;}
-.chat-wrap::-webkit-scrollbar-thumb{background:var(--blush);border-radius:4px;}
-.msg{max-width:82%;padding:11px 15px;border-radius:18px;font-size:13px;line-height:1.65;margin-bottom:9px;animation:fadeUp .3s ease;}
-.msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-bottom-right-radius:4px;}
-.msg.bot{align-self:flex-start;background:white;color:var(--warm);border:1px solid rgba(232,160,168,.25);border-bottom-left-radius:4px;}
-.msg.typing{color:var(--muted);font-style:italic;}
-.chat-input-row{display:flex;gap:9px;margin-top:12px;}
-#chatInput{flex:1;padding:12px 18px;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);background:white;outline:none;}
-#chatInput:focus{border-color:var(--rose);}
-#sendBtn{padding:12px 20px;border-radius:50px;background:linear-gradient(135deg,var(--accent),var(--rose));border:none;color:white;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;box-shadow:0 3px 10px rgba(200,100,100,.25);}
-#sendBtn:disabled{opacity:.6;cursor:not-allowed;}
-
-/* ── SHARED BUTTONS ── */
-.btn-primary{padding:11px 26px;border-radius:50px;background:linear-gradient(135deg,var(--rose),var(--peach));border:none;color:white;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(200,100,100,.24);}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,100,100,.34);}
-.btn-ghost{padding:10px 20px;border-radius:50px;background:none;border:1.5px solid var(--blush);color:var(--muted);font-size:12.5px;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;}
+/* BUTTONS */
+.btn{padding:10px 22px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;border:none;}
+.btn-primary{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;box-shadow:0 3px 12px rgba(200,100,100,.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(200,100,100,.35);}
+.btn-ghost{background:white;border:1.5px solid var(--blush)!important;color:var(--muted);}
 .btn-ghost:hover{background:var(--blush);color:var(--warm);}
+.btn-green{background:linear-gradient(135deg,#6ab89a,#4da888);color:white;box-shadow:0 3px 12px rgba(100,180,140,.25);}
+.btn-sm{padding:7px 16px;font-size:12px;}
 
-footer{text-align:center;padding:40px 20px;font-size:12px;color:var(--muted);line-height:1.9;position:relative;z-index:1;}
-footer strong{color:var(--accent);}
+/* INPUTS */
+input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{
+  padding:11px 16px;border-radius:14px;border:1.5px solid var(--blush);
+  font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);
+  background:white;outline:none;width:100%;transition:.2s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,160,168,.15);}
+textarea{resize:vertical;min-height:80px;}
+label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:5px;}
+
+/* GRID HELPERS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* STAT CARD */
+.stat-card{background:white;border-radius:16px;padding:16px;text-align:center;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--accent);}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* PILL TAG */
+.pill{display:inline-block;padding:4px 12px;border-radius:50px;font-size:11.5px;font-weight:500;margin:3px;}
+.pill-green{background:#e8f5e9;color:#2e7d32;}
+.pill-orange{background:#fff3e0;color:#e65100;}
+.pill-purple{background:#f3e5f5;color:#6a1b9a;}
+.pill-blue{background:#e3f2fd;color:#1565c0;}
+
+/* SAVE INDICATOR */
+.save-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:#e8f5e9;padding:4px 10px;border-radius:50px;margin-left:8px;opacity:0;transition:opacity .3s;}
+.save-badge.show{opacity:1;}
+
+/* ══════════════════════ NUTRITION ══════════════════════ */
+.food-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+.food-group-btn{padding:12px 10px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;transition:.2s;text-align:center;font-size:12.5px;font-weight:500;color:var(--muted);}
+.food-group-btn .fg-icon{font-size:24px;display:block;margin-bottom:4px;}
+.food-group-btn.active{border-color:var(--accent);background:linear-gradient(135deg,#fce8e8,#fdf0e8);color:var(--warm);}
+.food-log-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px;}
+.food-log-item .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px;transition:.2s;}
+.food-log-item .del-btn:hover{color:var(--accent);}
+.water-track{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.water-glass{font-size:22px;cursor:pointer;transition:.2s;filter:grayscale(1);opacity:.4;}
+.water-glass.filled{filter:none;opacity:1;transform:scale(1.1);}
+.nutrients-bar{margin-bottom:12px;}
+.nb-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
+.nb-bar{height:8px;border-radius:50px;background:#f0e0e0;}
+.nb-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--rose),var(--peach));transition:width .5s;}
+
+/* ══════════════════════ HOSPITAL BAG ══════════════════════ */
+.bag-category{margin-bottom:18px;}
+.bag-cat-title{font-size:13px;font-weight:600;color:var(--warm);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.bag-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:white;border-radius:11px;margin-bottom:5px;cursor:pointer;transition:.2s;font-size:13px;}
+.bag-item:hover{background:var(--cream);}
+.bag-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.bag-item.checked{opacity:.6;}
+.bag-item.checked span{text-decoration:line-through;color:var(--muted);}
+.bag-progress{height:10px;border-radius:50px;background:#f0e0e0;margin:10px 0 4px;}
+.bag-progress-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--green),#4da888);transition:width .5s;}
+.add-custom-item{display:flex;gap:8px;margin-top:10px;}
+
+/* ══════════════════════ BABY NAMES ══════════════════════ */
+.name-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.name-filter-btn{padding:7px 16px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:12.5px;color:var(--muted);cursor:pointer;transition:.2s;font-weight:500;}
+.name-filter-btn.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-color:transparent;}
+.name-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+.name-card{background:white;border-radius:16px;padding:16px;border:1.5px solid transparent;transition:.2s;cursor:pointer;position:relative;}
+.name-card:hover{border-color:var(--rose);transform:translateY(-2px);box-shadow:0 5px 16px rgba(200,100,100,.12);}
+.name-card.saved{border-color:var(--accent);background:linear-gradient(135deg,#fce8e8,#fff8f0);}
+.name-card .nc-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--warm);}
+.name-card .nc-meaning{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.name-card .nc-origin{font-size:10.5px;margin-top:5px;}
+.name-card .heart{position:absolute;top:12px;right:12px;font-size:18px;transition:.2s;}
+.saved-names-list{display:flex;gap:8px;flex-wrap:wrap;}
+.saved-name-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-weight:500;}
+.saved-name-pill button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;}
+
+/* ══════════════════════ MEDICINE ══════════════════════ */
+.med-card{background:white;border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.med-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.med-info{flex:1;}
+.med-name{font-size:14px;font-weight:600;color:var(--warm);}
+.med-dose{font-size:12px;color:var(--muted);margin-top:2px;}
+.med-time{font-size:11.5px;color:var(--accent);margin-top:3px;}
+.med-actions{display:flex;gap:6px;align-items:center;}
+.med-taken-btn{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--blush);background:white;color:var(--muted);transition:.2s;font-family:'DM Sans',sans-serif;}
+.med-taken-btn.taken{background:var(--green);border-color:var(--green);color:white;}
+.med-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;transition:.2s;}
+.med-delete:hover{color:var(--accent);}
+.add-med-form{background:var(--cream);border-radius:16px;padding:18px;margin-top:10px;}
+
+/* ══════════════════════ JOURNAL ══════════════════════ */
+.journal-entry{background:white;border-radius:18px;padding:18px;margin-bottom:12px;border:1.5px solid rgba(232,160,168,.2);}
+.je-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.je-date{font-size:12px;color:var(--muted);}
+.je-week{font-size:11px;background:var(--blush);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500;}
+.je-mood{font-size:20px;}
+.je-text{font-size:13.5px;line-height:1.7;color:var(--warm);}
+.je-photo{margin-top:10px;border-radius:12px;overflow:hidden;max-height:200px;display:flex;align-items:center;justify-content:center;background:var(--cream);}
+.je-photo img{max-width:100%;max-height:200px;object-fit:cover;border-radius:12px;}
+.je-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;transition:.2s;}
+.je-delete:hover{color:var(--accent);}
+.new-entry-form{background:var(--cream);border-radius:18px;padding:20px;margin-bottom:20px;}
+.mood-selector-row{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px;}
+.mood-sel-btn{font-size:22px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;transition:.2s;}
+.mood-sel-btn.active{border-color:var(--rose);background:var(--blush);}
+.photo-upload-area{border:2px dashed var(--blush);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:.2s;margin:10px 0;}
+.photo-upload-area:hover{border-color:var(--rose);background:#fdf5f5;}
+.photo-upload-area input{display:none;}
+.photo-preview{max-width:100%;max-height:160px;border-radius:12px;margin-top:8px;display:none;}
+
+/* CHAT */
+.chat-box{height:300px;overflow-y:auto;padding:14px;border-radius:16px;background:rgba(255,255,255,.6);border:1px solid rgba(232,160,168,.2);margin-bottom:12px;scroll-behavior:smooth;}
+.chat-box::-webkit-scrollbar{width:3px;}
+.chat-box::-webkit-scrollbar-thumb{background:var(--blush);}
+.msg{max-width:82%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.65;margin-bottom:8px;animation:fadeUp .3s ease;}
+.msg.user{align-self:flex-end;margin-left:auto;background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-bottom-right-radius:4px;display:block;}
+.msg.bot{align-self:flex-start;background:white;color:var(--warm);border:1px solid rgba(232,160,168,.2);border-bottom-left-radius:4px;display:block;}
+.chat-row{display:flex;gap:8px;}
+#chatInput{flex:1;padding:11px 16px;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);background:white;outline:none;}
+#chatInput:focus{border-color:var(--rose);}
+
+footer{text-align:center;padding:36px 18px;font-size:12px;color:var(--muted);line-height:1.9;position:relative;z-index:1;}
 </style>
 </head>
 <body>
-<div class="bg-orbs">
-  <div class="orb orb-1"></div><div class="orb orb-2"></div>
-  <div class="orb orb-3"></div><div class="orb orb-4"></div>
-</div>
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
-<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <a class="nav-logo" href="#">Mama<span>Care</span> 🌸</a>
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showPage('mood')">😊 Mood Support</button>
-      <button class="nav-tab" onclick="showPage('trimester')">📅 Week Guide</button>
-      <button class="nav-tab" onclick="showPage('kick')">👶 Kick Counter</button>
-      <button class="nav-tab" onclick="showPage('contraction')">⏱️ Contraction Timer</button>
-      <button class="nav-tab" onclick="showPage('partner')">💑 Partner Guide</button>
+      <button class="nav-tab active"  onclick="showPage('mood',this)">😊 Mood</button>
+      <button class="nav-tab" onclick="showPage('nutrition',this)">🍎 Nutrition</button>
+      <button class="nav-tab" onclick="showPage('bag',this)">🏥 Hospital Bag</button>
+      <button class="nav-tab" onclick="showPage('names',this)">👶 Baby Names</button>
+      <button class="nav-tab" onclick="showPage('medicine',this)">💊 Medicines</button>
+      <button class="nav-tab" onclick="showPage('journal',this)">📸 Journal</button>
     </div>
   </div>
 </nav>
 
-<!-- ══════════════════════════════════════════════ -->
-<!-- PAGE 1: MOOD SUPPORT                           -->
-<!-- ══════════════════════════════════════════════ -->
+<!-- ══════ MOOD PAGE ══════ -->
 <div class="page active" id="page-mood">
-  <div class="hero">
-    <div class="logo-pill">🌸 MamaCare</div>
-    <h1>Pregnancy mein <em>mood swings</em><br>normal hain, aap akeli nahi</h1>
-    <p class="tagline">Apna mood chuniye — hum aapko sahi support, breathing exercise, aur caring AI companion denge.</p>
+  <div style="text-align:center;padding:40px 0 28px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:7px 20px;margin-bottom:22px;font-size:12.5px;color:var(--muted)">🌸 MamaCare</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;line-height:1.2">Pregnancy mein <em style="font-style:italic;color:var(--accent)">mood swings</em><br>normal hain, aap akeli nahi</h1>
+    <p style="font-size:14px;color:var(--muted);margin-top:12px;max-width:480px;margin-inline:auto;line-height:1.7">Apna mood chuniye — personalized tips, breathing exercise, aur AI companion tayaar hai.</p>
   </div>
 
   <div class="card">
-    <div class="sec-sub">Step 1</div>
-    <div class="sec-title">Abhi aap kaisi feel kar rahi hain?</div>
-    <div class="mood-grid">
-      <button class="mood-btn" data-mood="anxious" onclick="selectMood(this)"><span class="em">😰</span>Anxious</button>
-      <button class="mood-btn" data-mood="sad" onclick="selectMood(this)"><span class="em">😢</span>Udaas</button>
-      <button class="mood-btn" data-mood="angry" onclick="selectMood(this)"><span class="em">😤</span>Gussa</button>
-      <button class="mood-btn" data-mood="tired" onclick="selectMood(this)"><span class="em">😴</span>Thakan</button>
-      <button class="mood-btn" data-mood="overwhelmed" onclick="selectMood(this)"><span class="em">🌊</span>Overwhelmed</button>
-      <button class="mood-btn" data-mood="lonely" onclick="selectMood(this)"><span class="em">🥺</span>Akela</button>
-      <button class="mood-btn" data-mood="scared" onclick="selectMood(this)"><span class="em">😨</span>Dara hua</button>
-      <button class="mood-btn" data-mood="happy" onclick="selectMood(this)"><span class="em">😊</span>Khush</button>
+    <div class="sec-label">Step 1</div>
+    <div class="sec-title">Abhi kaisi feel kar rahi hain?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px">
+      <button class="food-group-btn" data-mood="anxious" onclick="selectMood(this)"><span class="fg-icon">😰</span>Anxious</button>
+      <button class="food-group-btn" data-mood="sad" onclick="selectMood(this)"><span class="fg-icon">😢</span>Udaas</button>
+      <button class="food-group-btn" data-mood="angry" onclick="selectMood(this)"><span class="fg-icon">😤</span>Gussa</button>
+      <button class="food-group-btn" data-mood="tired" onclick="selectMood(this)"><span class="fg-icon">😴</span>Thakaan</button>
+      <button class="food-group-btn" data-mood="overwhelmed" onclick="selectMood(this)"><span class="fg-icon">🌊</span>Overwhelmed</button>
+      <button class="food-group-btn" data-mood="lonely" onclick="selectMood(this)"><span class="fg-icon">🥺</span>Akela</button>
+      <button class="food-group-btn" data-mood="scared" onclick="selectMood(this)"><span class="fg-icon">😨</span>Dara hua</button>
+      <button class="food-group-btn" data-mood="happy" onclick="selectMood(this)"><span class="fg-icon">😊</span>Khush</button>
     </div>
   </div>
 
-  <div id="solution-panel" class="card">
-    <div class="sol-header">
-      <div style="font-size:36px" id="solEmoji">🌸</div>
-      <div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem" id="solTitle">—</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px" id="solSub">—</div>
-      </div>
+  <div id="mood-tips" style="display:none" class="card">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,#fce8e8,#fdf5ee);margin-bottom:16px">
+      <div id="moodEmoji" style="font-size:34px"></div>
+      <div><div id="moodTitle" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem"></div><div id="moodSub" style="font-size:12px;color:var(--muted);margin-top:2px"></div></div>
     </div>
-    <div class="tips-grid" id="tipsGrid"></div>
+    <div id="moodTipsGrid" class="g2"></div>
   </div>
 
   <div class="card">
-    <div class="sec-sub">Quick Relief</div>
+    <div class="sec-label">Breathing</div>
     <div class="sec-title">4-4-4 Breathing Exercise</div>
-    <div class="breathe-wrap">
-      <div class="breathe-ring" id="breatheRing">Start</div>
-      <div style="font-size:13.5px;color:var(--muted);margin-top:8px" id="breatheStatus">Anxiety aur tension 2 minute mein kam karti hai</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px;height:18px" id="breatheCount"></div>
-      <button class="btn-primary" style="margin-top:18px" onclick="startBreathing()">🌬️ Breathing Shuru Karein</button>
+    <div style="text-align:center;padding:16px 0">
+      <div id="breathRing" style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,var(--blush) 0%,var(--rose) 60%,transparent 100%);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--warm);margin:0 auto 14px;box-shadow:0 0 0 8px rgba(232,160,168,.18),0 0 0 18px rgba(232,160,168,.08);cursor:pointer">Start</div>
+      <div id="breathStatus" style="font-size:13px;color:var(--muted)">Tension aur anxiety 2 min mein kam hoti hai</div>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="startBreath()">🌬️ Shuru Karein</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="sec-sub">Positive Energy</div>
-    <div class="sec-title">Aaj ki Affirmation</div>
-    <div class="affirm-box">
-      <p id="affirmText"></p>
-      <button class="btn-ghost" style="margin-top:16px" onclick="newAffirmation()">✨ Nayi Affirmation</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="sec-sub">24/7 Support</div>
-    <div class="sec-title">MamaCare AI Companion</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Kuch bhi share karein — judge nahi karega, bas sunega 🌸</p>
-    <div class="chat-wrap" id="chatWrap">
-      <div class="msg bot">Namaste! 🌸 Main MamaCare hun. Aaj kaisi feel kar rahi hain aap? Kuch bhi share karein.</div>
-    </div>
-    <div class="chat-input-row">
-      <input id="chatInput" type="text" placeholder="Apni baat share karein..." onkeydown="if(event.key==='Enter')sendMessage()"/>
-      <button id="sendBtn" onclick="sendMessage()">Send 💌</button>
+    <div class="sec-label">AI Companion</div>
+    <div class="sec-title">MamaCare Chat 💗</div>
+    <div class="chat-box" id="chatBox"><div class="msg bot">Namaste! 🌸 Main MamaCare hun. Aaj kaisi feel kar rahi hain? Kuch bhi share karein.</div></div>
+    <div class="chat-row">
+      <input id="chatInput" type="text" placeholder="Apni baat share karein..." onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="btn btn-primary btn-sm" onclick="sendChat()">Send</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════ -->
-<!-- PAGE 2: TRIMESTER WEEK GUIDE                   -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="page" id="page-trimester">
-  <div style="padding:32px 0 16px">
-    <div class="sec-sub">Week by Week</div>
-    <div class="sec-title">Pregnancy Guide — Week 1 to 40</div>
-    <p style="font-size:13.5px;color:var(--muted);margin-bottom:22px;line-height:1.7">Apna current week daalo — baby ki growth, body ke changes, aur mood ke liye special tips milenge.</p>
-  </div>
-
-  <div class="card" style="margin-bottom:28px">
-    <div class="trimester-tabs">
-      <button class="tri-tab active" onclick="filterTrimester(1,this)">🌱 Pehli Trimester (1–13)</button>
-      <button class="tri-tab" onclick="filterTrimester(2,this)">🌸 Doosri Trimester (14–27)</button>
-      <button class="tri-tab" onclick="filterTrimester(3,this)">🌟 Teesri Trimester (28–40)</button>
-    </div>
-    <div class="week-search">
-      <input type="number" id="weekInput" placeholder="Week number likhein (1-40)" min="1" max="40"/>
-      <button onclick="searchWeek()">Dhundo</button>
-    </div>
-    <div id="weekResult"></div>
-    <div id="trimesterOverview"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════ -->
-<!-- PAGE 3: KICK COUNTER                           -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="page" id="page-kick">
-  <div style="padding:32px 0 16px">
-    <div class="sec-sub">Baby Monitoring</div>
-    <div class="sec-title">Kick Counter 👶</div>
-    <p style="font-size:13.5px;color:var(--muted);margin-bottom:0;line-height:1.7">Baby ke movements count karo — 28th week ke baad din mein 2 baar 10 kicks ka goal rakhein.</p>
+<!-- ══════ NUTRITION PAGE ══════ -->
+<div class="page" id="page-nutrition">
+  <div style="padding:28px 0 8px">
+    <div class="sec-label">Aaj ka khana</div>
+    <div class="sec-title">Nutrition & Diet Tracker <span class="save-badge" id="nutri-save">✓ Saved</span></div>
   </div>
 
   <div class="card">
-    <div class="kick-display">
-      <div class="kick-num" id="kickCount">0</div>
-      <div class="kick-label">Kicks / Movements</div>
-    </div>
-    <button class="kick-btn" id="kickBtn" onclick="recordKick()">
-      👶<br>TAP FOR<br>KICK
-    </button>
-    <div id="kickAlert" class="kick-alert"></div>
-    <div class="kick-stats">
-      <div class="kick-stat"><div class="val" id="kickSession">0</div><div class="lbl">Is Session</div></div>
-      <div class="val kick-stat"><div class="val" id="kickTime">—</div><div class="lbl">Session Start</div></div>
-      <div class="kick-stat"><div class="val" id="kickGoal">10</div><div class="lbl">Daily Goal</div></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px;justify-content:center">
-      <button class="btn-primary" onclick="startKickSession()">▶ New Session</button>
-      <button class="btn-ghost" onclick="resetKick()">Reset</button>
-    </div>
+    <div class="sec-label">Water Intake</div>
+    <div style="font-size:13.5px;color:var(--warm);margin-bottom:10px">Goal: <strong>8-10 glasses</strong> roz — tap to track</div>
+    <div class="water-track" id="waterTrack"></div>
+    <div style="font-size:12px;color:var(--muted);margin-top:6px" id="waterMsg"></div>
   </div>
 
   <div class="card">
-    <div class="sec-sub">Session Log</div>
-    <div class="sec-title">Movement History</div>
-    <div class="kick-log" id="kickLog"><p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">Session shuru karein aur kicks record karein</p></div>
-  </div>
-
-  <div class="card" style="background:linear-gradient(135deg,rgba(255,248,220,.8),rgba(255,240,200,.8))">
-    <div class="sec-sub">Doctor Advice</div>
-    <div class="sec-title">Kab concerned hona chahiye?</div>
-    <div style="font-size:13.5px;line-height:1.8;color:var(--warm)">
-      <p>🔴 <strong>Turant doctor ko call karein</strong> agar:</p>
-      <ul style="margin:8px 0 0 16px;font-size:13px;color:var(--muted)">
-        <li style="margin-bottom:5px">2 ghante mein 10 se kam kicks hoon</li>
-        <li style="margin-bottom:5px">Achanak bahut kam movement ho</li>
-        <li style="margin-bottom:5px">Koi movement bilkul na ho</li>
-        <li>Movement pattern mein achanak change ho</li>
-      </ul>
-      <p style="margin-top:12px;font-size:12.5px;color:var(--muted)">💡 Tip: Khana khane ke baad ya raat ko baby zyada active hota hai — tab count karna best time hai.</p>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════ -->
-<!-- PAGE 4: CONTRACTION TIMER                      -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="page" id="page-contraction">
-  <div style="padding:32px 0 16px">
-    <div class="sec-sub">Labor Monitoring</div>
-    <div class="sec-title">Contraction Timer ⏱️</div>
-    <p style="font-size:13.5px;color:var(--muted);margin-bottom:0;line-height:1.7">Contractions ko track karo — duration aur frequency dekh ke samjho kab hospital jaana hai.</p>
+    <div class="sec-label">Nutrients Progress</div>
+    <div class="sec-title">Aaj ke Nutrients</div>
+    <div id="nutriBars"></div>
   </div>
 
   <div class="card">
-    <div class="contraction-display">
-      <div class="con-clock" id="conClock">00:00</div>
-      <div class="con-status" id="conStatus">Button dabao jab contraction shuru ho</div>
-    </div>
-    <div class="con-btns">
-      <button class="con-btn-start idle" id="conMainBtn" onclick="toggleContraction()">🔴 Contraction Shuru</button>
-      <button class="con-btn-reset" onclick="resetContractions()">Reset</button>
-    </div>
-    <div id="hospitalAlert" class="hospital-alert">
-      <h4>🏥 Hospital Jaane ka Waqt!</h4>
-      <p id="hospitalMsg"></p>
-    </div>
-  </div>
-
-  <div class="card" id="conListCard" style="display:none">
-    <div class="sec-sub">Tracking</div>
-    <div class="sec-title">Contraction Log</div>
-    <div class="con-header">
-      <span>#</span><span>Duration</span><span>Interval</span><span>Time</span>
-    </div>
-    <div id="conList"></div>
-    <div id="conSummary" class="con-summary"></div>
-  </div>
-
-  <div class="card" style="background:linear-gradient(135deg,rgba(255,248,220,.8),rgba(255,240,200,.8))">
-    <div class="sec-sub">5-1-1 Rule</div>
-    <div class="sec-title">Hospital Kab Jaayein?</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:4px;">
-      <div style="background:white;border-radius:14px;padding:16px;text-align:center">
-        <div style="font-size:2rem;font-family:'Cormorant Garamond',serif;color:var(--accent)">5</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">Minutes apart<br>contractions</div>
+    <div class="sec-label">Food Log</div>
+    <div class="sec-title">Kya khaya aaj?</div>
+    <div style="margin-bottom:14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="foodCatBtns">
+        <button class="name-filter-btn active" data-cat="all" onclick="setFoodCat('all',this)">Sabhi</button>
+        <button class="name-filter-btn" data-cat="subah" onclick="setFoodCat('subah',this)">🌅 Subah</button>
+        <button class="name-filter-btn" data-cat="dopahar" onclick="setFoodCat('dopahar',this)">☀️ Dopahar</button>
+        <button class="name-filter-btn" data-cat="shaam" onclick="setFoodCat('shaam',this)">🌆 Shaam</button>
+        <button class="name-filter-btn" data-cat="raat" onclick="setFoodCat('raat',this)">🌙 Raat</button>
       </div>
-      <div style="background:white;border-radius:14px;padding:16px;text-align:center">
-        <div style="font-size:2rem;font-family:'Cormorant Garamond',serif;color:var(--accent)">1</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">Minute each<br>contraction lasts</div>
-      </div>
-      <div style="background:white;border-radius:14px;padding:16px;text-align:center">
-        <div style="font-size:2rem;font-family:'Cormorant Garamond',serif;color:var(--accent)">1</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">Hour yeh pattern<br>continue kare</div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="foodInput" placeholder="Khana ka naam (e.g. Dalia, Dal chawal...)" style="flex:1"/>
+        <select id="foodCal" style="width:110px">
+          <option value="50">Light (~50 cal)</option>
+          <option value="150" selected>Snack (~150)</option>
+          <option value="300">Meal (~300)</option>
+          <option value="500">Heavy (~500)</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addFood()">+ Add</button>
       </div>
     </div>
-    <p style="font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.7">Pehli pregnancy mein thoda jaldi jaana theek hai. Water break ho jaaye ya bahut dard ho toh turant jaayein — wait mat karein.</p>
+    <div id="foodList"></div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,rgba(255,248,220,.7),rgba(255,240,200,.7))">
+    <div class="sec-label">Pregnancy Diet Tips</div>
+    <div class="sec-title">Kya khaana chahiye?</div>
+    <div class="g2" style="font-size:13px;line-height:1.75">
+      <div>
+        <p style="font-weight:600;color:var(--green);margin-bottom:6px">✅ Zaroor Khao</p>
+        <p>🥬 Palak, methi, saag — Iron & Folate<br>🥚 Ande — Choline & Protein<br>🐟 Machi — Omega-3<br>🥛 Doodh, dahi — Calcium<br>🌾 Dalia, ragi — Fibre<br>🍊 Nimbu, amla — Vitamin C<br>🫘 Dal, rajma — Protein</p>
+      </div>
+      <div>
+        <p style="font-weight:600;color:var(--accent);margin-bottom:6px">❌ Avoid Karein</p>
+        <p>🚫 Kacchi machi / anda<br>🚫 Papaya aur ananas (pehli trimester)<br>🚫 Bahut zyada chai/coffee<br>🚫 Processed junk food<br>🚫 Alcohol bilkul nahi<br>🚫 Unpasteurized doodh<br>🚫 Bahut teekha khana</p>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════ -->
-<!-- PAGE 5: PARTNER GUIDE                          -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="page" id="page-partner">
-  <div style="padding:32px 0 16px">
-    <div class="sec-sub">Pati / Partner ke liye</div>
-    <div class="sec-title">Pregnancy Partner Guide 💑</div>
+<!-- ══════ HOSPITAL BAG PAGE ══════ -->
+<div class="page" id="page-bag">
+  <div style="padding:28px 0 8px">
+    <div class="sec-label">Delivery Preparation</div>
+    <div class="sec-title">Hospital Bag Checklist <span class="save-badge" id="bag-save">✓ Saved</span></div>
   </div>
 
-  <div class="partner-hero">
-    <div class="icon">🤱</div>
-    <h3>Aap ki bhoomika bahut important hai</h3>
-    <p>Pregnancy sirf maa ki journey nahi hai — partner ke support se yeh safar kitna alag ho jaata hai. Yahan sab kuch hai jo aapko jaanna chahiye.</p>
-  </div>
-
-  <div style="margin-bottom:28px">
-    <div class="sec-sub">Trimester-wise Support</div>
-    <div class="sec-title">Har phase mein kya karein?</div>
-  </div>
-  <div class="partner-phases">
-    <div class="phase-card">
-      <h4>🌱 Pehli Trimester (1–13 weeks)</h4>
-      <ul>
-        <li>Nausea ke time saath raho</li>
-        <li>Doctor appointments attend karo</li>
-        <li>Fatigue ko seriously lo</li>
-        <li>Diet mein help karo</li>
-        <li>Emotional mood swings ke liye patience rakho</li>
-        <li>Khaana banana sikho / order karo</li>
-      </ul>
-    </div>
-    <div class="phase-card">
-      <h4>🌸 Doosri Trimester (14–27)</h4>
-      <ul>
-        <li>Baby ka naam sochne mein participate karo</li>
-        <li>Nursery setup mein madad karo</li>
-        <li>Baby movements feel karo</li>
-        <li>Prenatal classes attend karo</li>
-        <li>Back massage regularly do</li>
-        <li>Hospital bag planning mein help karo</li>
-      </ul>
-    </div>
-    <div class="phase-card">
-      <h4>🌟 Teesri Trimester (28–40)</h4>
-      <ul>
-        <li>Birth plan discuss karo milke</li>
-        <li>Hospital route practice karo</li>
-        <li>Work leave plan karo</li>
-        <li>Contraction timer sikhо</li>
-        <li>Raat ko pani / snacks laane ke liye ready raho</li>
-        <li>Delivery room mein saath rehne ki taiyaari karo</li>
-      </ul>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:22px;font-family:'Cormorant Garamond',serif;color:var(--warm)" id="bagPct">0%</div>
+        <div style="font-size:12px;color:var(--muted)">Pack kiya gaya</div>
+      </div>
+      <div style="flex:1;max-width:300px">
+        <div class="bag-progress"><div class="bag-progress-fill" id="bagBar" style="width:0%"></div></div>
+        <div style="font-size:12px;color:var(--muted);text-align:right" id="bagCount">0 / 0 items</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="resetBag()">Reset All</button>
     </div>
   </div>
 
-  <div style="margin-bottom:16px">
-    <div class="sec-sub">Dos & Don'ts</div>
-    <div class="sec-title">Kya karein, kya na karein?</div>
-  </div>
-  <div class="dos-donts">
-    <div class="do-col">
-      <h4>✅ Zaroor Karein</h4>
-      <ul>
-        <li>Feelings validate karo — "haan, yeh normal hai"</li>
-        <li>Physically present raho, especially raat ko</li>
-        <li>Ghar ke kaam mein zyada hissa lo</li>
-        <li>Doctor ki baatein dhyan se suno</li>
-        <li>Appreciation dikhao — chota gift, surprise dinner</li>
-        <li>Mood swing pe patience rakho</li>
-        <li>Baby ke baare mein curious raho aur questions poocho</li>
-      </ul>
+  <div id="bagContainer"></div>
+
+  <div class="card">
+    <div class="sec-label">Custom Items</div>
+    <div class="sec-title">Apni list mein add karein</div>
+    <div class="add-custom-item">
+      <input type="text" id="customBagItem" placeholder="Item ka naam..."/>
+      <select id="customBagCat" style="width:140px">
+        <option value="Maa ke liye">Maa ke liye</option>
+        <option value="Baby ke liye">Baby ke liye</option>
+        <option value="Documents">Documents</option>
+        <option value="Misc">Misc</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="addCustomBagItem()">+ Add</button>
     </div>
-    <div class="dont-col">
-      <h4>❌ Bilkul Mat Karein</h4>
-      <ul>
-        <li>"Itna drama kyu kar rahi ho" kabhi mat kaho</li>
-        <li>Pain ko dismiss mat karo</li>
-        <li>Apni problems zyada bade mat batao</li>
-        <li>Doctor appointments skip mat karo</li>
-        <li>Body changes pe negative comment mat karo</li>
-        <li>Phone pe busy rehna during quality time</li>
-        <li>Labour mein hospital mein alone rehna</li>
-      </ul>
+  </div>
+</div>
+
+<!-- ══════ BABY NAMES PAGE ══════ -->
+<div class="page" id="page-names">
+  <div style="padding:28px 0 8px">
+    <div class="sec-label">Baby ke liye</div>
+    <div class="sec-title">Baby Name Finder 👶 <span class="save-badge" id="names-save">✓ Saved</span></div>
+  </div>
+
+  <div class="card">
+    <div style="margin-bottom:14px">
+      <input type="text" id="nameSearch" placeholder="Name ya meaning search karein..." oninput="renderNames()" style="margin-bottom:10px"/>
+      <div class="name-filters" id="nameFilters">
+        <button class="name-filter-btn active" data-f="all" onclick="setNameFilter('all',this)">Sabhi</button>
+        <button class="name-filter-btn" data-f="boy" onclick="setNameFilter('boy',this)">👦 Boy</button>
+        <button class="name-filter-btn" data-f="girl" onclick="setNameFilter('girl',this)">👧 Girl</button>
+        <button class="name-filter-btn" data-f="unisex" onclick="setNameFilter('unisex',this)">🌟 Unisex</button>
+        <button class="name-filter-btn" data-f="hindu" onclick="setNameFilter('hindu',this)">🕉️ Hindu</button>
+        <button class="name-filter-btn" data-f="muslim" onclick="setNameFilter('muslim',this)">☪️ Muslim</button>
+        <button class="name-filter-btn" data-f="sikh" onclick="setNameFilter('sikh',this)">🪯 Sikh</button>
+        <button class="name-filter-btn" data-f="modern" onclick="setNameFilter('modern',this)">✨ Modern</button>
+      </div>
+    </div>
+    <div class="name-grid" id="nameGrid"></div>
+  </div>
+
+  <div class="card" id="savedNamesCard" style="display:none">
+    <div class="sec-label">Pasandida</div>
+    <div class="sec-title">Saved Names 💗</div>
+    <div class="saved-names-list" id="savedNamesList"></div>
+  </div>
+</div>
+
+<!-- ══════ MEDICINE PAGE ══════ -->
+<div class="page" id="page-medicine">
+  <div style="padding:28px 0 8px">
+    <div class="sec-label">Daily Health</div>
+    <div class="sec-title">Medicine & Supplement Tracker <span class="save-badge" id="med-save">✓ Saved</span></div>
+  </div>
+
+  <div class="card">
+    <div class="g3" style="margin-bottom:0">
+      <div class="stat-card"><div class="stat-val" id="medTakenCount">0</div><div class="stat-lbl">Aaj liya</div></div>
+      <div class="stat-card"><div class="stat-val" id="medTotalCount">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-card"><div class="stat-val" id="medPct">0%</div><div class="stat-lbl">Complete</div></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="sec-sub">Partner Quiz</div>
-    <div class="sec-title">Kitna Jaante Hain Aap? 🎯</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:18px">Quick quiz — pregnancy ke baare mein apna knowledge test karo!</p>
-    <div id="quizContainer"></div>
-    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap" id="quizBtns">
-      <button class="btn-primary" onclick="nextQuestion()">Agla Sawaal ➜</button>
-      <button class="btn-ghost" onclick="restartQuiz()">Restart Quiz</button>
+    <div class="sec-label">Aaj ki Medicines</div>
+    <div class="sec-title">Medication List</div>
+    <div id="medList"></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="toggleAddMed()">+ Nayi Medicine Add Karein</button>
+    <div class="add-med-form" id="addMedForm" style="display:none;margin-top:14px">
+      <div class="g2" style="margin-bottom:10px">
+        <div><label>Medicine / Supplement Name</label><input type="text" id="medName" placeholder="e.g. Folic Acid, Iron..."/></div>
+        <div><label>Dose</label><input type="text" id="medDose" placeholder="e.g. 1 tablet, 5ml..."/></div>
+      </div>
+      <div class="g2" style="margin-bottom:10px">
+        <div><label>Time</label><input type="time" id="medTime"/></div>
+        <div><label>Icon</label>
+          <select id="medIcon">
+            <option value="💊">💊 Tablet</option>
+            <option value="💉">💉 Injection</option>
+            <option value="🧴">🧴 Syrup</option>
+            <option value="🫁">🫁 Inhaler</option>
+            <option value="🌿">🌿 Herbal</option>
+            <option value="🍊">🍊 Vitamin</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:12px"><label>Notes (optional)</label><input type="text" id="medNotes" placeholder="e.g. Khane ke baad lena..."/></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="addMedicine()">Save</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleAddMed()">Cancel</button>
+      </div>
     </div>
-    <div style="margin-top:10px;font-size:12.5px;color:var(--muted)" id="quizScore"></div>
   </div>
 
-  <div class="card" style="background:linear-gradient(135deg,rgba(235,235,255,.7),rgba(245,235,255,.7))">
-    <div class="sec-sub">Important Reminder</div>
-    <div class="sec-title">Aapki Mental Health bhi Matter Karti Hai 💙</div>
-    <p style="font-size:13.5px;line-height:1.8;color:var(--warm)">Partners mein bhi prenatal anxiety hoti hai — yeh normal hai. Agar aap anxious, scared ya overwhelmed feel kar rahe hain toh apne partner se baat karein ya doctor se milein. Dono ki wellbeing se hi ek healthy family banti hai. 🌟</p>
+  <div class="card" style="background:linear-gradient(135deg,rgba(235,248,240,.7),rgba(230,245,255,.7))">
+    <div class="sec-label">Doctor Advice</div>
+    <div class="sec-title">Common Pregnancy Supplements</div>
+    <div style="font-size:13px;line-height:1.8;color:var(--warm)">
+      <p>💊 <strong>Folic Acid</strong> — Neural tube defects rokne ke liye, pehle 3 month zaroori</p>
+      <p>🍊 <strong>Iron + Vitamin C</strong> — Anaemia se bachao, sath mein lena absorption badhata hai</p>
+      <p>🦴 <strong>Calcium + Vitamin D</strong> — Baby ki haddiyan aur aapke bones ke liye</p>
+      <p>🐟 <strong>Omega-3 (DHA)</strong> — Baby ka brain development</p>
+      <p>🌿 <strong>Magnesium</strong> — Leg cramps aur sleep ke liye</p>
+      <p style="margin-top:10px;font-size:12px;color:var(--muted)">⚠️ Koi bhi supplement apne doctor ki salah ke bina mat lo.</p>
+    </div>
   </div>
+</div>
+
+<!-- ══════ JOURNAL PAGE ══════ -->
+<div class="page" id="page-journal">
+  <div style="padding:28px 0 8px">
+    <div class="sec-label">Yaadein sanjao</div>
+    <div class="sec-title">Baby Bump Journal 📸 <span class="save-badge" id="journal-save">✓ Saved</span></div>
+  </div>
+
+  <div class="new-entry-form">
+    <div class="sec-label" style="margin-bottom:8px">Nayi Entry</div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><label>Pregnancy Week</label><input type="number" id="jWeek" placeholder="Week number (1-40)" min="1" max="40"/></div>
+      <div><label>Aaj ka date</label><input type="date" id="jDate"/></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label>Aaj ka mood</label>
+      <div class="mood-selector-row" id="jMoodRow">
+        <span class="mood-sel-btn active" data-m="😊" onclick="selectJMood(this)">😊</span>
+        <span class="mood-sel-btn" data-m="😢" onclick="selectJMood(this)">😢</span>
+        <span class="mood-sel-btn" data-m="😴" onclick="selectJMood(this)">😴</span>
+        <span class="mood-sel-btn" data-m="🥰" onclick="selectJMood(this)">🥰</span>
+        <span class="mood-sel-btn" data-m="😤" onclick="selectJMood(this)">😤</span>
+        <span class="mood-sel-btn" data-m="😰" onclick="selectJMood(this)">😰</span>
+        <span class="mood-sel-btn" data-m="🌟" onclick="selectJMood(this)">🌟</span>
+      </div>
+    </div>
+    <div style="margin-bottom:10px"><label>Aaj ki baatein (kuch bhi likhein...)</label><textarea id="jText" placeholder="Aaj baby ne kick kiya... ya kuch special hua... ya bas man ki baat..."></textarea></div>
+    <div>
+      <label>Baby Bump Photo (optional)</label>
+      <div class="photo-upload-area" onclick="document.getElementById('photoUpload').click()">
+        <div style="font-size:24px;margin-bottom:6px">📷</div>
+        <div style="font-size:13px;color:var(--muted)">Click karke photo upload karein</div>
+        <input type="file" id="photoUpload" accept="image/*" onchange="handlePhoto(this)"/>
+        <img id="photoPreview" class="photo-preview"/>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="saveJournalEntry()">💗 Entry Save Karein</button>
+  </div>
+
+  <div id="journalEntries"></div>
 </div>
 
 <footer>
-  <strong>MamaCare</strong> — Pregnancy Wellness Companion 🌸<br>
-  Yeh app medical advice nahi deta. Kisi bhi serious concern ke liye apne doctor se milein.<br>
-  Made with 💗 for every expecting mother
+  <strong style="color:var(--accent)">MamaCare</strong> — Complete Pregnancy Companion 🌸<br>
+  Aapka data sirf aapke device par save hota hai — completely private.<br>
+  Yeh app medical advice nahi deta. Serious concerns ke liye apne doctor se milein. 💗
 </footer>
 
 <script>
-// ════════════════════════════
+// ══════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════
+const S={
+  get:(k,def)=>{try{const v=localStorage.getItem('mc_'+k);return v?JSON.parse(v):def;}catch{return def;}},
+  set:(k,v)=>{try{localStorage.setItem('mc_'+k,JSON.stringify(v));}catch{}},
+};
+function flashSave(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800);}
+
+// ══════════════════════════════════
 // NAVIGATION
-// ════════════════════════════
-function showPage(id){
+// ══════════════════════════════════
+function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  event.currentTarget.classList.add('active');
+  if(btn)btn.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ════════════════════════════
-// MOOD DATA
-// ════════════════════════════
-const moodData={
-  anxious:{emoji:'😰',title:'Ghabhrahat / Anxiety',sub:'Hormones aur naye changes ki wajah se — bilkul normal',tips:[{l:'Saans ka jaadu',t:'4 sec saans lo, 4 sec roko, 4 sec chhodho. Nervous system turant shant hota hai.'},{l:'Body scan karo',t:'Ankhein band karo. Pair se sir tak har muscle ko consciously dheel do.'},{l:'5-4-3-2-1 grounding',t:'5 cheezein dekho, 4 chho lo, 3 suno, 2 sungo, 1 taste karo.'},{l:'Baat karo',t:'Akele mat raho. Partner ya kisi trusted insaan ko batao kya feel ho raha hai.'}]},
-  sad:{emoji:'😢',title:'Udaasi / Sadness',sub:'Rone ka mann ho toh rone do — emotions bahar aane do',tips:[{l:'Cry karo',t:'Aansu rokna mat. Rone ke baad body feel-good hormones release karti hai.'},{l:'Warmth lo',t:'Cozy blanket ya warm hug — oxytocin naturally badhta hai.'},{l:'Dhoop mein baitho',t:'Subah 10-15 min ki dhoop — serotonin boost hota hai.'},{l:'Journaling',t:'Jo dil mein aaye woh likh do — koi format nahi chahiye.'}]},
-  angry:{emoji:'😤',title:'Gussa / Irritability',sub:'Progesterone changes irritability badhate hain — aap galat nahi',tips:[{l:'STOP technique',t:'Stop, Take a breath, Observe, Proceed — 10 second ka gap do.'},{l:'Cold water',t:'Haath ya chehra thande paani se dhona — gussa kam hota hai.'},{l:'Triggers likh do',t:'Kya cheez trigger karti hai — pattern samjho.'},{l:'Physical release',t:'Walk karna ya pillow squeeze karna adrenaline khatam karta hai.'}]},
-  tired:{emoji:'😴',title:'Thakaan / Exhaustion',sub:'Pehli aur teesri trimester mein extreme fatigue normal hai',tips:[{l:'20 min nap',t:'Research: 20-min nap full alertness wapas laati hai.'},{l:'Iron check karo',t:'Anaemia common cause hai — haemoglobin test karwao.'},{l:'Hydration',t:'Dehydration #1 hidden cause hai. Har ghante ek glass paani.'},{l:'Gentle stretching',t:'5 min yoga ya stretch blood flow badhata hai.'}]},
-  overwhelmed:{emoji:'🌊',title:'Overwhelmed',sub:'Ek saath bahut saari zimmedaariyan — normal hai',tips:[{l:'Brain dump',t:'Saari chintayein kagaz par likh do — dimaag se bahar aao.'},{l:'3 priorities',t:'Sirf 3 kaam aaj — baaki kal ke liye.'},{l:'No kehna seekho',t:'Pregnancy mein "No" kehna self-care hai, selfishness nahi.'},{l:'Help maango',t:'Support maangna wisdom hai — partner, maa, saheli se help lo.'}]},
-  lonely:{emoji:'🥺',title:'Akela Mehsoos Karna',sub:'Loneliness pregnancy ka underrated challenge hai',tips:[{l:'Pregnancy group',t:'WhatsApp ya Facebook par local pregnancy groups join karo.'},{l:'Video call',t:'Purani saheli ko call karo — bas baat karo, koi agenda nahi.'},{l:'Baby se baat karo',t:'Pet pe haath rakh ke baat karo — oxytocin badhta hai.'},{l:'Creative hobby',t:'Kuch banana — rangoli, knitting — akele time meaningful banta hai.'}]},
-  scared:{emoji:'😨',title:'Dar / Fear',sub:'Delivery ka dar, baby ki health — valid feelings hain',tips:[{l:'Information power hai',t:'Delivery process ke baare mein padho — unknown zyada scary lagta hai.'},{l:'Birth plan',t:'Doctor se milke birth plan discuss karo — control feel karne se dar kam hota hai.'},{l:'Positive stories',t:'YouTube par positive delivery stories dekho.'},{l:'Therapist se milein',t:'Pregnancy anxiety real condition hai — help lena smart hai.'}]},
-  happy:{emoji:'😊',title:'Khushi / Happiness',sub:'Yeh feeling capture karo — aur badhao!',tips:[{l:'Gratitude journal',t:'3 achhi cheezein aaj likhna — brain khushi notice karna seekhta hai.'},{l:'Photos leno',t:'Baby bump photos mat bhoolna — life bhar kaam aayengi.'},{l:'Baby ke liye kuch karo',t:'Nursery, naam, playlist — connection badhata hai.'},{l:'Share karo',t:'Partner ke saath khushi share karne se dooni hoti hai!'}]},
+// ══════════════════════════════════
+// MOOD
+// ══════════════════════════════════
+const MOODS={
+  anxious:{e:'😰',t:'Ghabhrahat / Anxiety',s:'Hormones aur naye changes — bilkul normal hai',tips:[['Saans ka jaadu','4 sec saans lo, 4 sec roko, 4 sec chhodho. Nervous system shant hota hai.'],['5-4-3-2-1 Grounding','5 cheezein dekho, 4 chho lo, 3 suno — anxiety bhag jaati hai.'],['Body scan','Aankhein band karo, pair se sir tak muscles dheel do.'],['Baat karo','Partner ya trusted insaan ko batao — akele mat raho.']]},
+  sad:{e:'😢',t:'Udaasi / Sadness',s:'Rone ka mann ho toh rone do — emotions bahar aane do',tips:[['Cry karo freely','Rone ke baad body feel-good hormones release karti hai.'],['Warmth lo','Cozy blanket ya warm hug — oxytocin naturally badhta hai.'],['Dhoop mein baitho','Subah 10-15 min ki dhoop — serotonin boost.'],['Journal likhein','Jo dil mein aaye woh likho — man ka bojh kam hota hai.']]},
+  angry:{e:'😤',t:'Gussa / Irritability',s:'Progesterone changes — aap galat nahi hain',tips:[['STOP technique','Stop, Take breath, Observe, Proceed — 10 sec gap do.'],['Cold water','Haath thande paani se dhona — gusse ki intensity kam hoti hai.'],['Walk karo','10 min walk adrenaline naturally khatam karta hai.'],['Trigger note karo','Kya cheez trigger karti hai — pattern jaanno.']]},
+  tired:{e:'😴',t:'Thakaan / Exhaustion',s:'Extreme fatigue normal hai — guilt mat karo',tips:[['20 min nap','Research: 20 min nap full alertness wapas laati hai.'],['Iron check','Anaemia common cause — haemoglobin test karwao.'],['Hydration first','Dehydration #1 hidden cause — har ghante paani peeo.'],['Gentle stretch','5 min yoga blood flow badhata hai.']]},
+  overwhelmed:{e:'🌊',t:'Overwhelmed',s:'Bahut saari zimmedaariyan — normal hai',tips:[['Brain dump','Saari chintayein kagaz par likh do — dimaag free hoga.'],['Sirf 3 kaam','Aaj 3 priorities — baaki kal ke liye.'],['No kehna seekho','"No" kehna self-care hai, selfishness nahi.'],['Help maango','Support maangna wisdom hai — kisi ek se lo.']]},
+  lonely:{e:'🥺',t:'Akela Mehsoos',s:'Loneliness pregnancy ka underrated challenge',tips:[['Group join karo','WhatsApp pregnancy groups mein bahut support milta hai.'],['Video call','Purani saheli — bas baat karo, koi agenda nahi.'],['Baby se baat karo','Pet pe haath rakh ke baat karo — connection badhta hai.'],['Creative hobby','Kuch banana — akele time meaningful banta hai.']]},
+  scared:{e:'😨',t:'Dar / Fear',s:'Delivery ka dar — valid feeling hai',tips:[['Jaankaari lo','Delivery process padho — unknown zyada scary lagta hai.'],['Birth plan','Doctor ke saath birth plan bnao — control milta hai.'],['Positive stories','YouTube par real positive birth stories dekho.'],['Professional help','Pregnancy anxiety real hai — therapist se milna smart decision.']]},
+  happy:{e:'😊',t:'Khushi / Happiness',s:'Yeh feeling capture karo!',tips:[['Gratitude journal','3 achhi cheezein aaj likhna — brain khushi notice karta hai.'],['Bump photos','Photos mat bhoolna — life bhar kaam aayengi!'],['Baby se connect','Naam sochna, nursery, playlist — connection badhta hai.'],['Share karo','Khushi share karne se dooni hoti hai.']]},
 };
 function selectMood(btn){
-  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const d=moodData[btn.dataset.mood];
-  document.getElementById('solEmoji').textContent=d.emoji;
-  document.getElementById('solTitle').textContent=d.title;
-  document.getElementById('solSub').textContent=d.sub;
-  document.getElementById('tipsGrid').innerHTML=d.tips.map(t=>`<div class="tip-card"><b>${t.l}</b>${t.t}</div>`).join('');
-  const p=document.getElementById('solution-panel');
-  p.style.display='block';p.style.animation='none';void p.offsetWidth;p.style.animation='fadeUp .4s ease';
+  const d=MOODS[btn.dataset.mood];
+  document.getElementById('moodEmoji').textContent=d.e;
+  document.getElementById('moodTitle').textContent=d.t;
+  document.getElementById('moodSub').textContent=d.s;
+  document.getElementById('moodTipsGrid').innerHTML=d.tips.map(([l,t])=>`<div style="background:white;border-radius:14px;padding:14px;border-left:3px solid var(--rose)"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px;font-weight:600">${l}</div><div style="font-size:13px;line-height:1.65;color:var(--warm)">${t}</div></div>`).join('');
+  const p=document.getElementById('mood-tips');p.style.display='block';p.style.animation='none';void p.offsetWidth;p.style.animation='fadeUp .4s ease';
   p.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ════════════════════════════
-// AFFIRMATIONS
-// ════════════════════════════
-const affirmations=["Mera sharir ek miracle perform kar raha hai — main strong aur capable hun.","Har pal main apne baby ke liye best kar rahi hun.","Meri feelings valid hain — main inhe acknowledge karti hun.","Main perfect nahi hun, lekin main enough hun — aaj ke liye, aur hamesha.","Yeh pregnancy journey unique hai meri — main ise apne terms par ji rahi hun.","Mera baby safe hai, main safe hun. Sab theek hai.","Main jitna kar sakti hun, utna kaafi hai. Khud par bharosa rakhna zaroori hai.","Premi log mere aaspaas hain — main akeli nahi hun is safar mein.","Mera body har din kaafi strong hai naye life ko nurture karne ke liye.","Aaj ka din gift hai — main ise ek ek pal feel karti hun.","Main ek naya insaan bana rahi hun — yeh kaam duniya ka sabse bada kaam hai.","Mushkilein temporary hain — meri strength permanent hai."];
-let affIdx=Math.floor(Math.random()*affirmations.length);
-document.getElementById('affirmText').textContent=affirmations[affIdx];
-function newAffirmation(){affIdx=(affIdx+1)%affirmations.length;const el=document.getElementById('affirmText');el.style.opacity=0;setTimeout(()=>{el.textContent=affirmations[affIdx];el.style.opacity=1;el.style.transition='opacity .35s';},220);}
-
-// ════════════════════════════
-// BREATHING
-// ════════════════════════════
+// Breathing
 let bTimer=null,bCount=0;
-function startBreathing(){if(bTimer)clearTimeout(bTimer);bCount=0;runBreath();}
+function startBreath(){if(bTimer)clearTimeout(bTimer);bCount=0;runBreath();}
 function runBreath(){
-  const ring=document.getElementById('breatheRing'),st=document.getElementById('breatheStatus'),ct=document.getElementById('breatheCount');
-  const phases=[{t:'Saans lo...',c:'inhale',d:4000},{t:'Roko...',c:'hold',d:4000},{t:'Chhodho...',c:'exhale',d:4000}];
+  const ring=document.getElementById('breathRing'),st=document.getElementById('breathStatus');
+  const phases=[['Saans lo...','inhale',4000],['Roko...','hold',4000],['Chhodho...','exhale',4000]];
   let i=0;
-  function next(){
-    if(i>=phases.length){bCount++;ct.textContent=`Round ${bCount} ✓`;if(bCount<4){i=0;next();}else{ring.className='breathe-ring';ring.textContent='✅';st.textContent='Bahut achha! Ab better feel kar rahi hongi 🌸';}return;}
-    const p=phases[i];ring.className='breathe-ring '+p.c;ring.textContent=['Inhale','Hold','Exhale'][i];st.textContent=p.t;i++;bTimer=setTimeout(next,p.d);
-  }next();
+  function next(){if(i>=phases.length){bCount++;if(bCount<4){i=0;next();}else{ring.textContent='✅';st.textContent='Bahut achha! Better feel kar rahi hongi 🌸';}return;}
+    ring.textContent=['Inhale','Hold','Exhale'][i];st.textContent=phases[i][0];i++;bTimer=setTimeout(next,phases[i-1][2]);}
+  next();
 }
 
-// ════════════════════════════
-// TRIMESTER WEEK DATA
-// ════════════════════════════
-const weekData={
-  1:{tri:1,baby:"Fertilization hua abhi! Baby ek microscopic cell hai.",body:"Aapko abhi pata bhi nahi hoga — periods miss hone wala hai.",mood:"Koi alag feeling nahi, ya halki bloating/thakaan ho sakti hai.",tip:"Folic acid shuru karein — neural tube development ke liye zaruri hai."},
-  2:{tri:1,baby:"Embryo implantation ho raha hai uterus mein.",body:"Spotting ho sakti hai (implantation bleeding) — normal hai.",mood:"Mood stable hai abhi. Enjoy karo!",tip:"Alcohol aur smoking poori tarah band karein aaj se."},
-  3:{tri:1,baby:"Baby ka dil banana shuru ho gaya — wow!",body:"Nausea, breast tenderness shuru ho sakti hai.",mood:"Mood swings shuru! Hormones ka khel hai yeh.",tip:"Ginger tea nausea ke liye bahut kaam aati hai."},
-  4:{tri:1,baby:"Baby matar ke size ka — 4mm. Embryo officially!",body:"Pregnancy test ab clearly positive aayega.",mood:"Excitement aur anxiety dono ek saath normal hai.",tip:"OB/GYN se pehli appointment book karein."},
-  5:{tri:1,baby:"Heart ab beat kar raha hai — 100 bpm!",body:"Morning sickness peak pe ho sakti hai.",mood:"Pehli trimester ki worst anxiety abhi hoti hai — normal hai.",tip:"Small meals frequent khao — khali pet nausea badhata hai."},
-  6:{tri:1,baby:"Chehre ka outline ban raha hai — aankhein, naak dikhengi.",body:"Thakaan extreme ho sakti hai. Rest karo bina guilt ke.",mood:"Irritability normal hai — hormones ka surge hai.",tip:"Prenatal vitamins daily lena mat bhoolna."},
-  7:{tri:1,baby:"Baby aadhaa inch! Haath aur pair ki ungliyan bann rahi hain.",body:"Frequent urination shuru — uterus badh raha hai.",mood:"Anxiety zyada hai abhi — miscarriage ka dar common hai.",tip:"Stress mat lo — baby protected hai amniotic sac mein."},
-  8:{tri:1,baby:"Sabhi major organs ban rahe hain. Critical phase!",body:"Waistband tight lagne laga? Normal hai.",mood:"Mood zyada sensitive ho jaata hai. Rone aata hai achanak.",tip:"Loose comfortable kapde pahnna shuru karo."},
-  9:{tri:1,baby:"Baby ab 'fetus' hai officially. Fingers fully formed!",body:"Nausea abhi peak pe ho sakti hai.",mood:"Overwhelmed feeling — pregnancy ki reality set ho rahi hai.",tip:"Sour candy ya nimbu nausea mein help karta hai."},
-  10:{tri:1,baby:"Baby 1 inch! Facial features clear ho rahi hain.",body:"Mood swings reduce hone lage slowly.",mood:"Thoda better feel hone lagta hai — dark period dhire dhire khatam.",tip:"Nuchal translucency scan book karein (week 11-13)."},
-  11:{tri:1,baby:"Baby ki skin transparent hai, veins dikhti hain!",body:"Nausea reduce hone lagti hai kuch cases mein.",mood:"Energy thodi wapas aati hai — enjoy karo!",tip:"Miscarriage risk dramatically kam ho jaata hai ab."},
-  12:{tri:1,baby:"Baby 2.5 inch! Reflexes shuru ho gaye.",body:"Baby bump ab slightly visible ho sakta hai.",mood:"Relief! Most women announce pregnancy week 12 mein.",tip:"First trimester screening tests is hafte karo."},
-  13:{tri:1,baby:"Fingerprints ban gayi! Unique hai aapka baby.",body:"Nausea finally thodi better hoti hai mostly.",mood:"Energy boost! Doosri trimester ka welcome.",tip:"Maternity clothes shopping shuru kar sakte hain."},
-  14:{tri:2,baby:"Baby 3.5 inch — lemon size! Sex possibly visible on scan.",body:"Energy wapas aa rahi hai — 'honeymoon phase' of pregnancy!",mood:"Most women feel best in second trimester. Enjoy!",tip:"Khul ke khao — healthy weight gain important hai."},
-  16:{tri:2,baby:"Baby ki aankhein hil sakti hain, ears kaam kar rahi hain!",body:"Baby bump clearly visible ab.",mood:"Positive! Many feel confident aur glowing.",tip:"Baby ko music sunao — wo sun sakta hai."},
-  18:{tri:2,baby:"Baby 5.5 inch. Anatomy scan time!",body:"Baby movements feel hone lage kuch moms ko.",mood:"Excitement — anatomy scan se sab normal confirm hoga.",tip:"Anatomy scan book karein — detailed 20-week scan."},
-  20:{tri:2,baby:"Half way there! Baby 10 inch, 300g.",body:"Belly button bahar aa sakti hai.",mood:"Milestone! Aadhi journey complete.",tip:"Baby ki first kicks feel karo — magical moment hai."},
-  24:{tri:2,baby:"Baby 30cm! Survival outside womb possible ab.",body:"Stretch marks aa sakti hain — coconut oil lagao.",mood:"Reality settle ho rahi hai — nesting instinct shuru.",tip:"Glucose screening test is period mein hota hai."},
-  28:{tri:3,baby:"Baby 25cm — 1kg! Eyes khul sakti hain.",body:"Teesri trimester ki thakaan wapas aati hai.",mood:"Anxiety about delivery shuru ho sakti hai — normal.",tip:"Kick counting shuru karein — din mein 2 baar."},
-  32:{tri:3,baby:"Baby 42cm — 1.8kg. Full development phase!",body:"Braxton Hicks contractions (practice contractions) start.",mood:"Nesting instinct peak pe — sab saaf karne ka mann karta hai.",tip:"Hospital bag pack karna shuru karo."},
-  36:{tri:3,baby:"Baby 47cm — 2.6kg. Almost ready!",body:"Baby drop karta hai — breathing thoda aasaan, urination zyada.",mood:"Eager anticipation + anxiety mix. Real feelings hain.",tip:"Birth plan finalize karo doctor ke saath."},
-  38:{tri:3,baby:"Baby full term! 3kg+. Lungs ready hain.",body:"Cervix dilate hona shuru ho sakta hai.",mood:"'Get this baby out!' feeling — bilkul normal aur valid!",tip:"Signs of labor jaano — contractions, water break."},
-  40:{tri:3,baby:"Due date! Baby 50cm, 3.4kg average.",body:"Post-date pregnancy — doctor monitor karega.",mood:"Excited, tired, scared, ready — sab ek saath!",tip:"Agar labor shuru na ho, doctor induction discuss karega."},
-};
-function getWeekData(w){
-  if(weekData[w])return weekData[w];
-  // interpolate for missing weeks
-  const keys=Object.keys(weekData).map(Number).sort((a,b)=>a-b);
-  const tri=w<=13?1:w<=27?2:3;
-  const close=keys.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);
-  return{...weekData[close],tri};
+// AI Chat
+let chatHistory=[];
+function appendMsg(txt,role){const d=document.createElement('div');d.className='msg '+role;d.textContent=txt;document.getElementById('chatBox').appendChild(d);document.getElementById('chatBox').scrollTop=9999;}
+async function sendChat(){
+  const inp=document.getElementById('chatInput');const txt=inp.value.trim();if(!txt)return;
+  inp.value='';appendMsg(txt,'user');chatHistory.push({role:'user',content:txt});
+  const t=document.createElement('div');t.className='msg bot';t.textContent='Soch rahi hun... 💭';t.style.fontStyle='italic';t.style.color='var(--muted)';document.getElementById('chatBox').appendChild(t);document.getElementById('chatBox').scrollTop=9999;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are MamaCare AI — a warm, empathetic pregnancy support companion. Speak in Hinglish (Hindi-English mix). Tone: caring elder sister + nurse. Keep responses 2-4 sentences. Validate feelings first. Soft emojis naturally. Recommend doctor for medical concerns.',messages:chatHistory})});
+    const data=await r.json();t.remove();const reply=data.content?.[0]?.text||'Kuch issue aa gaya, dobara try karein 🌸';
+    appendMsg(reply,'bot');chatHistory.push({role:'assistant',content:reply});
+  }catch{t.remove();appendMsg('Network issue — check karein 🌸','bot');}
 }
-function searchWeek(){
-  const w=parseInt(document.getElementById('weekInput').value);
-  if(!w||w<1||w>40){document.getElementById('weekResult').innerHTML='<p style="color:var(--accent);font-size:13px;padding:10px 0">1 se 40 ke beech week number daalo.</p>';return;}
-  const d=getWeekData(w);
-  const triNames=['Pehli','Doosri','Teesri'];
-  document.getElementById('weekResult').innerHTML=`
-    <div class="week-card show">
-      <div class="week-header">
-        <div class="week-badge">${w}</div>
-        <div class="week-info">
-          <h3>Week ${w} of 40</h3>
-          <p>${triNames[d.tri-1]} Trimester • ${Math.round((w/40)*100)}% journey complete</p>
+
+// ══════════════════════════════════
+// NUTRITION
+// ══════════════════════════════════
+let waterCount=S.get('water',0);
+let foodLog=S.get('foodLog',[]);
+let foodCatFilter='all';
+
+function initWater(){
+  const w=document.getElementById('waterTrack');w.innerHTML='';
+  for(let i=0;i<10;i++){
+    const g=document.createElement('span');g.className='water-glass'+(i<waterCount?' filled':'');
+    g.textContent='🥤';g.onclick=()=>toggleWater(i);w.appendChild(g);
+  }
+  document.getElementById('waterMsg').textContent=waterCount>=10?'🎉 Daily goal complete! Bahut achha!':waterCount>=6?`✅ ${waterCount}/10 glasses — good progress!`:`💧 ${waterCount}/10 — ${10-waterCount} glasses aur peeni hain`;
+}
+function toggleWater(i){waterCount=i<waterCount?i:i+1;S.set('water',waterCount);initWater();flashSave('nutri-save');}
+
+function initNutriBars(){
+  const calories=foodLog.reduce((a,f)=>a+f.cal,0);
+  const goal=2200;const pct=Math.min(100,Math.round(calories/goal*100));
+  document.getElementById('nutriBars').innerHTML=`
+    <div class="nutrients-bar"><div class="nb-label"><span>Calories</span><span>${calories} / ${goal} kcal</span></div><div class="nb-bar"><div class="nb-fill" style="width:${pct}%"></div></div></div>
+    <div class="nutrients-bar"><div class="nb-label"><span>Paani</span><span>${waterCount} / 10 glasses</span></div><div class="nb-bar"><div class="nb-fill" style="width:${Math.min(100,waterCount*10)}%;background:linear-gradient(90deg,var(--blue),#4da8d4)"></div></div></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">💡 Pregnancy mein ~300 extra calories chahiye hoti hain daily.</p>`;
+}
+
+function renderFoodLog(){
+  const list=document.getElementById('foodList');
+  const filtered=foodCatFilter==='all'?foodLog:foodLog.filter(f=>f.cat===foodCatFilter);
+  if(filtered.length===0){list.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:16px 0">Kuch log nahi kiya abhi. Khaana add karein!</p>';return;}
+  list.innerHTML=filtered.slice().reverse().map((f,i)=>`
+    <div class="food-log-item">
+      <span>${f.cat==='subah'?'🌅':f.cat==='dopahar'?'☀️':f.cat==='shaam'?'🌆':'🌙'} ${f.name}</span>
+      <span style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:var(--muted)">${f.cal} cal</span>
+        <button class="del-btn" onclick="deleteFood(${foodLog.indexOf(f)})">×</button>
+      </span>
+    </div>`).join('');
+  initNutriBars();
+}
+function setFoodCat(cat,btn){
+  document.querySelectorAll('#foodCatBtns .name-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');foodCatFilter=cat;renderFoodLog();
+}
+function addFood(){
+  const name=document.getElementById('foodInput').value.trim();if(!name)return;
+  const cal=parseInt(document.getElementById('foodCal').value);
+  foodLog.push({name,cal,cat:foodCatFilter==='all'?'subah':foodCatFilter,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
+  S.set('foodLog',foodLog);document.getElementById('foodInput').value='';renderFoodLog();flashSave('nutri-save');
+}
+function deleteFood(i){foodLog.splice(i,1);S.set('foodLog',foodLog);renderFoodLog();flashSave('nutri-save');}
+initWater();initNutriBars();renderFoodLog();
+
+// ══════════════════════════════════
+// HOSPITAL BAG
+// ══════════════════════════════════
+const BAG_ITEMS={
+  'Maa ke liye':[['Maternity nightgown / comfortable dress (2-3)','clothes'],['Comfortable undergarments','clothes'],['Non-slip slippers / chappals','clothes'],['Toiletries (soap, shampoo, toothbrush)','personal'],['Sanitary pads (heavy duty)','personal'],['Breast pads','personal'],['Snacks (healthy — dry fruits, crackers)','food'],['Water bottle','food'],['Phone charger + power bank','tech'],['Earphones','tech'],['Favourite pillow cover','comfort'],['Eye mask + ear plugs','comfort']],
+  'Baby ke liye':[['Onesies / jhabla (5-6 sets)','clothes'],['Soft blanket (2-3)','clothes'],['Baby cap, socks, mittens','clothes'],['Diapers (newborn size, 10-15)','care'],['Baby wipes (unscented)','care'],['Baby body lotion','care'],['Muslin swaddle cloths (2-3)','care'],['Baby nail filer','care'],['Going home outfit','special']],
+  'Documents':[['Aadhar card (original + copy)','docs'],['Health insurance card','docs'],['Hospital registration / past records','docs'],['Doctor\'s contact number (written)','docs'],['Blood group card','docs'],['Birth plan copy','docs'],['Emergency contacts list','docs']],
+  'Partner ke liye':[['Change of clothes (2 days)','clothes'],['Snacks & water','food'],['Cash + card','misc'],['Camera / phone fully charged','tech'],['Comfy pillow','comfort']]
+};
+let bagChecked=S.get('bagChecked',{});
+let customBagItems=S.get('customBagItems',[]);
+
+function renderBag(){
+  const container=document.getElementById('bagContainer');container.innerHTML='';
+  const allItems=[...Object.entries(BAG_ITEMS).flatMap(([cat,items])=>items.map(([name])=>cat+'::'+name)),...customBagItems.map(i=>i.cat+'::'+i.name)];
+  const total=allItems.length;const done=allItems.filter(k=>bagChecked[k]).length;
+  document.getElementById('bagPct').textContent=Math.round(done/total*100)+'%';
+  document.getElementById('bagBar').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('bagCount').textContent=`${done} / ${total} items`;
+
+  const allCats={...BAG_ITEMS};
+  customBagItems.forEach(i=>{if(!allCats[i.cat])allCats[i.cat]=[];allCats[i.cat].push([i.name,i.cat]);});
+
+  Object.entries(allCats).forEach(([cat,items])=>{
+    const catDone=items.filter(([name])=>bagChecked[cat+'::'+name]).length;
+    const div=document.createElement('div');div.className='card bag-category';
+    div.innerHTML=`<div class="bag-cat-title">${getCatIcon(cat)} ${cat} <span style="margin-left:auto;font-size:12px;color:var(--muted)">${catDone}/${items.length}</span></div>`+
+      items.map(([name])=>{
+        const key=cat+'::'+name;const chk=!!bagChecked[key];
+        return`<div class="bag-item${chk?' checked':''}" onclick="toggleBagItem('${key}',this)"><input type="checkbox" ${chk?'checked':''} onclick="event.stopPropagation();toggleBagItem('${key}',this.closest('.bag-item'))"/><span>${name}</span></div>`;
+      }).join('');
+    container.appendChild(div);
+  });
+}
+function getCatIcon(c){return c.includes('Maa')?'👩':c.includes('Baby')?'👶':c.includes('Doc')?'📄':c.includes('Partner')?'👨':'📦';}
+function toggleBagItem(key,el){
+  bagChecked[key]=!bagChecked[key];
+  el.classList.toggle('checked',bagChecked[key]);
+  el.querySelector('input[type=checkbox]').checked=bagChecked[key];
+  S.set('bagChecked',bagChecked);renderBag();flashSave('bag-save');
+}
+function addCustomBagItem(){
+  const name=document.getElementById('customBagItem').value.trim();if(!name)return;
+  const cat=document.getElementById('customBagCat').value;
+  customBagItems.push({name,cat});S.set('customBagItems',customBagItems);
+  document.getElementById('customBagItem').value='';renderBag();flashSave('bag-save');
+}
+function resetBag(){if(!confirm('Sab uncheck kar dein?'))return;bagChecked={};S.set('bagChecked',{});renderBag();}
+renderBag();
+
+// ══════════════════════════════════
+// BABY NAMES
+// ══════════════════════════════════
+const NAMES=[
+  {n:'Aarav',m:'Peaceful, calm',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Vivaan',m:'Full of life, sunrise',o:'Sanskrit',g:'boy',r:['hindu','modern']},
+  {n:'Arjun',m:'Bright, shining, white',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Reyansh',m:'Part of god\'s light',o:'Sanskrit',g:'boy',r:['hindu','modern']},
+  {n:'Kabir',m:'Great, powerful',o:'Arabic',g:'boy',r:['muslim','hindu']},
+  {n:'Aryan',m:'Noble, honourable',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Dev',m:'Divine, godlike',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Ishaan',m:'Sun, gift of God',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Veer',m:'Brave, courageous',o:'Sanskrit',g:'boy',r:['hindu','sikh']},
+  {n:'Ayaan',m:'Gift of God',o:'Arabic',g:'boy',r:['muslim']},
+  {n:'Zayan',m:'Beauty, grace',o:'Arabic',g:'boy',r:['muslim','modern']},
+  {n:'Rayan',m:'Gates of heaven',o:'Arabic',g:'boy',r:['muslim']},
+  {n:'Advaith',m:'Unique, non-dual',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Arnav',m:'Ocean, sea',o:'Sanskrit',g:'boy',r:['hindu']},
+  {n:'Gurpreet',m:'Beloved of the Guru',o:'Punjabi',g:'boy',r:['sikh']},
+  {n:'Harjot',m:'God\'s light',o:'Punjabi',g:'boy',r:['sikh']},
+  {n:'Anaya',m:'Completely free, gift',o:'Sanskrit',g:'girl',r:['hindu','modern']},
+  {n:'Aarohi',m:'Rising, musical scale',o:'Sanskrit',g:'girl',r:['hindu']},
+  {n:'Pari',m:'Angel, fairy',o:'Persian',g:'girl',r:['muslim','hindu','modern']},
+  {n:'Myra',m:'Sweet, admirable',o:'Modern',g:'girl',r:['modern']},
+  {n:'Ahana',m:'Inner light, dawn',o:'Sanskrit',g:'girl',r:['hindu']},
+  {n:'Zara',m:'Bright as dawn, princess',o:'Arabic',g:'girl',r:['muslim','modern']},
+  {n:'Inaya',m:'Kindness, care of God',o:'Arabic',g:'girl',r:['muslim']},
+  {n:'Aisha',m:'Alive, prosperous',o:'Arabic',g:'girl',r:['muslim']},
+  {n:'Sara',m:'Pure, precious',o:'Hebrew/Arabic',g:'girl',r:['muslim','modern']},
+  {n:'Simran',m:'Meditation, God\'s remembrance',o:'Punjabi',g:'girl',r:['sikh']},
+  {n:'Harleen',m:'Absorbed in God',o:'Punjabi',g:'girl',r:['sikh']},
+  {n:'Kiara',m:'Bright, clear',o:'Modern',g:'girl',r:['modern']},
+  {n:'Diya',m:'Lamp, divine light',o:'Sanskrit',g:'girl',r:['hindu','modern']},
+  {n:'Navya',m:'Young, worthy of praise',o:'Sanskrit',g:'girl',r:['hindu','modern']},
+  {n:'Aadvik',m:'Unique, special',o:'Sanskrit',g:'unisex',r:['hindu','modern']},
+  {n:'Kiran',m:'Ray of light',o:'Sanskrit',g:'unisex',r:['hindu','sikh']},
+  {n:'Arya',m:'Noble, honoured',o:'Sanskrit',g:'unisex',r:['hindu','modern']},
+  {n:'Reva',m:'Star, swift',o:'Sanskrit',g:'unisex',r:['hindu']},
+  {n:'Robin',m:'Bright fame',o:'English',g:'unisex',r:['modern']},
+];
+let nameFilter='all';
+let savedNames=S.get('savedNames',[]);
+
+function setNameFilter(f,btn){
+  document.querySelectorAll('#nameFilters .name-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');nameFilter=f;renderNames();
+}
+function renderNames(){
+  const q=(document.getElementById('nameSearch').value||'').toLowerCase();
+  let filtered=NAMES.filter(n=>{
+    const matchQ=!q||n.n.toLowerCase().includes(q)||n.m.toLowerCase().includes(q);
+    const matchF=nameFilter==='all'||n.g===nameFilter||n.r.includes(nameFilter);
+    return matchQ&&matchF;
+  });
+  document.getElementById('nameGrid').innerHTML=filtered.map(n=>{
+    const isSaved=savedNames.includes(n.n);
+    return`<div class="name-card${isSaved?' saved':''}" onclick="toggleSaveName('${n.n}',this)">
+      <div class="heart">${isSaved?'💗':'🤍'}</div>
+      <div class="nc-name">${n.n}</div>
+      <div class="nc-meaning">${n.m}</div>
+      <div class="nc-origin"><span class="pill ${n.g==='boy'?'pill-blue':n.g==='girl'?'pill-purple':'pill-orange'}">${n.g}</span> <span class="pill pill-green">${n.o}</span></div>
+    </div>`;}).join('')||'<p style="color:var(--muted);font-size:13px;padding:16px;grid-column:1/-1">Koi naam nahi mila — filter change karein.</p>';
+}
+function toggleSaveName(name,el){
+  const i=savedNames.indexOf(name);
+  if(i>-1)savedNames.splice(i,1);else savedNames.push(name);
+  S.set('savedNames',savedNames);flashSave('names-save');renderNames();renderSavedNames();
+}
+function renderSavedNames(){
+  const card=document.getElementById('savedNamesCard'),list=document.getElementById('savedNamesList');
+  card.style.display=savedNames.length?'block':'none';
+  list.innerHTML=savedNames.map(n=>`<div class="saved-name-pill">💗 ${n}<button onclick="removeSavedName('${n}')">×</button></div>`).join('');
+}
+function removeSavedName(n){savedNames=savedNames.filter(x=>x!==n);S.set('savedNames',savedNames);renderNames();renderSavedNames();}
+renderNames();renderSavedNames();
+
+// ══════════════════════════════════
+// MEDICINE
+// ══════════════════════════════════
+let medicines=S.get('medicines',[]);
+function renderMeds(){
+  const taken=medicines.filter(m=>m.taken).length;
+  document.getElementById('medTakenCount').textContent=taken;
+  document.getElementById('medTotalCount').textContent=medicines.length;
+  document.getElementById('medPct').textContent=medicines.length?Math.round(taken/medicines.length*100)+'%':'0%';
+  document.getElementById('medList').innerHTML=medicines.length===0?'<p style="font-size:13px;color:var(--muted);padding:10px 0">Abhi koi medicine add nahi ki. Neeche button se add karein.</p>':
+    medicines.map((m,i)=>`
+      <div class="med-card">
+        <div class="med-icon" style="background:${m.taken?'#e8f5e9':'#fce8e8'}">${m.icon}</div>
+        <div class="med-info">
+          <div class="med-name">${m.name}</div>
+          <div class="med-dose">${m.dose}${m.notes?' • '+m.notes:''}</div>
+          <div class="med-time">⏰ ${m.time}</div>
+        </div>
+        <div class="med-actions">
+          <button class="med-taken-btn${m.taken?' taken':''}" onclick="toggleMedTaken(${i})">${m.taken?'✓ Liya':'Liya?'}</button>
+          <button class="med-delete" onclick="deleteMed(${i})">×</button>
+        </div>
+      </div>`).join('');
+}
+function toggleMedTaken(i){medicines[i].taken=!medicines[i].taken;S.set('medicines',medicines);renderMeds();flashSave('med-save');}
+function deleteMed(i){if(!confirm('Delete karein?'))return;medicines.splice(i,1);S.set('medicines',medicines);renderMeds();}
+function toggleAddMed(){const f=document.getElementById('addMedForm');f.style.display=f.style.display==='none'?'block':'none';}
+function addMedicine(){
+  const name=document.getElementById('medName').value.trim();if(!name)return;
+  medicines.push({name,dose:document.getElementById('medDose').value||'1 tablet',time:document.getElementById('medTime').value||'08:00',icon:document.getElementById('medIcon').value,notes:document.getElementById('medNotes').value,taken:false});
+  S.set('medicines',medicines);['medName','medDose','medNotes'].forEach(id=>document.getElementById(id).value='');
+  toggleAddMed();renderMeds();flashSave('med-save');
+}
+// Reset taken status at midnight logic
+const today=new Date().toDateString();
+if(S.get('medDate','')!==today){medicines.forEach(m=>m.taken=false);S.set('medicines',medicines);S.set('medDate',today);}
+renderMeds();
+
+// ══════════════════════════════════
+// JOURNAL
+// ══════════════════════════════════
+let journalEntries=S.get('journalEntries',[]);
+let selectedJMood='😊';
+let photoData=null;
+document.getElementById('jDate').value=new Date().toISOString().split('T')[0];
+
+function selectJMood(el){
+  document.querySelectorAll('.mood-sel-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');selectedJMood=el.dataset.m;
+}
+function handlePhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{photoData=e.target.result;const prev=document.getElementById('photoPreview');prev.src=photoData;prev.style.display='block';};
+  reader.readAsDataURL(file);
+}
+function saveJournalEntry(){
+  const text=document.getElementById('jText').value.trim();
+  const week=document.getElementById('jWeek').value;
+  const date=document.getElementById('jDate').value;
+  if(!text&&!photoData){alert('Kuch likhein ya photo add karein!');return;}
+  journalEntries.unshift({text,week:week||'?',date:date||new Date().toISOString().split('T')[0],mood:selectedJMood,photo:photoData,id:Date.now()});
+  S.set('journalEntries',journalEntries);
+  document.getElementById('jText').value='';document.getElementById('jWeek').value='';
+  photoData=null;document.getElementById('photoPreview').style.display='none';document.getElementById('photoUpload').value='';
+  flashSave('journal-save');renderJournal();
+}
+function deleteEntry(id){if(!confirm('Entry delete karein?'))return;journalEntries=journalEntries.filter(e=>e.id!==id);S.set('journalEntries',journalEntries);renderJournal();}
+function renderJournal(){
+  const container=document.getElementById('journalEntries');
+  if(!journalEntries.length){container.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13.5px;padding:24px">Abhi koi entry nahi hai. Upar form se apni pehli yaad likho! 🌸</p>';return;}
+  container.innerHTML=journalEntries.map(e=>`
+    <div class="journal-entry">
+      <div class="je-header">
+        <div>
+          <span class="je-mood">${e.mood}</span>
+          <span class="je-date" style="margin-left:8px">${formatDate(e.date)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${e.week!=='?'?`<span class="je-week">Week ${e.week}</span>`:''}
+          <button class="je-delete" onclick="deleteEntry(${e.id})">🗑️</button>
         </div>
       </div>
-      <div class="week-sections">
-        <div class="week-sec"><h4>👶 Baby</h4><p>${d.baby}</p></div>
-        <div class="week-sec"><h4>🤱 Aapka Body</h4><p>${d.body}</p></div>
-        <div class="week-sec"><h4>💡 Tip</h4><p>${d.tip}</p></div>
-      </div>
-      <div class="mood-tip-box">🌸 <b>Mood Tip:</b> ${d.mood}</div>
-    </div>`;
-}
-function filterTrimester(n,btn){
-  document.querySelectorAll('.tri-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  const ranges={1:[1,13],2:[14,27],3:[28,40]};
-  const [s,e]=ranges[n];
-  const highlights=Object.keys(weekData).map(Number).filter(w=>w>=s&&w<=e).slice(0,4);
-  document.getElementById('trimesterOverview').innerHTML=`
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Important weeks — click karke details dekho:</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      ${highlights.map(w=>`<button onclick="document.getElementById('weekInput').value=${w};searchWeek()" style="padding:8px 18px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:13px;color:var(--warm);cursor:pointer;font-family:'DM Sans',sans-serif">Week ${w}</button>`).join('')}
-    </div>`;
-  document.getElementById('weekResult').innerHTML='';
-}
-filterTrimester(1,document.querySelector('.tri-tab'));
-
-// ════════════════════════════
-// KICK COUNTER
-// ════════════════════════════
-let kicks=[],sessionActive=false,sessionStart=null,kickCount=0;
-function startKickSession(){
-  kicks=[];kickCount=0;sessionActive=true;sessionStart=new Date();
-  document.getElementById('kickCount').textContent='0';
-  document.getElementById('kickSession').textContent='0';
-  document.getElementById('kickTime').textContent=sessionStart.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('kickLog').innerHTML='';
-  document.getElementById('kickAlert').style.display='none';
-}
-function recordKick(){
-  if(!sessionActive){startKickSession();}
-  kickCount++;kicks.push(new Date());
-  document.getElementById('kickCount').textContent=kickCount;
-  document.getElementById('kickSession').textContent=kickCount;
-  const log=document.getElementById('kickLog');
-  const row=document.createElement('div');row.className='kick-log-item';
-  row.innerHTML=`<span>Kick #${kickCount} 👶</span><span class="kt">${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</span>`;
-  log.insertBefore(row,log.firstChild);
-  const alert=document.getElementById('kickAlert');
-  if(kickCount>=10){alert.className='kick-alert ok';alert.style.display='block';alert.innerHTML='🎉 <b>10 kicks complete!</b> Baby healthy aur active hai. Great job tracking!';}
-  else if(kickCount>=5){alert.className='kick-alert ok';alert.style.display='block';alert.innerHTML=`✅ ${kickCount} kicks recorded. ${10-kickCount} aur chahiye goal ke liye.`;}
-}
-function resetKick(){kicks=[];kickCount=0;sessionActive=false;sessionStart=null;document.getElementById('kickCount').textContent='0';document.getElementById('kickSession').textContent='0';document.getElementById('kickTime').textContent='—';document.getElementById('kickLog').innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">Session shuru karein aur kicks record karein</p>';document.getElementById('kickAlert').style.display='none';}
-
-// ════════════════════════════
-// CONTRACTION TIMER
-// ════════════════════════════
-let contracting=false,conStart=null,conList=[],conInterval=null,conElapsed=0;
-function toggleContraction(){
-  if(!contracting){
-    contracting=true;conStart=new Date();conElapsed=0;
-    document.getElementById('conMainBtn').textContent='🟢 Contraction Khatam';
-    document.getElementById('conMainBtn').className='con-btn-start active';
-    document.getElementById('conStatus').textContent='Contraction chal rahi hai...';
-    conInterval=setInterval(()=>{conElapsed++;document.getElementById('conClock').textContent=fmt(conElapsed);},1000);
-  }else{
-    clearInterval(conInterval);contracting=false;
-    const dur=conElapsed;
-    const now=new Date();
-    const gap=conList.length>0?Math.round((now-conList[conList.length-1].end)/1000):null;
-    conList.push({n:conList.length+1,dur,end:now,gap,time:now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
-    document.getElementById('conMainBtn').textContent='🔴 Contraction Shuru';
-    document.getElementById('conMainBtn').className='con-btn-start idle';
-    document.getElementById('conStatus').textContent=`Duration: ${fmt(dur)} — Next ke liye wait karo`;
-    document.getElementById('conClock').textContent='00:00';
-    renderContractions();
-    checkHospital();
-  }
-}
-function fmt(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function fmtGap(s){if(!s)return'—';if(s<60)return`${s}s`;return`${Math.floor(s/60)}m ${s%60}s`;}
-function renderContractions(){
-  if(conList.length===0)return;
-  document.getElementById('conListCard').style.display='block';
-  document.getElementById('conList').innerHTML=conList.slice().reverse().map(c=>`
-    <div class="con-row">
-      <span style="font-weight:600;color:var(--accent)">#${c.n}</span>
-      <span>${fmt(c.dur)}</span>
-      <span>${fmtGap(c.gap)}</span>
-      <span style="color:var(--muted);font-size:12px">${c.time}</span>
+      ${e.text?`<div class="je-text">${e.text.replace(/\n/g,'<br>')}</div>`:''}
+      ${e.photo?`<div class="je-photo"><img src="${e.photo}" alt="Bump photo"/></div>`:''}
     </div>`).join('');
-  if(conList.length>=3){
-    const last3=conList.slice(-3);
-    const avgDur=Math.round(last3.reduce((a,c)=>a+c.dur,0)/3);
-    const gaps=last3.slice(1).map(c=>c.gap).filter(Boolean);
-    const avgGap=gaps.length?Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length):null;
-    document.getElementById('conSummary').innerHTML=`<b>Last 3 contractions:</b> Avg duration <b>${fmt(avgDur)}</b>${avgGap?`, avg interval <b>${fmtGap(avgGap)}</b>`:''}`;
-  }
 }
-function checkHospital(){
-  if(conList.length<3)return;
-  const last3=conList.slice(-3);
-  const avgDur=last3.reduce((a,c)=>a+c.dur,0)/3;
-  const gaps=last3.slice(1).map(c=>c.gap).filter(Boolean);
-  const avgGap=gaps.length?gaps.reduce((a,b)=>a+b,0)/gaps.length:999;
-  const alert=document.getElementById('hospitalAlert');
-  if(avgGap<=300&&avgDur>=45){alert.style.display='block';document.getElementById('hospitalMsg').textContent=`Contractions ${Math.round(avgGap/60)} minutes apart, ${Math.round(avgDur)} seconds duration. 5-1-1 rule follow ho raha hai — hospital ke liye niklo!`;}
-  else if(avgGap<=600&&avgDur>=30){alert.style.display='block';alert.style.background='linear-gradient(135deg,#fff8e1,#fff3cd)';alert.style.borderColor='#ffc107';document.getElementById('hospitalMsg').textContent=`Labor progress ho raha hai — doctor ko call karo aur taiyaar raho.`;}
-}
-function resetContractions(){clearInterval(conInterval);contracting=false;conList=[];conElapsed=0;document.getElementById('conClock').textContent='00:00';document.getElementById('conStatus').textContent='Button dabao jab contraction shuru ho';document.getElementById('conMainBtn').textContent='🔴 Contraction Shuru';document.getElementById('conMainBtn').className='con-btn-start idle';document.getElementById('conListCard').style.display='none';document.getElementById('hospitalAlert').style.display='none';}
-
-// ════════════════════════════
-// PARTNER QUIZ
-// ════════════════════════════
-const quizData=[
-  {q:"Pehli trimester mein sabse common symptom kya hai?",opts:["Back pain","Morning sickness / Nausea","Leg cramps","Heartburn"],ans:1,exp:"Morning sickness (nausea) pehli trimester ka #1 symptom hai — 70-80% women experience karti hain."},
-  {q:"Kick counting kab shuru karna chahiye?",opts:["Week 12 se","Week 20 se","Week 28 se","Delivery ke time"],ans:2,exp:"Week 28 ke baad daily kick counting recommended hai — 2 ghante mein 10 kicks normal hai."},
-  {q:"Partner delivery room mein kya karein?",opts:["Mobile phone check karte rahein","Bas wait karein quietly","Haath pakdo, encourage karo, ice chips do","Doctor ko sab handle karne do"],ans:2,exp:"Presence, physical support (hand holding), encouragement aur ice chips/hydration — yeh sab bahut farq karte hain."},
-  {q:"5-1-1 rule kab apply hota hai?",opts:["Baby kick count ke liye","Hospital jaane ka decision ke liye","Prenatal vitamins ke liye","Due date calculate karne ke liye"],ans:1,exp:"5-1-1: Contractions 5 min apart, 1 minute each, 1 ghante se — yeh active labor ka sign hai, hospital ka time!"},
-  {q:"Pregnancy mein partner ki sabse important quality kya hai?",opts:["Perfect advice dena","Patience aur presence","Sab kuch khud karna","Doctors se zyada jaanna"],ans:1,exp:"Patience aur present rehna — emotionally available rehna medical knowledge se zyada important hai pregnancy mein."},
-];
-let qIdx=0,score=0,answered=false;
-function renderQuiz(){
-  const q=quizData[qIdx];
-  document.getElementById('quizContainer').innerHTML=`
-    <div class="partner-quiz">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Question ${qIdx+1} of ${quizData.length}</div>
-      <div class="quiz-q">${q.q}</div>
-      <div class="quiz-options">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}</div>
-      <div id="quizFeedback" class="quiz-result"></div>
-    </div>`;
-  answered=false;
-}
-function answerQuiz(i){
-  if(answered)return;answered=true;
-  const q=quizData[qIdx];
-  const opts=document.querySelectorAll('.quiz-opt');
-  opts[i].className='quiz-opt '+(i===q.ans?'correct':'wrong');
-  opts[q.ans].className='quiz-opt correct';
-  if(i===q.ans)score++;
-  const fb=document.getElementById('quizFeedback');
-  fb.style.display='block';fb.style.background=i===q.ans?'#e8f5e9':'#ffebee';fb.style.borderRadius='12px';fb.style.padding='12px 14px';
-  fb.textContent=(i===q.ans?'✅ Sahi! ':'❌ Galat. ')+q.exp;
-  document.getElementById('quizScore').textContent=`Score: ${score}/${qIdx+1}`;
-}
-function nextQuestion(){
-  if(qIdx<quizData.length-1){qIdx++;renderQuiz();}
-  else{document.getElementById('quizContainer').innerHTML=`<div style="text-align:center;padding:24px"><div style="font-size:3rem;margin-bottom:12px">${score>=4?'🏆':score>=3?'🌟':'💪'}</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--warm)">${score}/${quizData.length} Score</div><p style="font-size:13px;color:var(--muted);margin-top:8px">${score>=4?'Bahut badiya! Aap ek amazing partner hain 💗':score>=3?'Good job! Thoda aur seekho — aap kar sakte hain 🌸':'Practice makes perfect — phir se try karo! 💪'}</p></div>`;document.getElementById('quizBtns').innerHTML='<button class="btn-primary" onclick="restartQuiz()">Phir Se Khelein</button>';}}
-function restartQuiz(){qIdx=0;score=0;answered=false;renderQuiz();document.getElementById('quizBtns').innerHTML='<button class="btn-primary" onclick="nextQuestion()">Agla Sawaal ➜</button><button class="btn-ghost" onclick="restartQuiz()">Restart Quiz</button>';document.getElementById('quizScore').textContent='';}
-renderQuiz();
-
-// ════════════════════════════
-// AI CHAT
-// ════════════════════════════
-const chatWrap=document.getElementById('chatWrap');
-let chatHistory=[];
-function appendMsg(txt,role){const d=document.createElement('div');d.className='msg '+role;d.textContent=txt;chatWrap.appendChild(d);chatWrap.scrollTop=chatWrap.scrollHeight;}
-async function sendMessage(){
-  const inp=document.getElementById('chatInput'),btn=document.getElementById('sendBtn');
-  const txt=inp.value.trim();if(!txt)return;
-  inp.value='';appendMsg(txt,'user');chatHistory.push({role:'user',content:txt});btn.disabled=true;
-  const typing=document.createElement('div');typing.className='msg bot typing';typing.textContent='Soch rahi hun... 💭';chatWrap.appendChild(typing);chatWrap.scrollTop=chatWrap.scrollHeight;
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are MamaCare AI — a warm, empathetic pregnancy support companion. Speak in Hinglish (Hindi-English mix). Tone: like a caring elder sister who is also a trained nurse. Keep responses to 2-4 sentences max. Validate feelings first. Use soft emojis naturally. For medical concerns, recommend consulting a doctor. Never dismiss feelings.`,messages:chatHistory})});
-    const data=await res.json();typing.remove();
-    const reply=data.content?.[0]?.text||'Kuch technical issue aa gaya — thodi der baad try karein 🌸';
-    appendMsg(reply,'bot');chatHistory.push({role:'assistant',content:reply});
-  }catch(e){typing.remove();appendMsg('Network issue. Internet check karein 🌸','bot');}
-  btn.disabled=false;
-}
+function formatDate(d){if(!d)return'';const dt=new Date(d);return dt.toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'});}
+renderJournal();
 </script>
 </body>
 </html>

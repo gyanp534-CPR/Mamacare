@@ -1,501 +1,550 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MamaCare — Complete Pregnancy Companion</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#e8a0a8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="MamaCare"/>
+<meta name="description" content="Complete Pregnancy Companion — Mood, Nutrition, Yoga, Sleep, Emergency & more"/>
+<title>MamaCare — Pregnancy Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 :root{
   --rose:#e8a0a8;--blush:#f5d5d8;--peach:#f7c4a8;--cream:#fdf6f0;
   --warm:#4a2c2a;--muted:#9a7070;--accent:#c97b7b;--green:#6ab89a;
-  --lavender:#b8a8d0;--gold:#d4a853;--blue:#7ab8d4;
+  --lavender:#b8a8d0;--gold:#d4a853;--blue:#7ab8d4;--red:#e05c5c;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--warm);overflow-x:hidden;}
 .bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.25;animation:drift 14s ease-in-out infinite alternate;}
-.orb-1{width:600px;height:600px;background:var(--blush);top:-150px;left:-200px;animation-duration:15s;}
-.orb-2{width:450px;height:450px;background:var(--peach);bottom:-100px;right:-120px;animation-duration:12s;animation-delay:-5s;}
-.orb-3{width:350px;height:350px;background:var(--lavender);top:45%;left:55%;animation-duration:18s;animation-delay:-8s;}
-@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(35px,28px) scale(1.1)}}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.22;animation:drift 14s ease-in-out infinite alternate;}
+.orb-1{width:600px;height:600px;background:var(--blush);top:-150px;left:-200px;}
+.orb-2{width:450px;height:450px;background:var(--peach);bottom:-100px;right:-120px;animation-delay:-5s;}
+.orb-3{width:300px;height:300px;background:var(--lavender);top:40%;left:50%;animation-delay:-9s;}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(30px,25px) scale(1.08)}}
 
-/* NAV */
-nav{position:sticky;top:0;z-index:100;background:rgba(253,246,240,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,160,168,.2);}
-.nav-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--warm);text-decoration:none;white-space:nowrap;}
+/* ── LANG BAR ── */
+#langBar{background:rgba(255,255,255,.9);border-bottom:1px solid rgba(232,160,168,.15);padding:6px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:200;}
+#langBar::-webkit-scrollbar{display:none;}
+.lang-btn{padding:4px 12px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:.2s;font-family:'DM Sans',sans-serif;color:var(--muted);}
+.lang-btn.active{background:var(--rose);border-color:var(--rose);color:white;}
+
+/* ── NAV ── */
+nav{position:sticky;top:37px;z-index:100;background:rgba(253,246,240,.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(232,160,168,.2);}
+.nav-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--warm);text-decoration:none;}
 .nav-logo span{color:var(--accent);}
-.nav-tabs{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;padding:4px 0;}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
 .nav-tabs::-webkit-scrollbar{display:none;}
-.nav-tab{padding:6px 13px;border-radius:50px;border:none;background:none;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500;transition:.2s;}
+.nav-tab{padding:5px 11px;border-radius:50px;border:none;background:none;font-size:11.5px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:500;transition:.2s;}
 .nav-tab:hover{background:var(--blush);color:var(--warm);}
-.nav-tab.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;box-shadow:0 2px 10px rgba(200,100,100,.25);}
+.nav-tab.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;}
 
-/* LAYOUT */
-.page{display:none;position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:28px 18px 80px;}
+/* ── LAYOUT ── */
+.page{display:none;position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:24px 16px 80px;}
 .page.active{display:block;animation:fadeUp .3s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* CARD */
-.card{background:rgba(255,255,255,.75);backdrop-filter:blur(20px);border:1.5px solid rgba(232,160,168,.2);border-radius:22px;padding:24px;margin-bottom:22px;box-shadow:0 4px 24px rgba(200,100,100,.07);}
-
-/* TYPOGRAPHY */
-.sec-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;}
-.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:400;margin-bottom:16px;color:var(--warm);}
-
-/* BUTTONS */
-.btn{padding:10px 22px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;border:none;}
-.btn-primary{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;box-shadow:0 3px 12px rgba(200,100,100,.25);}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(200,100,100,.35);}
-.btn-ghost{background:white;border:1.5px solid var(--blush)!important;color:var(--muted);}
-.btn-ghost:hover{background:var(--blush);color:var(--warm);}
-.btn-green{background:linear-gradient(135deg,#6ab89a,#4da888);color:white;box-shadow:0 3px 12px rgba(100,180,140,.25);}
-.btn-sm{padding:7px 16px;font-size:12px;}
-
-/* INPUTS */
-input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{
-  padding:11px 16px;border-radius:14px;border:1.5px solid var(--blush);
-  font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);
-  background:white;outline:none;width:100%;transition:.2s;
-}
-input:focus,select:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,160,168,.15);}
-textarea{resize:vertical;min-height:80px;}
-label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:5px;}
-
-/* GRID HELPERS */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-@media(max-width:600px){.g2,.g3{grid-template-columns:1fr;}}
-
-/* STAT CARD */
-.stat-card{background:white;border-radius:16px;padding:16px;text-align:center;}
-.stat-val{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--accent);}
-.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
-
-/* PILL TAG */
-.pill{display:inline-block;padding:4px 12px;border-radius:50px;font-size:11.5px;font-weight:500;margin:3px;}
-.pill-green{background:#e8f5e9;color:#2e7d32;}
-.pill-orange{background:#fff3e0;color:#e65100;}
-.pill-purple{background:#f3e5f5;color:#6a1b9a;}
-.pill-blue{background:#e3f2fd;color:#1565c0;}
-
-/* SAVE INDICATOR */
-.save-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:#e8f5e9;padding:4px 10px;border-radius:50px;margin-left:8px;opacity:0;transition:opacity .3s;}
+/* ── SHARED ── */
+.card{background:rgba(255,255,255,.76);backdrop-filter:blur(20px);border:1.5px solid rgba(232,160,168,.2);border-radius:20px;padding:22px;margin-bottom:20px;box-shadow:0 4px 22px rgba(200,100,100,.07);}
+.sec-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;margin-bottom:14px;color:var(--warm);}
+.btn{padding:10px 20px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:.2s;}
+.btn-p{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;box-shadow:0 3px 12px rgba(200,100,100,.25);}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(200,100,100,.35);}
+.btn-g{background:white;border:1.5px solid var(--blush)!important;color:var(--muted);}
+.btn-g:hover{background:var(--blush);color:var(--warm);}
+.btn-red{background:linear-gradient(135deg,#e05c5c,#c94040);color:white;box-shadow:0 3px 12px rgba(220,80,80,.3);}
+.btn-sm{padding:7px 14px;font-size:12px;}
+input,select,textarea{padding:10px 14px;border-radius:12px;border:1.5px solid var(--blush);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);background:white;outline:none;width:100%;transition:.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--rose);}
+textarea{resize:vertical;min-height:70px;}
+label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:4px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:580px){.g2,.g3{grid-template-columns:1fr;}}
+.stat{background:white;border-radius:14px;padding:14px;text-align:center;}
+.stat-v{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--accent);}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px;}
+.save-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--green);background:#e8f5e9;padding:3px 9px;border-radius:50px;margin-left:6px;opacity:0;transition:.3s;}
 .save-badge.show{opacity:1;}
+.tab-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+.tab-btn{padding:7px 15px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:12.5px;color:var(--muted);cursor:pointer;transition:.2s;font-weight:500;}
+.tab-btn.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-color:transparent;}
+.pill{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:500;margin:2px;}
+.pill-g{background:#e8f5e9;color:#2e7d32;}
+.pill-r{background:#ffebee;color:#c62828;}
+.pill-b{background:#e3f2fd;color:#1565c0;}
+.pill-p{background:#f3e5f5;color:#6a1b9a;}
 
-/* ══════════════════════ NUTRITION ══════════════════════ */
-.food-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
-.food-group-btn{padding:12px 10px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;transition:.2s;text-align:center;font-size:12.5px;font-weight:500;color:var(--muted);}
-.food-group-btn .fg-icon{font-size:24px;display:block;margin-bottom:4px;}
-.food-group-btn.active{border-color:var(--accent);background:linear-gradient(135deg,#fce8e8,#fdf0e8);color:var(--warm);}
-.food-log-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px;}
-.food-log-item .del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px;transition:.2s;}
-.food-log-item .del-btn:hover{color:var(--accent);}
-.water-track{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
-.water-glass{font-size:22px;cursor:pointer;transition:.2s;filter:grayscale(1);opacity:.4;}
-.water-glass.filled{filter:none;opacity:1;transform:scale(1.1);}
-.nutrients-bar{margin-bottom:12px;}
-.nb-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;}
-.nb-bar{height:8px;border-radius:50px;background:#f0e0e0;}
-.nb-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--rose),var(--peach));transition:width .5s;}
+/* ── DUE DATE ── */
+.timeline-bar{position:relative;height:12px;background:#f0e0e0;border-radius:50px;margin:14px 0 6px;overflow:hidden;}
+.timeline-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .8s;}
+.milestone-dots{display:flex;justify-content:space-between;margin-top:4px;}
+.m-dot{font-size:10.5px;color:var(--muted);text-align:center;}
+.tri-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px;}
+@media(max-width:500px){.tri-cards{grid-template-columns:1fr;}}
+.tri-c{border-radius:14px;padding:14px;text-align:center;border:2px solid transparent;}
+.tri-c.current{border-color:var(--rose);background:linear-gradient(135deg,#fce8e8,#fdf5ee);}
+.tri-c h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;margin-bottom:4px;}
+.tri-c p{font-size:11.5px;color:var(--muted);line-height:1.5;}
 
-/* ══════════════════════ HOSPITAL BAG ══════════════════════ */
-.bag-category{margin-bottom:18px;}
-.bag-cat-title{font-size:13px;font-weight:600;color:var(--warm);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.bag-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:white;border-radius:11px;margin-bottom:5px;cursor:pointer;transition:.2s;font-size:13px;}
-.bag-item:hover{background:var(--cream);}
-.bag-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
-.bag-item.checked{opacity:.6;}
-.bag-item.checked span{text-decoration:line-through;color:var(--muted);}
-.bag-progress{height:10px;border-radius:50px;background:#f0e0e0;margin:10px 0 4px;}
-.bag-progress-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--green),#4da888);transition:width .5s;}
-.add-custom-item{display:flex;gap:8px;margin-top:10px;}
+/* ── WEIGHT ── */
+.weight-entry{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px;}
+.weight-entry .del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;}
+.wt-range{padding:12px 16px;border-radius:13px;font-size:13px;line-height:1.7;margin-top:10px;}
+.wt-ok{background:#e8f5e9;color:#2e7d32;}
+.wt-high{background:#fff3e0;color:#e65100;}
+.wt-low{background:#e3f2fd;color:#1565c0;}
 
-/* ══════════════════════ BABY NAMES ══════════════════════ */
-.name-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
-.name-filter-btn{padding:7px 16px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:12.5px;color:var(--muted);cursor:pointer;transition:.2s;font-weight:500;}
-.name-filter-btn.active{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-color:transparent;}
-.name-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
-.name-card{background:white;border-radius:16px;padding:16px;border:1.5px solid transparent;transition:.2s;cursor:pointer;position:relative;}
-.name-card:hover{border-color:var(--rose);transform:translateY(-2px);box-shadow:0 5px 16px rgba(200,100,100,.12);}
-.name-card.saved{border-color:var(--accent);background:linear-gradient(135deg,#fce8e8,#fff8f0);}
-.name-card .nc-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--warm);}
-.name-card .nc-meaning{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5;}
-.name-card .nc-origin{font-size:10.5px;margin-top:5px;}
-.name-card .heart{position:absolute;top:12px;right:12px;font-size:18px;transition:.2s;}
-.saved-names-list{display:flex;gap:8px;flex-wrap:wrap;}
-.saved-name-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-weight:500;}
-.saved-name-pill button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;}
+/* ── YOGA ── */
+.yoga-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.yoga-card{background:white;border-radius:16px;padding:16px;border:1.5px solid rgba(232,160,168,.2);transition:.2s;}
+.yoga-card:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(200,100,100,.12);}
+.yoga-icon{font-size:36px;margin-bottom:8px;}
+.yoga-name{font-weight:600;font-size:13.5px;margin-bottom:4px;}
+.yoga-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+.yoga-tags{margin-top:7px;}
+.avoid-list{background:#fff5f5;border-radius:13px;padding:14px;border-left:3px solid var(--accent);}
+.avoid-list li{font-size:13px;color:var(--warm);margin-bottom:5px;list-style:none;padding-left:16px;position:relative;}
+.avoid-list li::before{content:"⚠️";position:absolute;left:0;font-size:11px;}
 
-/* ══════════════════════ MEDICINE ══════════════════════ */
-.med-card{background:white;border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
-.med-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.med-info{flex:1;}
-.med-name{font-size:14px;font-weight:600;color:var(--warm);}
-.med-dose{font-size:12px;color:var(--muted);margin-top:2px;}
-.med-time{font-size:11.5px;color:var(--accent);margin-top:3px;}
-.med-actions{display:flex;gap:6px;align-items:center;}
-.med-taken-btn{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--blush);background:white;color:var(--muted);transition:.2s;font-family:'DM Sans',sans-serif;}
-.med-taken-btn.taken{background:var(--green);border-color:var(--green);color:white;}
-.med-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;transition:.2s;}
-.med-delete:hover{color:var(--accent);}
-.add-med-form{background:var(--cream);border-radius:16px;padding:18px;margin-top:10px;}
+/* ── SLEEP ── */
+.sleep-entry{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px;}
+.sleep-entry .del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;}
+.sleep-tip-card{background:white;border-radius:14px;padding:14px;border-left:3px solid var(--lavender);}
+.sleep-tip-card b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--lavender);margin-bottom:3px;}
 
-/* ══════════════════════ JOURNAL ══════════════════════ */
-.journal-entry{background:white;border-radius:18px;padding:18px;margin-bottom:12px;border:1.5px solid rgba(232,160,168,.2);}
-.je-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.je-date{font-size:12px;color:var(--muted);}
-.je-week{font-size:11px;background:var(--blush);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500;}
-.je-mood{font-size:20px;}
-.je-text{font-size:13.5px;line-height:1.7;color:var(--warm);}
-.je-photo{margin-top:10px;border-radius:12px;overflow:hidden;max-height:200px;display:flex;align-items:center;justify-content:center;background:var(--cream);}
-.je-photo img{max-width:100%;max-height:200px;object-fit:cover;border-radius:12px;}
-.je-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;transition:.2s;}
-.je-delete:hover{color:var(--accent);}
-.new-entry-form{background:var(--cream);border-radius:18px;padding:20px;margin-bottom:20px;}
-.mood-selector-row{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px;}
-.mood-sel-btn{font-size:22px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent;transition:.2s;}
-.mood-sel-btn.active{border-color:var(--rose);background:var(--blush);}
-.photo-upload-area{border:2px dashed var(--blush);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:.2s;margin:10px 0;}
-.photo-upload-area:hover{border-color:var(--rose);background:#fdf5f5;}
-.photo-upload-area input{display:none;}
-.photo-preview{max-width:100%;max-height:160px;border-radius:12px;margin-top:8px;display:none;}
+/* ── BIRTH PLAN ── */
+.bp-section{margin-bottom:20px;}
+.bp-section h4{font-size:13.5px;font-weight:600;color:var(--warm);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--blush);}
+.bp-options{display:flex;gap:8px;flex-wrap:wrap;}
+.bp-opt{padding:7px 15px;border-radius:50px;border:1.5px solid var(--blush);background:white;font-size:12.5px;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;color:var(--muted);}
+.bp-opt.sel{background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-color:transparent;}
+@media print{
+  #langBar,nav,.no-print{display:none!important;}
+  .page{display:block!important;padding:0!important;}
+  .card{box-shadow:none!important;border:1px solid #ddd!important;}
+  body{background:white!important;}
+}
 
-/* CHAT */
-.chat-box{height:300px;overflow-y:auto;padding:14px;border-radius:16px;background:rgba(255,255,255,.6);border:1px solid rgba(232,160,168,.2);margin-bottom:12px;scroll-behavior:smooth;}
-.chat-box::-webkit-scrollbar{width:3px;}
-.chat-box::-webkit-scrollbar-thumb{background:var(--blush);}
-.msg{max-width:82%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.65;margin-bottom:8px;animation:fadeUp .3s ease;}
-.msg.user{align-self:flex-end;margin-left:auto;background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-bottom-right-radius:4px;display:block;}
-.msg.bot{align-self:flex-start;background:white;color:var(--warm);border:1px solid rgba(232,160,168,.2);border-bottom-left-radius:4px;display:block;}
+/* ── SOS ── */
+.sos-big{width:160px;height:160px;border-radius:50%;background:linear-gradient(145deg,#e05c5c,#c94040);border:none;color:white;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 28px rgba(220,80,80,.4),0 0 0 0 rgba(220,80,80,.3);animation:sosPulse 2s infinite;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:0 auto;}
+@keyframes sosPulse{0%,100%{box-shadow:0 6px 28px rgba(220,80,80,.4),0 0 0 0 rgba(220,80,80,.3)}50%{box-shadow:0 6px 28px rgba(220,80,80,.4),0 0 0 20px rgba(220,80,80,.0)}}
+.sos-contact{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:white;border-radius:14px;margin-bottom:8px;}
+.sos-contact .name{font-weight:600;font-size:14px;}
+.sos-contact .num{font-size:12.5px;color:var(--muted);margin-top:2px;}
+.sos-contact a{padding:8px 16px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12.5px;font-weight:500;}
+
+/* ── PWA INSTALL ── */
+#installBanner{display:none;background:linear-gradient(135deg,var(--rose),var(--peach));color:white;padding:12px 20px;text-align:center;font-size:13px;position:relative;z-index:300;}
+#installBanner button{background:white;color:var(--accent);border:none;padding:6px 18px;border-radius:50px;font-size:12.5px;font-weight:600;cursor:pointer;margin-left:10px;}
+
+/* ── CHAT ── */
+.chat-box{height:280px;overflow-y:auto;padding:12px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid rgba(232,160,168,.2);margin-bottom:10px;}
+.msg{max-width:82%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.6;margin-bottom:8px;animation:fadeUp .3s ease;}
+.msg.user{margin-left:auto;background:linear-gradient(135deg,var(--rose),var(--peach));color:white;border-bottom-right-radius:4px;display:block;}
+.msg.bot{background:white;color:var(--warm);border:1px solid rgba(232,160,168,.2);border-bottom-left-radius:4px;display:block;}
 .chat-row{display:flex;gap:8px;}
-#chatInput{flex:1;padding:11px 16px;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);background:white;outline:none;}
+#chatInput{flex:1;padding:10px 16px;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-family:'DM Sans',sans-serif;color:var(--warm);background:white;outline:none;}
 #chatInput:focus{border-color:var(--rose);}
 
-footer{text-align:center;padding:36px 18px;font-size:12px;color:var(--muted);line-height:1.9;position:relative;z-index:1;}
+footer{text-align:center;padding:32px 16px;font-size:12px;color:var(--muted);line-height:1.9;position:relative;z-index:1;}
 </style>
 </head>
 <body>
 <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner">
+  📱 MamaCare ko apne phone pe install karein — offline bhi chalega!
+  <button onclick="installPWA()">Install Karein</button>
+  <button onclick="document.getElementById('installBanner').style.display='none'" style="background:transparent;color:white;border:1px solid rgba(255,255,255,.5)">Baad mein</button>
+</div>
+
+<!-- LANGUAGE BAR -->
+<div id="langBar">
+  <span style="font-size:11px;color:var(--muted);line-height:2.2;margin-right:4px">🌍</span>
+  <button class="lang-btn active" onclick="setLang('en',this)">English</button>
+  <button class="lang-btn" onclick="setLang('hi',this)">हिंदी</button>
+  <button class="lang-btn" onclick="setLang('hinglish',this)">Hinglish</button>
+  <button class="lang-btn" onclick="setLang('ta',this)">தமிழ்</button>
+  <button class="lang-btn" onclick="setLang('bn',this)">বাংলা</button>
+  <button class="lang-btn" onclick="setLang('mr',this)">मराठी</button>
+  <button class="lang-btn" onclick="setLang('te',this)">తెలుగు</button>
+</div>
+
+<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <a class="nav-logo" href="#">Mama<span>Care</span> 🌸</a>
     <div class="nav-tabs">
-      <button class="nav-tab active"  onclick="showPage('mood',this)">😊 Mood</button>
-      <button class="nav-tab" onclick="showPage('nutrition',this)">🍎 Nutrition</button>
-      <button class="nav-tab" onclick="showPage('bag',this)">🏥 Hospital Bag</button>
-      <button class="nav-tab" onclick="showPage('names',this)">👶 Baby Names</button>
-      <button class="nav-tab" onclick="showPage('medicine',this)">💊 Medicines</button>
-      <button class="nav-tab" onclick="showPage('journal',this)">📸 Journal</button>
+      <button class="nav-tab active" onclick="showPage('due',this)">🗓️ Due Date</button>
+      <button class="nav-tab" onclick="showPage('weight',this)">📊 Weight</button>
+      <button class="nav-tab" onclick="showPage('yoga',this)">🧘 Yoga</button>
+      <button class="nav-tab" onclick="showPage('sleep',this)">😴 Sleep</button>
+      <button class="nav-tab" onclick="showPage('birth',this)">📋 Birth Plan</button>
+      <button class="nav-tab" onclick="showPage('sos',this)">🚨 SOS</button>
+      <button class="nav-tab" onclick="showPage('mood',this)">😊 Mood</button>
     </div>
   </div>
 </nav>
 
-<!-- ══════ MOOD PAGE ══════ -->
-<div class="page active" id="page-mood">
-  <div style="text-align:center;padding:40px 0 28px">
-    <div style="display:inline-flex;align-items:center;gap:8px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:7px 20px;margin-bottom:22px;font-size:12.5px;color:var(--muted)">🌸 MamaCare</div>
-    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;line-height:1.2">Pregnancy mein <em style="font-style:italic;color:var(--accent)">mood swings</em><br>normal hain, aap akeli nahi</h1>
-    <p style="font-size:14px;color:var(--muted);margin-top:12px;max-width:480px;margin-inline:auto;line-height:1.7">Apna mood chuniye — personalized tips, breathing exercise, aur AI companion tayaar hai.</p>
+<!-- ════════════ DUE DATE ════════════ -->
+<div class="page active" id="page-due">
+  <div style="padding:24px 0 10px">
+    <div class="sec-label" data-t="dueLabel">Due Date Calculator</div>
+    <div class="sec-title" data-t="dueTitle">Pregnancy Timeline 🗓️ <span class="save-badge" id="due-save">✓ Saved</span></div>
   </div>
 
   <div class="card">
-    <div class="sec-label">Step 1</div>
-    <div class="sec-title">Abhi kaisi feel kar rahi hain?</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px">
-      <button class="food-group-btn" data-mood="anxious" onclick="selectMood(this)"><span class="fg-icon">😰</span>Anxious</button>
-      <button class="food-group-btn" data-mood="sad" onclick="selectMood(this)"><span class="fg-icon">😢</span>Udaas</button>
-      <button class="food-group-btn" data-mood="angry" onclick="selectMood(this)"><span class="fg-icon">😤</span>Gussa</button>
-      <button class="food-group-btn" data-mood="tired" onclick="selectMood(this)"><span class="fg-icon">😴</span>Thakaan</button>
-      <button class="food-group-btn" data-mood="overwhelmed" onclick="selectMood(this)"><span class="fg-icon">🌊</span>Overwhelmed</button>
-      <button class="food-group-btn" data-mood="lonely" onclick="selectMood(this)"><span class="fg-icon">🥺</span>Akela</button>
-      <button class="food-group-btn" data-mood="scared" onclick="selectMood(this)"><span class="fg-icon">😨</span>Dara hua</button>
-      <button class="food-group-btn" data-mood="happy" onclick="selectMood(this)"><span class="fg-icon">😊</span>Khush</button>
+    <div class="g2" style="margin-bottom:14px">
+      <div><label data-t="lmpLabel">Last Menstrual Period (LMP)</label><input type="date" id="lmpDate" onchange="calcDue()"/></div>
+      <div><label data-t="dueDateLabel">Ya directly Due Date daalo</label><input type="date" id="directDue" onchange="calcFromDue()"/></div>
     </div>
+    <div id="dueResult"></div>
   </div>
 
-  <div id="mood-tips" style="display:none" class="card">
-    <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,#fce8e8,#fdf5ee);margin-bottom:16px">
-      <div id="moodEmoji" style="font-size:34px"></div>
-      <div><div id="moodTitle" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem"></div><div id="moodSub" style="font-size:12px;color:var(--muted);margin-top:2px"></div></div>
+  <div id="timelineCard" class="card" style="display:none">
+    <div class="sec-label">Progress</div>
+    <div class="sec-title" data-t="journeyTitle">Aapki Journey</div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:4px">
+      <span data-t="start">Shuruat</span><span id="pctText">0%</span><span data-t="end">Due Date</span>
     </div>
-    <div id="moodTipsGrid" class="g2"></div>
+    <div class="timeline-bar"><div class="timeline-fill" id="timelineFill" style="width:0%"></div></div>
+    <div class="milestone-dots">
+      <div class="m-dot">Week 1</div>
+      <div class="m-dot">Week 13<br>1st Tri ✓</div>
+      <div class="m-dot">Week 27<br>2nd Tri ✓</div>
+      <div class="m-dot">Week 40<br>🎉 Baby!</div>
+    </div>
+    <div class="tri-cards" id="triCards"></div>
+  </div>
+
+  <div id="weekDetailCard" class="card" style="display:none">
+    <div class="sec-label" data-t="thisWeek">Is Hafte</div>
+    <div class="sec-title" id="weekDetailTitle">Week —</div>
+    <div class="g3" id="weekDetailGrid"></div>
+  </div>
+</div>
+
+<!-- ════════════ WEIGHT ════════════ -->
+<div class="page" id="page-weight">
+  <div style="padding:24px 0 10px">
+    <div class="sec-label">Health Monitoring</div>
+    <div class="sec-title">Weight Gain Tracker 📊 <span class="save-badge" id="wt-save">✓ Saved</span></div>
   </div>
 
   <div class="card">
-    <div class="sec-label">Breathing</div>
-    <div class="sec-title">4-4-4 Breathing Exercise</div>
-    <div style="text-align:center;padding:16px 0">
-      <div id="breathRing" style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,var(--blush) 0%,var(--rose) 60%,transparent 100%);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--warm);margin:0 auto 14px;box-shadow:0 0 0 8px rgba(232,160,168,.18),0 0 0 18px rgba(232,160,168,.08);cursor:pointer">Start</div>
-      <div id="breathStatus" style="font-size:13px;color:var(--muted)">Tension aur anxiety 2 min mein kam hoti hai</div>
-      <button class="btn btn-primary" style="margin-top:16px" onclick="startBreath()">🌬️ Shuru Karein</button>
+    <div class="g3" style="margin-bottom:16px" id="wtStats"></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="flex:1"><label>Aaj ka weight (kg)</label><input type="number" id="wtInput" placeholder="e.g. 62.5" step="0.1"/></div>
+      <div style="flex:1"><label>Week number</label><input type="number" id="wtWeek" placeholder="1-40" min="1" max="40"/></div>
+      <div style="align-self:flex-end"><button class="btn btn-p btn-sm" onclick="addWeight()">+ Log</button></div>
+    </div>
+    <div style="margin-bottom:8px"><label>Pre-pregnancy weight (kg) — range calculate karne ke liye</label><input type="number" id="preWeight" placeholder="e.g. 55" step="0.1" oninput="savePreWeight()"/></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Graph</div>
+    <div class="sec-title">Weight Journey</div>
+    <canvas id="weightChart" height="120"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Log</div>
+    <div class="sec-title">Weight History</div>
+    <div id="weightLog"></div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,rgba(240,248,240,.7),rgba(235,245,255,.7))">
+    <div class="sec-label">Doctor Guidelines</div>
+    <div class="sec-title">Recommended Weight Gain</div>
+    <div style="font-size:13px;line-height:1.9">
+      <p>⚖️ <strong>Normal BMI (18.5–24.9):</strong> 11–16 kg total</p>
+      <p>⚖️ <strong>Underweight (BMI &lt;18.5):</strong> 13–18 kg</p>
+      <p>⚖️ <strong>Overweight (BMI 25–29.9):</strong> 7–11 kg</p>
+      <p>⚖️ <strong>Twins:</strong> 17–25 kg</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--muted)">💡 1st trimester: 1-2 kg | 2nd & 3rd: ~0.5 kg/week</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ YOGA ════════════ -->
+<div class="page" id="page-yoga">
+  <div style="padding:24px 0 10px">
+    <div class="sec-label">Safe Exercise</div>
+    <div class="sec-title">Prenatal Yoga & Exercise 🧘</div>
+  </div>
+
+  <div class="card">
+    <div class="tab-row" id="yogaFilterRow">
+      <button class="tab-btn active" onclick="filterYoga('all',this)">Sabhi</button>
+      <button class="tab-btn" onclick="filterYoga('1',this)">1st Trimester</button>
+      <button class="tab-btn" onclick="filterYoga('2',this)">2nd Trimester</button>
+      <button class="tab-btn" onclick="filterYoga('3',this)">3rd Trimester</button>
+      <button class="tab-btn" onclick="filterYoga('breathing',this)">🌬️ Breathing</button>
+      <button class="tab-btn" onclick="filterYoga('stretch',this)">🤸 Stretching</button>
+    </div>
+    <div class="yoga-grid" id="yogaGrid"></div>
+  </div>
+
+  <div class="card avoid-list" style="border:none;background:linear-gradient(135deg,#fff5f5,#fff0e8)">
+    <div class="sec-label" style="margin-bottom:8px">⚠️ Avoid Karein</div>
+    <div class="sec-title" style="margin-bottom:12px">Pregnancy mein kya nahi karna chahiye</div>
+    <ul class="avoid-list">
+      <li>Flat back pe litnaa (pehli trimester ke baad) — uterus main artery par pressure</li>
+      <li>Intense ab crunches / sit-ups</li>
+      <li>High-impact sports — skiing, contact sports, horse riding</li>
+      <li>Hot yoga ya sauna — overheating baby ke liye harmful</li>
+      <li>Heavy lifting (>10kg) without doctor's clearance</li>
+      <li>Koi bhi exercise jo dard ya dizziness de</li>
+      <li>Agle 24 ghante mein exercise na karo agar spotting ho</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════ SLEEP ════════════ -->
+<div class="page" id="page-sleep">
+  <div style="padding:24px 0 10px">
+    <div class="sec-label">Rest & Recovery</div>
+    <div class="sec-title">Sleep Tracker 😴 <span class="save-badge" id="sleep-save">✓ Saved</span></div>
+  </div>
+
+  <div class="card">
+    <div class="g3" id="sleepStats" style="margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="flex:1"><label>Soye (bedtime)</label><input type="time" id="sleepStart"/></div>
+      <div style="flex:1"><label>Uthe (wake time)</label><input type="time" id="sleepEnd"/></div>
+      <div style="flex:1"><label>Quality</label>
+        <select id="sleepQuality">
+          <option value="3">😊 Achhi</option>
+          <option value="2">😐 Theek</option>
+          <option value="1">😞 Kharab</option>
+        </select>
+      </div>
+      <div style="align-self:flex-end"><button class="btn btn-p btn-sm" onclick="logSleep()">Log</button></div>
     </div>
   </div>
 
+  <div class="card">
+    <div class="sec-label">7-Day Sleep Chart</div>
+    <div class="sec-title">Sleep Pattern</div>
+    <canvas id="sleepChart" height="120"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Log</div>
+    <div class="sec-title">Sleep History</div>
+    <div id="sleepLog"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Tips</div>
+    <div class="sec-title">Better Sleep ke Liye</div>
+    <div class="g2" id="sleepTips"></div>
+  </div>
+</div>
+
+<!-- ════════════ BIRTH PLAN ════════════ -->
+<div class="page" id="page-birth">
+  <div style="padding:24px 0 10px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px">
+    <div>
+      <div class="sec-label">Hospital ke liye</div>
+      <div class="sec-title">Birth Plan Builder 📋 <span class="save-badge" id="bp-save">✓ Saved</span></div>
+    </div>
+    <div class="no-print" style="display:flex;gap:8px">
+      <button class="btn btn-p btn-sm" onclick="window.print()">🖨️ Print / PDF</button>
+      <button class="btn btn-g btn-sm" onclick="saveBirthPlan()">💾 Save</button>
+    </div>
+  </div>
+
+  <div class="card" id="bpForm">
+    <!-- Personal Info -->
+    <div class="bp-section">
+      <h4>👩 Patient Information</h4>
+      <div class="g2">
+        <div><label>Aapka naam</label><input type="text" id="bp_name" placeholder="Full name"/></div>
+        <div><label>Doctor ka naam</label><input type="text" id="bp_doctor" placeholder="Dr. ..."/></div>
+        <div><label>Hospital</label><input type="text" id="bp_hospital" placeholder="Hospital naam"/></div>
+        <div><label>Due Date</label><input type="date" id="bp_due"/></div>
+      </div>
+    </div>
+
+    <!-- Labor Preferences -->
+    <div class="bp-section">
+      <h4>🏥 Labor ke Dauran</h4>
+      <label style="margin-bottom:8px">Pain management preference:</label>
+      <div class="bp-options" id="bp_pain">
+        <button class="bp-opt" onclick="bpToggle('bp_pain',this)">Natural / No medication</button>
+        <button class="bp-opt" onclick="bpToggle('bp_pain',this)">Epidural chahiye</button>
+        <button class="bp-opt" onclick="bpToggle('bp_pain',this)">Gas & Air</button>
+        <button class="bp-opt" onclick="bpToggle('bp_pain',this)">Open to options</button>
+      </div>
+      <label style="margin:12px 0 8px;display:block">Labor mein kaun saath ho?</label>
+      <div class="bp-options" id="bp_support">
+        <button class="bp-opt" onclick="bpToggle('bp_support',this)">Pati / Partner</button>
+        <button class="bp-opt" onclick="bpToggle('bp_support',this)">Maa</button>
+        <button class="bp-opt" onclick="bpToggle('bp_support',this)">Doula</button>
+        <button class="bp-opt" onclick="bpToggle('bp_support',this)">Akele prefer karoon</button>
+      </div>
+      <label style="margin:12px 0 8px;display:block">Movement preference:</label>
+      <div class="bp-options" id="bp_move">
+        <button class="bp-opt" onclick="bpToggle('bp_move',this)">Chalna chahti hun</button>
+        <button class="bp-opt" onclick="bpToggle('bp_move',this)">Birth ball use karna</button>
+        <button class="bp-opt" onclick="bpToggle('bp_move',this)">Bed pe rehna prefer</button>
+        <button class="bp-opt" onclick="bpToggle('bp_move',this)">Water tub/shower</button>
+      </div>
+    </div>
+
+    <!-- Delivery -->
+    <div class="bp-section">
+      <h4>👶 Delivery ke Waqt</h4>
+      <label style="margin-bottom:8px">Pushing position:</label>
+      <div class="bp-options" id="bp_push">
+        <button class="bp-opt" onclick="bpToggle('bp_push',this)">Traditional (back pe)</button>
+        <button class="bp-opt" onclick="bpToggle('bp_push',this)">Squatting</button>
+        <button class="bp-opt" onclick="bpToggle('bp_push',this)">Side-lying</button>
+        <button class="bp-opt" onclick="bpToggle('bp_push',this)">Hands & knees</button>
+      </div>
+      <label style="margin:12px 0 8px;display:block">Cord cutting:</label>
+      <div class="bp-options" id="bp_cord">
+        <button class="bp-opt" onclick="bpToggle('bp_cord',this)">Partner cut kare</button>
+        <button class="bp-opt" onclick="bpToggle('bp_cord',this)">Delayed cord clamping</button>
+        <button class="bp-opt" onclick="bpToggle('bp_cord',this)">Doctor decide kare</button>
+      </div>
+    </div>
+
+    <!-- After Birth -->
+    <div class="bp-section">
+      <h4>🌸 Delivery ke Baad</h4>
+      <label style="margin-bottom:8px">Newborn ke liye:</label>
+      <div class="bp-options" id="bp_newborn">
+        <button class="bp-opt" onclick="bpToggle('bp_newborn',this)">Skin-to-skin turant chahiye</button>
+        <button class="bp-opt" onclick="bpToggle('bp_newborn',this)">Breastfeeding immediately</button>
+        <button class="bp-opt" onclick="bpToggle('bp_newborn',this)">Photos lene ki permission</button>
+        <button class="bp-opt" onclick="bpToggle('bp_newborn',this)">Rooming-in (baby saath rahe)</button>
+      </div>
+      <label style="margin:12px 0 8px;display:block">Feeding plan:</label>
+      <div class="bp-options" id="bp_feed">
+        <button class="bp-opt" onclick="bpToggle('bp_feed',this)">Only breastfeeding</button>
+        <button class="bp-opt" onclick="bpToggle('bp_feed',this)">Combination</button>
+        <button class="bp-opt" onclick="bpToggle('bp_feed',this)">Formula</button>
+      </div>
+    </div>
+
+    <!-- Special Notes -->
+    <div class="bp-section">
+      <h4>📝 Special Notes / Requests</h4>
+      <textarea id="bp_notes" placeholder="Koi bhi special request, allergy, ya important info likhein..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ SOS ════════════ -->
+<div class="page" id="page-sos">
+  <div style="padding:24px 0 10px">
+    <div class="sec-label">Emergency</div>
+    <div class="sec-title">SOS — Emergency Help 🚨</div>
+  </div>
+
+  <div class="card" style="text-align:center;padding:28px">
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:22px">Emergency mein yeh button dabao — nearest hospital find karega</p>
+    <button class="sos-big" onclick="findHospital()">
+      <span style="font-size:32px">🚨</span>
+      <span>EMERGENCY</span>
+      <span style="font-size:11px;opacity:.85">Nearest Hospital</span>
+    </button>
+    <div id="sosResult" style="margin-top:20px"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Helplines</div>
+    <div class="sec-title">Emergency Numbers 📞</div>
+    <div class="sos-contact"><div><div class="name">🚑 Ambulance</div><div class="num">National Emergency</div></div><a href="tel:108">Call 108</a></div>
+    <div class="sos-contact"><div><div class="name">👮 Police</div><div class="num">All India</div></div><a href="tel:100">Call 100</a></div>
+    <div class="sos-contact"><div><div class="name">🏥 iCall Mental Health</div><div class="num">9152987821</div></div><a href="tel:9152987821">Call</a></div>
+    <div class="sos-contact"><div><div class="name">👩 Women Helpline</div><div class="num">All India</div></div><a href="tel:1091">Call 1091</a></div>
+    <div id="customContacts"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Personal Contacts</div>
+    <div class="sec-title">Emergency Contacts Add Karein</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <div style="flex:1"><label>Naam</label><input type="text" id="ecName" placeholder="e.g. Pati, Maa..."/></div>
+      <div style="flex:1"><label>Phone</label><input type="tel" id="ecPhone" placeholder="Mobile number"/></div>
+      <div style="align-self:flex-end"><button class="btn btn-p btn-sm" onclick="addEC()">+ Add</button></div>
+    </div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,#fff5f5,#fff0e8)">
+    <div class="sec-label">Warning Signs</div>
+    <div class="sec-title">Turant Doctor ko Call Karein ⚠️</div>
+    <div style="font-size:13px;line-height:1.95">
+      <p>🔴 Bahut zyada bleeding</p>
+      <p>🔴 Severe abdominal pain</p>
+      <p>🔴 Baby ki movements suddenly band</p>
+      <p>🔴 Severe headache + vision problems</p>
+      <p>🔴 Swelling in face, hands (preeclampsia sign)</p>
+      <p>🔴 High fever (38°C+)</p>
+      <p>🔴 Water break (amniotic fluid)</p>
+      <p>🔴 Contractions before 37 weeks (preterm labor)</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ MOOD ════════════ -->
+<div class="page" id="page-mood">
+  <div style="padding:24px 0 10px;text-align:center">
+    <div style="display:inline-flex;align-items:center;gap:7px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:6px 18px;margin-bottom:18px;font-size:12px;color:var(--muted)">🌸 MamaCare</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4.5vw,3rem);font-weight:300;line-height:1.2" data-t="moodHero">Pregnancy mein <em style="font-style:italic;color:var(--accent)">mood swings</em><br>normal hain</h1>
+  </div>
+  <div class="card">
+    <div class="sec-label" data-t="moodStep">Kaisi feel kar rahi hain?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:9px">
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="anxious" onclick="selMood(this)"><span style="font-size:26px">😰</span><span data-t="m_anxious">Anxious</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="sad" onclick="selMood(this)"><span style="font-size:26px">😢</span><span data-t="m_sad">Udaas</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="angry" onclick="selMood(this)"><span style="font-size:26px">😤</span><span data-t="m_angry">Gussa</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="tired" onclick="selMood(this)"><span style="font-size:26px">😴</span><span data-t="m_tired">Thakaan</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="happy" onclick="selMood(this)"><span style="font-size:26px">😊</span><span data-t="m_happy">Khush</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="overwhelmed" onclick="selMood(this)"><span style="font-size:26px">🌊</span><span data-t="m_over">Overwhelmed</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="scared" onclick="selMood(this)"><span style="font-size:26px">😨</span><span data-t="m_scared">Dara hua</span></button>
+      <button style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border-radius:16px;border:1.5px solid var(--blush);background:white;cursor:pointer;font-size:11.5px;color:var(--muted);transition:.2s" data-mood="lonely" onclick="selMood(this)"><span style="font-size:26px">🥺</span><span data-t="m_lonely">Akela</span></button>
+    </div>
+  </div>
+  <div id="moodTips" style="display:none" class="card"></div>
   <div class="card">
     <div class="sec-label">AI Companion</div>
     <div class="sec-title">MamaCare Chat 💗</div>
     <div class="chat-box" id="chatBox"><div class="msg bot">Namaste! 🌸 Main MamaCare hun. Aaj kaisi feel kar rahi hain? Kuch bhi share karein.</div></div>
-    <div class="chat-row">
-      <input id="chatInput" type="text" placeholder="Apni baat share karein..." onkeydown="if(event.key==='Enter')sendChat()"/>
-      <button class="btn btn-primary btn-sm" onclick="sendChat()">Send</button>
-    </div>
+    <div class="chat-row"><input id="chatInput" type="text" placeholder="Apni baat share karein..." onkeydown="if(event.key==='Enter')sendChat()"/><button class="btn btn-p btn-sm" onclick="sendChat()">Send</button></div>
   </div>
-</div>
-
-<!-- ══════ NUTRITION PAGE ══════ -->
-<div class="page" id="page-nutrition">
-  <div style="padding:28px 0 8px">
-    <div class="sec-label">Aaj ka khana</div>
-    <div class="sec-title">Nutrition & Diet Tracker <span class="save-badge" id="nutri-save">✓ Saved</span></div>
-  </div>
-
-  <div class="card">
-    <div class="sec-label">Water Intake</div>
-    <div style="font-size:13.5px;color:var(--warm);margin-bottom:10px">Goal: <strong>8-10 glasses</strong> roz — tap to track</div>
-    <div class="water-track" id="waterTrack"></div>
-    <div style="font-size:12px;color:var(--muted);margin-top:6px" id="waterMsg"></div>
-  </div>
-
-  <div class="card">
-    <div class="sec-label">Nutrients Progress</div>
-    <div class="sec-title">Aaj ke Nutrients</div>
-    <div id="nutriBars"></div>
-  </div>
-
-  <div class="card">
-    <div class="sec-label">Food Log</div>
-    <div class="sec-title">Kya khaya aaj?</div>
-    <div style="margin-bottom:14px">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="foodCatBtns">
-        <button class="name-filter-btn active" data-cat="all" onclick="setFoodCat('all',this)">Sabhi</button>
-        <button class="name-filter-btn" data-cat="subah" onclick="setFoodCat('subah',this)">🌅 Subah</button>
-        <button class="name-filter-btn" data-cat="dopahar" onclick="setFoodCat('dopahar',this)">☀️ Dopahar</button>
-        <button class="name-filter-btn" data-cat="shaam" onclick="setFoodCat('shaam',this)">🌆 Shaam</button>
-        <button class="name-filter-btn" data-cat="raat" onclick="setFoodCat('raat',this)">🌙 Raat</button>
-      </div>
-      <div style="display:flex;gap:8px">
-        <input type="text" id="foodInput" placeholder="Khana ka naam (e.g. Dalia, Dal chawal...)" style="flex:1"/>
-        <select id="foodCal" style="width:110px">
-          <option value="50">Light (~50 cal)</option>
-          <option value="150" selected>Snack (~150)</option>
-          <option value="300">Meal (~300)</option>
-          <option value="500">Heavy (~500)</option>
-        </select>
-        <button class="btn btn-primary btn-sm" onclick="addFood()">+ Add</button>
-      </div>
-    </div>
-    <div id="foodList"></div>
-  </div>
-
-  <div class="card" style="background:linear-gradient(135deg,rgba(255,248,220,.7),rgba(255,240,200,.7))">
-    <div class="sec-label">Pregnancy Diet Tips</div>
-    <div class="sec-title">Kya khaana chahiye?</div>
-    <div class="g2" style="font-size:13px;line-height:1.75">
-      <div>
-        <p style="font-weight:600;color:var(--green);margin-bottom:6px">✅ Zaroor Khao</p>
-        <p>🥬 Palak, methi, saag — Iron & Folate<br>🥚 Ande — Choline & Protein<br>🐟 Machi — Omega-3<br>🥛 Doodh, dahi — Calcium<br>🌾 Dalia, ragi — Fibre<br>🍊 Nimbu, amla — Vitamin C<br>🫘 Dal, rajma — Protein</p>
-      </div>
-      <div>
-        <p style="font-weight:600;color:var(--accent);margin-bottom:6px">❌ Avoid Karein</p>
-        <p>🚫 Kacchi machi / anda<br>🚫 Papaya aur ananas (pehli trimester)<br>🚫 Bahut zyada chai/coffee<br>🚫 Processed junk food<br>🚫 Alcohol bilkul nahi<br>🚫 Unpasteurized doodh<br>🚫 Bahut teekha khana</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════ HOSPITAL BAG PAGE ══════ -->
-<div class="page" id="page-bag">
-  <div style="padding:28px 0 8px">
-    <div class="sec-label">Delivery Preparation</div>
-    <div class="sec-title">Hospital Bag Checklist <span class="save-badge" id="bag-save">✓ Saved</span></div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-      <div>
-        <div style="font-size:22px;font-family:'Cormorant Garamond',serif;color:var(--warm)" id="bagPct">0%</div>
-        <div style="font-size:12px;color:var(--muted)">Pack kiya gaya</div>
-      </div>
-      <div style="flex:1;max-width:300px">
-        <div class="bag-progress"><div class="bag-progress-fill" id="bagBar" style="width:0%"></div></div>
-        <div style="font-size:12px;color:var(--muted);text-align:right" id="bagCount">0 / 0 items</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="resetBag()">Reset All</button>
-    </div>
-  </div>
-
-  <div id="bagContainer"></div>
-
-  <div class="card">
-    <div class="sec-label">Custom Items</div>
-    <div class="sec-title">Apni list mein add karein</div>
-    <div class="add-custom-item">
-      <input type="text" id="customBagItem" placeholder="Item ka naam..."/>
-      <select id="customBagCat" style="width:140px">
-        <option value="Maa ke liye">Maa ke liye</option>
-        <option value="Baby ke liye">Baby ke liye</option>
-        <option value="Documents">Documents</option>
-        <option value="Misc">Misc</option>
-      </select>
-      <button class="btn btn-primary btn-sm" onclick="addCustomBagItem()">+ Add</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════ BABY NAMES PAGE ══════ -->
-<div class="page" id="page-names">
-  <div style="padding:28px 0 8px">
-    <div class="sec-label">Baby ke liye</div>
-    <div class="sec-title">Baby Name Finder 👶 <span class="save-badge" id="names-save">✓ Saved</span></div>
-  </div>
-
-  <div class="card">
-    <div style="margin-bottom:14px">
-      <input type="text" id="nameSearch" placeholder="Name ya meaning search karein..." oninput="renderNames()" style="margin-bottom:10px"/>
-      <div class="name-filters" id="nameFilters">
-        <button class="name-filter-btn active" data-f="all" onclick="setNameFilter('all',this)">Sabhi</button>
-        <button class="name-filter-btn" data-f="boy" onclick="setNameFilter('boy',this)">👦 Boy</button>
-        <button class="name-filter-btn" data-f="girl" onclick="setNameFilter('girl',this)">👧 Girl</button>
-        <button class="name-filter-btn" data-f="unisex" onclick="setNameFilter('unisex',this)">🌟 Unisex</button>
-        <button class="name-filter-btn" data-f="hindu" onclick="setNameFilter('hindu',this)">🕉️ Hindu</button>
-        <button class="name-filter-btn" data-f="muslim" onclick="setNameFilter('muslim',this)">☪️ Muslim</button>
-        <button class="name-filter-btn" data-f="sikh" onclick="setNameFilter('sikh',this)">🪯 Sikh</button>
-        <button class="name-filter-btn" data-f="modern" onclick="setNameFilter('modern',this)">✨ Modern</button>
-      </div>
-    </div>
-    <div class="name-grid" id="nameGrid"></div>
-  </div>
-
-  <div class="card" id="savedNamesCard" style="display:none">
-    <div class="sec-label">Pasandida</div>
-    <div class="sec-title">Saved Names 💗</div>
-    <div class="saved-names-list" id="savedNamesList"></div>
-  </div>
-</div>
-
-<!-- ══════ MEDICINE PAGE ══════ -->
-<div class="page" id="page-medicine">
-  <div style="padding:28px 0 8px">
-    <div class="sec-label">Daily Health</div>
-    <div class="sec-title">Medicine & Supplement Tracker <span class="save-badge" id="med-save">✓ Saved</span></div>
-  </div>
-
-  <div class="card">
-    <div class="g3" style="margin-bottom:0">
-      <div class="stat-card"><div class="stat-val" id="medTakenCount">0</div><div class="stat-lbl">Aaj liya</div></div>
-      <div class="stat-card"><div class="stat-val" id="medTotalCount">0</div><div class="stat-lbl">Total</div></div>
-      <div class="stat-card"><div class="stat-val" id="medPct">0%</div><div class="stat-lbl">Complete</div></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="sec-label">Aaj ki Medicines</div>
-    <div class="sec-title">Medication List</div>
-    <div id="medList"></div>
-    <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="toggleAddMed()">+ Nayi Medicine Add Karein</button>
-    <div class="add-med-form" id="addMedForm" style="display:none;margin-top:14px">
-      <div class="g2" style="margin-bottom:10px">
-        <div><label>Medicine / Supplement Name</label><input type="text" id="medName" placeholder="e.g. Folic Acid, Iron..."/></div>
-        <div><label>Dose</label><input type="text" id="medDose" placeholder="e.g. 1 tablet, 5ml..."/></div>
-      </div>
-      <div class="g2" style="margin-bottom:10px">
-        <div><label>Time</label><input type="time" id="medTime"/></div>
-        <div><label>Icon</label>
-          <select id="medIcon">
-            <option value="💊">💊 Tablet</option>
-            <option value="💉">💉 Injection</option>
-            <option value="🧴">🧴 Syrup</option>
-            <option value="🫁">🫁 Inhaler</option>
-            <option value="🌿">🌿 Herbal</option>
-            <option value="🍊">🍊 Vitamin</option>
-          </select>
-        </div>
-      </div>
-      <div style="margin-bottom:12px"><label>Notes (optional)</label><input type="text" id="medNotes" placeholder="e.g. Khane ke baad lena..."/></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary btn-sm" onclick="addMedicine()">Save</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleAddMed()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="background:linear-gradient(135deg,rgba(235,248,240,.7),rgba(230,245,255,.7))">
-    <div class="sec-label">Doctor Advice</div>
-    <div class="sec-title">Common Pregnancy Supplements</div>
-    <div style="font-size:13px;line-height:1.8;color:var(--warm)">
-      <p>💊 <strong>Folic Acid</strong> — Neural tube defects rokne ke liye, pehle 3 month zaroori</p>
-      <p>🍊 <strong>Iron + Vitamin C</strong> — Anaemia se bachao, sath mein lena absorption badhata hai</p>
-      <p>🦴 <strong>Calcium + Vitamin D</strong> — Baby ki haddiyan aur aapke bones ke liye</p>
-      <p>🐟 <strong>Omega-3 (DHA)</strong> — Baby ka brain development</p>
-      <p>🌿 <strong>Magnesium</strong> — Leg cramps aur sleep ke liye</p>
-      <p style="margin-top:10px;font-size:12px;color:var(--muted)">⚠️ Koi bhi supplement apne doctor ki salah ke bina mat lo.</p>
-    </div>
-  </div>
-</div>
-
-<!-- ══════ JOURNAL PAGE ══════ -->
-<div class="page" id="page-journal">
-  <div style="padding:28px 0 8px">
-    <div class="sec-label">Yaadein sanjao</div>
-    <div class="sec-title">Baby Bump Journal 📸 <span class="save-badge" id="journal-save">✓ Saved</span></div>
-  </div>
-
-  <div class="new-entry-form">
-    <div class="sec-label" style="margin-bottom:8px">Nayi Entry</div>
-    <div class="g2" style="margin-bottom:10px">
-      <div><label>Pregnancy Week</label><input type="number" id="jWeek" placeholder="Week number (1-40)" min="1" max="40"/></div>
-      <div><label>Aaj ka date</label><input type="date" id="jDate"/></div>
-    </div>
-    <div style="margin-bottom:10px">
-      <label>Aaj ka mood</label>
-      <div class="mood-selector-row" id="jMoodRow">
-        <span class="mood-sel-btn active" data-m="😊" onclick="selectJMood(this)">😊</span>
-        <span class="mood-sel-btn" data-m="😢" onclick="selectJMood(this)">😢</span>
-        <span class="mood-sel-btn" data-m="😴" onclick="selectJMood(this)">😴</span>
-        <span class="mood-sel-btn" data-m="🥰" onclick="selectJMood(this)">🥰</span>
-        <span class="mood-sel-btn" data-m="😤" onclick="selectJMood(this)">😤</span>
-        <span class="mood-sel-btn" data-m="😰" onclick="selectJMood(this)">😰</span>
-        <span class="mood-sel-btn" data-m="🌟" onclick="selectJMood(this)">🌟</span>
-      </div>
-    </div>
-    <div style="margin-bottom:10px"><label>Aaj ki baatein (kuch bhi likhein...)</label><textarea id="jText" placeholder="Aaj baby ne kick kiya... ya kuch special hua... ya bas man ki baat..."></textarea></div>
-    <div>
-      <label>Baby Bump Photo (optional)</label>
-      <div class="photo-upload-area" onclick="document.getElementById('photoUpload').click()">
-        <div style="font-size:24px;margin-bottom:6px">📷</div>
-        <div style="font-size:13px;color:var(--muted)">Click karke photo upload karein</div>
-        <input type="file" id="photoUpload" accept="image/*" onchange="handlePhoto(this)"/>
-        <img id="photoPreview" class="photo-preview"/>
-      </div>
-    </div>
-    <button class="btn btn-primary" style="margin-top:12px" onclick="saveJournalEntry()">💗 Entry Save Karein</button>
-  </div>
-
-  <div id="journalEntries"></div>
 </div>
 
 <footer>
-  <strong style="color:var(--accent)">MamaCare</strong> — Complete Pregnancy Companion 🌸<br>
-  Aapka data sirf aapke device par save hota hai — completely private.<br>
-  Yeh app medical advice nahi deta. Serious concerns ke liye apne doctor se milein. 💗
+  <strong style="color:var(--accent)">MamaCare</strong> v4 — Complete Pregnancy Companion 🌸<br>
+  📱 Install karein aur offline bhi use karein | 🔒 Data sirf aapke device par<br>
+  Yeh app medical advice nahi deta — serious concerns ke liye doctor se milein 💗
 </footer>
 
 <script>
-// ══════════════════════════════════
-// STORAGE HELPERS
-// ══════════════════════════════════
+// ════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════
 const S={
-  get:(k,def)=>{try{const v=localStorage.getItem('mc_'+k);return v?JSON.parse(v):def;}catch{return def;}},
-  set:(k,v)=>{try{localStorage.setItem('mc_'+k,JSON.stringify(v));}catch{}},
+  get:(k,d)=>{try{const v=localStorage.getItem('mc4_'+k);return v!==null?JSON.parse(v):d;}catch{return d;}},
+  set:(k,v)=>{try{localStorage.setItem('mc4_'+k,JSON.stringify(v));}catch{}}
 };
-function flashSave(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800);}
+function flash(id){const e=document.getElementById(id);if(!e)return;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600);}
 
-// ══════════════════════════════════
+// ════════════════════════════════════
 // NAVIGATION
-// ══════════════════════════════════
+// ════════════════════════════════════
 function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
@@ -504,325 +553,349 @@ function showPage(id,btn){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ══════════════════════════════════
-// MOOD
-// ══════════════════════════════════
-const MOODS={
-  anxious:{e:'😰',t:'Ghabhrahat / Anxiety',s:'Hormones aur naye changes — bilkul normal hai',tips:[['Saans ka jaadu','4 sec saans lo, 4 sec roko, 4 sec chhodho. Nervous system shant hota hai.'],['5-4-3-2-1 Grounding','5 cheezein dekho, 4 chho lo, 3 suno — anxiety bhag jaati hai.'],['Body scan','Aankhein band karo, pair se sir tak muscles dheel do.'],['Baat karo','Partner ya trusted insaan ko batao — akele mat raho.']]},
-  sad:{e:'😢',t:'Udaasi / Sadness',s:'Rone ka mann ho toh rone do — emotions bahar aane do',tips:[['Cry karo freely','Rone ke baad body feel-good hormones release karti hai.'],['Warmth lo','Cozy blanket ya warm hug — oxytocin naturally badhta hai.'],['Dhoop mein baitho','Subah 10-15 min ki dhoop — serotonin boost.'],['Journal likhein','Jo dil mein aaye woh likho — man ka bojh kam hota hai.']]},
-  angry:{e:'😤',t:'Gussa / Irritability',s:'Progesterone changes — aap galat nahi hain',tips:[['STOP technique','Stop, Take breath, Observe, Proceed — 10 sec gap do.'],['Cold water','Haath thande paani se dhona — gusse ki intensity kam hoti hai.'],['Walk karo','10 min walk adrenaline naturally khatam karta hai.'],['Trigger note karo','Kya cheez trigger karti hai — pattern jaanno.']]},
-  tired:{e:'😴',t:'Thakaan / Exhaustion',s:'Extreme fatigue normal hai — guilt mat karo',tips:[['20 min nap','Research: 20 min nap full alertness wapas laati hai.'],['Iron check','Anaemia common cause — haemoglobin test karwao.'],['Hydration first','Dehydration #1 hidden cause — har ghante paani peeo.'],['Gentle stretch','5 min yoga blood flow badhata hai.']]},
-  overwhelmed:{e:'🌊',t:'Overwhelmed',s:'Bahut saari zimmedaariyan — normal hai',tips:[['Brain dump','Saari chintayein kagaz par likh do — dimaag free hoga.'],['Sirf 3 kaam','Aaj 3 priorities — baaki kal ke liye.'],['No kehna seekho','"No" kehna self-care hai, selfishness nahi.'],['Help maango','Support maangna wisdom hai — kisi ek se lo.']]},
-  lonely:{e:'🥺',t:'Akela Mehsoos',s:'Loneliness pregnancy ka underrated challenge',tips:[['Group join karo','WhatsApp pregnancy groups mein bahut support milta hai.'],['Video call','Purani saheli — bas baat karo, koi agenda nahi.'],['Baby se baat karo','Pet pe haath rakh ke baat karo — connection badhta hai.'],['Creative hobby','Kuch banana — akele time meaningful banta hai.']]},
-  scared:{e:'😨',t:'Dar / Fear',s:'Delivery ka dar — valid feeling hai',tips:[['Jaankaari lo','Delivery process padho — unknown zyada scary lagta hai.'],['Birth plan','Doctor ke saath birth plan bnao — control milta hai.'],['Positive stories','YouTube par real positive birth stories dekho.'],['Professional help','Pregnancy anxiety real hai — therapist se milna smart decision.']]},
-  happy:{e:'😊',t:'Khushi / Happiness',s:'Yeh feeling capture karo!',tips:[['Gratitude journal','3 achhi cheezein aaj likhna — brain khushi notice karta hai.'],['Bump photos','Photos mat bhoolna — life bhar kaam aayengi!'],['Baby se connect','Naam sochna, nursery, playlist — connection badhta hai.'],['Share karo','Khushi share karne se dooni hoti hai.']]},
+// ════════════════════════════════════
+// MULTI-LANGUAGE
+// ════════════════════════════════════
+const LANGS={
+  en:{dueLabel:'Due Date Calculator',dueTitle:'Pregnancy Timeline 🗓️',journeyTitle:'Your Journey',start:'Start',end:'Due Date',thisWeek:'This Week',moodHero:'Pregnancy mood swings are normal',moodStep:'How are you feeling?',m_anxious:'Anxious',m_sad:'Sad',m_angry:'Angry',m_tired:'Tired',m_happy:'Happy',m_over:'Overwhelmed',m_scared:'Scared',m_lonely:'Lonely'},
+  hi:{dueLabel:'नियत तिथि कैलकुलेटर',dueTitle:'गर्भावस्था टाइमलाइन 🗓️',journeyTitle:'आपकी यात्रा',start:'शुरुआत',end:'नियत तिथि',thisWeek:'इस हफ्ते',moodHero:'गर्भावस्था में मूड स्विंग्स सामान्य हैं',moodStep:'अभी कैसा महसूस कर रही हैं?',m_anxious:'घबराहट',m_sad:'उदासी',m_angry:'गुस्सा',m_tired:'थकान',m_happy:'खुशी',m_over:'अभिभूत',m_scared:'डर',m_lonely:'अकेलापन'},
+  hinglish:{dueLabel:'Due Date Calculator',dueTitle:'Pregnancy Timeline 🗓️',journeyTitle:'Aapki Journey',start:'Shuruat',end:'Due Date',thisWeek:'Is Hafte',moodHero:'Pregnancy mein mood swings normal hain',moodStep:'Abhi kaisi feel kar rahi hain?',m_anxious:'Anxious',m_sad:'Udaas',m_angry:'Gussa',m_tired:'Thakaan',m_happy:'Khush',m_over:'Overwhelmed',m_scared:'Dara hua',m_lonely:'Akela'},
+  ta:{dueLabel:'பிரசவ தேதி கணிப்பி',dueTitle:'கர்ப்ப காலக்கோடு 🗓️',journeyTitle:'உங்கள் பயணம்',start:'தொடக்கம்',end:'பிரசவ தேதி',thisWeek:'இந்த வாரம்',moodHero:'கர்ப்பத்தில் மனநிலை மாற்றங்கள் இயல்பானவை',moodStep:'இப்போது எப்படி உணர்கிறீர்கள்?',m_anxious:'பதட்டம்',m_sad:'சோகம்',m_angry:'கோபம்',m_tired:'சோர்வு',m_happy:'மகிழ்ச்சி',m_over:'மிகுந்த அழுத்தம்',m_scared:'பயம்',m_lonely:'தனிமை'},
+  bn:{dueLabel:'প্রসবের তারিখ ক্যালকুলেটর',dueTitle:'গর্ভাবস্থার টাইমলাইন 🗓️',journeyTitle:'আপনার যাত্রা',start:'শুরু',end:'প্রসবের তারিখ',thisWeek:'এই সপ্তাহ',moodHero:'গর্ভাবস্থায় মুড সুইং স্বাভাবিক',moodStep:'এখন কেমন অনুভব করছেন?',m_anxious:'উদ্বিগ্ন',m_sad:'দুঃখী',m_angry:'রাগান্বিত',m_tired:'ক্লান্ত',m_happy:'সুখী',m_over:'অভিভূত',m_scared:'ভয়',m_lonely:'একা'},
+  mr:{dueLabel:'देय तारीख कॅल्क्युलेटर',dueTitle:'गर्भधारणा टाइमलाइन 🗓️',journeyTitle:'तुमचा प्रवास',start:'सुरुवात',end:'देय तारीख',thisWeek:'या आठवड्यात',moodHero:'गर्भधारणेत मूड स्विंग्स सामान्य आहेत',moodStep:'आत्ता कसे वाटत आहे?',m_anxious:'चिंता',m_sad:'दुःख',m_angry:'राग',m_tired:'थकवा',m_happy:'आनंद',m_over:'दडपण',m_scared:'भीती',m_lonely:'एकटेपणा'},
+  te:{dueLabel:'ప్రసవ తేదీ కాలిక్యులేటర్',dueTitle:'గర్భధారణ టైమ్‌లైన్ 🗓️',journeyTitle:'మీ ప్రయాణం',start:'ప్రారంభం',end:'ప్రసవ తేదీ',thisWeek:'ఈ వారం',moodHero:'గర్భధారణలో మూడ్ స్వింగ్స్ సాధారణం',moodStep:'ఇప్పుడు ఎలా అనిపిస్తోంది?',m_anxious:'ఆందోళన',m_sad:'దుఃఖం',m_angry:'కోపం',m_tired:'అలసట',m_happy:'ఆనందం',m_over:'అధికంగా',m_scared:'భయం',m_lonely:'ఒంటరిగా'},
 };
-function selectMood(btn){
-  document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const d=MOODS[btn.dataset.mood];
-  document.getElementById('moodEmoji').textContent=d.e;
-  document.getElementById('moodTitle').textContent=d.t;
-  document.getElementById('moodSub').textContent=d.s;
-  document.getElementById('moodTipsGrid').innerHTML=d.tips.map(([l,t])=>`<div style="background:white;border-radius:14px;padding:14px;border-left:3px solid var(--rose)"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px;font-weight:600">${l}</div><div style="font-size:13px;line-height:1.65;color:var(--warm)">${t}</div></div>`).join('');
-  const p=document.getElementById('mood-tips');p.style.display='block';p.style.animation='none';void p.offsetWidth;p.style.animation='fadeUp .4s ease';
+let curLang=S.get('lang','hinglish');
+function setLang(l,btn){
+  curLang=l;S.set('lang',l);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const T=LANGS[l]||LANGS.hinglish;
+  document.querySelectorAll('[data-t]').forEach(el=>{const k=el.dataset.t;if(T[k])el.textContent=T[k];});
+  // set html lang
+  document.getElementById('htmlRoot').lang=l==='ta'?'ta':l==='bn'?'bn':l==='mr'?'mr':l==='te'?'te':l==='hi'?'hi':'en';
+}
+// Init lang
+setTimeout(()=>{
+  const btn=document.querySelector(`.lang-btn[onclick="setLang('${curLang}',this)"]`);
+  setLang(curLang,btn);
+},100);
+
+// ════════════════════════════════════
+// DUE DATE CALCULATOR
+// ════════════════════════════════════
+const WEEK_INFO={
+  4:{b:'Embryo implant ho raha hai. Dil banana shuru.',body:'Test positive! Nausea jaldi shuru ho sakti.',tip:'Folic acid shuru karein aaj se.'},
+  8:{b:'Baby 1.6cm — haath aur pair ban rahe hain.',body:'Morning sickness peak ho sakti hai.',tip:'Small frequent meals — khali pet nahi rehna.'},
+  12:{b:'Baby 6cm — fingerprints ban gayi!',body:'Nausea reduce hone lagti hai.',tip:'First trimester scan karwao.'},
+  16:{b:'Baby 12cm — sex possibly visible.',body:'Energy wapas aa rahi hai.',tip:'Baby ko music sunao — wo sun sakta hai!'},
+  20:{b:'Half way! Baby 25cm, 300g.',body:'Baby kicks feel hone lagte hain.',tip:'Anatomy scan book karein.'},
+  24:{b:'Baby survival possible outside womb.',body:'Stretch marks aa sakti hain.',tip:'Coconut oil / vitamin E lagao.'},
+  28:{b:'Baby 1kg+ — eyes khul sakti hain.',body:'Teesri trimester ki thakaan shuru.',tip:'Kick counting shuru karein — 10 in 2 hrs.'},
+  32:{b:'Baby 1.8kg — almost fully formed.',body:'Braxton Hicks contractions start.',tip:'Hospital bag pack karna shuru karo.'},
+  36:{b:'Baby 47cm — lungs nearly ready.',body:'Baby drop karta hai — zyada urination.',tip:'Birth plan finalize karo.'},
+  40:{b:'Baby full term! 3-3.5kg average.',body:'Due date aa gayi! 🎉',tip:'Signs of labor jaano.'},
+};
+function getWI(w){const keys=Object.keys(WEEK_INFO).map(Number).sort((a,b)=>a-b);const k=keys.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);return WEEK_INFO[k];}
+
+function calcDue(){
+  const lmp=new Date(document.getElementById('lmpDate').value);
+  if(isNaN(lmp))return;
+  const due=new Date(lmp);due.setDate(due.getDate()+280);
+  document.getElementById('directDue').value=due.toISOString().split('T')[0];
+  S.set('dueDate',due.toISOString());flash('due-save');showTimeline(due);
+}
+function calcFromDue(){
+  const due=new Date(document.getElementById('directDue').value);
+  if(isNaN(due))return;
+  const lmp=new Date(due);lmp.setDate(lmp.getDate()-280);
+  document.getElementById('lmpDate').value=lmp.toISOString().split('T')[0];
+  S.set('dueDate',due.toISOString());flash('due-save');showTimeline(due);
+}
+function showTimeline(due){
+  const now=new Date();const start=new Date(due);start.setDate(start.getDate()-280);
+  const totalDays=280;const elapsed=Math.max(0,Math.round((now-start)/86400000));
+  const week=Math.min(40,Math.floor(elapsed/7)+1);const pct=Math.min(100,Math.round(elapsed/totalDays*100));
+  const daysLeft=Math.max(0,Math.round((due-now)/86400000));
+  const tri=week<=13?1:week<=27?2:3;
+
+  document.getElementById('dueResult').innerHTML=`
+    <div class="g3">
+      <div class="stat"><div class="stat-v">Week ${week}</div><div class="stat-l">Current Week</div></div>
+      <div class="stat"><div class="stat-v">${daysLeft}</div><div class="stat-l">Days Remaining</div></div>
+      <div class="stat"><div class="stat-v">${pct}%</div><div class="stat-l">Complete</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px">🗓️ Due Date: <strong>${due.toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'})}</strong></p>`;
+
+  document.getElementById('timelineCard').style.display='block';
+  document.getElementById('pctText').textContent=pct+'%';
+  setTimeout(()=>document.getElementById('timelineFill').style.width=pct+'%',100);
+
+  const names=['1st Trimester','2nd Trimester','3rd Trimester'];
+  const weeks=[['1–13','Nausea, fatigue, hormonal changes'],['14–27','Energy boost, baby kicks!'],['28–40','Baby growth, prepare for delivery']];
+  document.getElementById('triCards').innerHTML=weeks.map(([w,d],i)=>`
+    <div class="tri-c${tri===i+1?' current':''}">
+      <h4>${names[i]}</h4>
+      <p style="font-size:11px;color:var(--accent);font-weight:600">Week ${w}</p>
+      <p>${d}</p>
+      ${tri===i+1?'<p style="font-size:11px;margin-top:6px;color:var(--accent);font-weight:600">← Aap yahan hain</p>':''}
+    </div>`).join('');
+
+  const wi=getWI(week);
+  document.getElementById('weekDetailCard').style.display='block';
+  document.getElementById('weekDetailTitle').textContent=`Week ${week} of 40`;
+  document.getElementById('weekDetailGrid').innerHTML=`
+    <div style="background:white;border-radius:13px;padding:14px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:5px;font-weight:600">👶 Baby</div><p style="font-size:12.5px;line-height:1.65">${wi.b}</p></div>
+    <div style="background:white;border-radius:13px;padding:14px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:5px;font-weight:600">🤱 Body</div><p style="font-size:12.5px;line-height:1.65">${wi.body}</p></div>
+    <div style="background:white;border-radius:13px;padding:14px"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:5px;font-weight:600">💡 Tip</div><p style="font-size:12.5px;line-height:1.65">${wi.tip}</p></div>`;
+}
+// Restore saved due date
+const savedDue=S.get('dueDate',null);
+if(savedDue){const d=new Date(savedDue);document.getElementById('directDue').value=d.toISOString().split('T')[0];calcFromDue();}
+
+// ════════════════════════════════════
+// WEIGHT TRACKER
+// ════════════════════════════════════
+let weights=S.get('weights',[]);
+let wtChart=null;
+const preWt=S.get('preWeight',null);
+if(preWt)document.getElementById('preWeight').value=preWt;
+
+function savePreWeight(){const v=parseFloat(document.getElementById('preWeight').value);if(v)S.set('preWeight',v);}
+function addWeight(){
+  const kg=parseFloat(document.getElementById('wtInput').value);
+  const wk=parseInt(document.getElementById('wtWeek').value);
+  if(!kg)return;
+  weights.push({kg,wk:wk||0,date:new Date().toLocaleDateString('en-IN'),ts:Date.now()});
+  weights.sort((a,b)=>a.wk-b.wk||a.ts-b.ts);
+  S.set('weights',weights);document.getElementById('wtInput').value='';renderWeight();flash('wt-save');
+}
+function delWeight(i){weights.splice(i,1);S.set('weights',weights);renderWeight();}
+function renderWeight(){
+  // stats
+  const first=weights[0],last=weights[weights.length-1];
+  const gain=weights.length>=2?(last.kg-first.kg).toFixed(1):0;
+  const pre=parseFloat(document.getElementById('preWeight').value)||null;
+  const totalGain=pre&&last?((last.kg-pre).toFixed(1)):'—';
+  document.getElementById('wtStats').innerHTML=`
+    <div class="stat"><div class="stat-v">${last?last.kg+'kg':'—'}</div><div class="stat-l">Current</div></div>
+    <div class="stat"><div class="stat-v">${weights.length>=2?'+'+gain+'kg':'—'}</div><div class="stat-l">Recent Change</div></div>
+    <div class="stat"><div class="stat-v">${totalGain!=='—'?'+'+totalGain+'kg':totalGain}</div><div class="stat-l">Total Gain</div></div>`;
+  // chart
+  if(wtChart)wtChart.destroy();
+  const ctx=document.getElementById('weightChart').getContext('2d');
+  wtChart=new Chart(ctx,{type:'line',data:{labels:weights.map(w=>`W${w.wk||'?'}`),datasets:[{label:'Weight (kg)',data:weights.map(w=>w.kg),borderColor:'#e8a0a8',backgroundColor:'rgba(232,160,168,.15)',tension:.4,pointBackgroundColor:'#c97b7b',pointRadius:5,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(200,100,100,.08)'},ticks:{font:{size:11}}}}}});
+  // log
+  document.getElementById('weightLog').innerHTML=weights.length===0?'<p style="font-size:13px;color:var(--muted);text-align:center;padding:16px">Abhi koi entry nahi. Oopar se log karein!</p>':
+    weights.slice().reverse().map((w,ri)=>`<div class="weight-entry"><span>Week ${w.wk||'?'} — <strong>${w.kg} kg</strong></span><span style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--muted)">${w.date}</span><button class="del" onclick="delWeight(${weights.length-1-ri})">×</button></span></div>`).join('');
+  // tip
+  const tg=parseFloat(totalGain);
+  const tip=document.querySelector('.wt-range');
+  if(tip)tip.remove();
+  if(pre&&!isNaN(tg)){const div=document.createElement('div');div.className='wt-range '+(tg>16?'wt-high':tg<0?'wt-low':'wt-ok');div.innerHTML=tg>16?'⚠️ Weight gain thoda zyada lag raha hai — doctor se discuss karein':tg<0?'ℹ️ Weight loss ho raha hai — doctor se poochein':'✅ Weight gain normal range mein hai!';document.getElementById('weightLog').after(div);}
+}
+renderWeight();
+
+// ════════════════════════════════════
+// YOGA
+// ════════════════════════════════════
+const YOGA=[
+  {icon:'🧘',name:'Cat-Cow Stretch',desc:'Spine flexibility badhata hai, back pain kam karta hai.',tags:['1','2','3','stretch'],dur:'5–10 min'},
+  {icon:'🦋',name:'Butterfly Pose',desc:'Hips open karta hai, pelvic floor strengthen karta hai.',tags:['1','2','3','stretch'],dur:'5 min'},
+  {icon:'🌊',name:'Prenatal Squats',desc:'Labor preparation ke liye best — pelvic opening.',tags:['2','3','stretch'],dur:'2–3 min'},
+  {icon:'💪',name:'Side-Lying Leg Lifts',desc:'Hip strengthening bina back pressure.',tags:['2','3','stretch'],dur:'5 min'},
+  {icon:'🌬️',name:'Deep Belly Breathing',desc:'Anxiety kam karta hai, oxygen badhata hai.',tags:['1','2','3','breathing'],dur:'10 min'},
+  {icon:'🕊️',name:'Ujjayi Breath',desc:'Calming breath — stress aur blood pressure kam.',tags:['1','2','3','breathing'],dur:'5–10 min'},
+  {icon:'🌙',name:'Child\'s Pose (modified)',desc:'Hips aur lower back ke liye relief. Belly ke neeche cushion rakho.',tags:['1','2','3','stretch'],dur:'5 min'},
+  {icon:'⭐',name:'Warrior I (modified)',desc:'Balance aur strength — legs aur core ke liye.',tags:['2','3','stretch'],dur:'5 min'},
+  {icon:'🌸',name:'Pelvic Floor Exercises',desc:'Kegel exercises — delivery aur recovery ke liye zaroori.',tags:['1','2','3'],dur:'Daily'},
+  {icon:'😤',name:'Lamaze Breathing',desc:'Labor pain management ke liye practiced breathing.',tags:['3','breathing'],dur:'Practice daily'},
+  {icon:'🤸',name:'Gentle Walking',desc:'Best overall exercise — 30 min daily safe hai.',tags:['1','2','3'],dur:'20–30 min'},
+  {icon:'💧',name:'Water Aerobics',desc:'Low-impact, joint pressure kam — bahut safe hai.',tags:['1','2','3'],dur:'30 min'},
+];
+let yogaF='all';
+function filterYoga(f,btn){
+  document.querySelectorAll('#yogaFilterRow .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');yogaF=f;renderYoga();
+}
+function renderYoga(){
+  const filtered=yogaF==='all'?YOGA:YOGA.filter(y=>y.tags.includes(yogaF));
+  document.getElementById('yogaGrid').innerHTML=filtered.map(y=>`
+    <div class="yoga-card">
+      <div class="yoga-icon">${y.icon}</div>
+      <div class="yoga-name">${y.name}</div>
+      <div class="yoga-desc">${y.desc}</div>
+      <div class="yoga-tags"><span class="pill pill-g">⏱ ${y.dur}</span></div>
+    </div>`).join('');
+}
+renderYoga();
+
+// ════════════════════════════════════
+// SLEEP TRACKER
+// ════════════════════════════════════
+let sleepLog2=S.get('sleepLog',[]);
+let sleepChart2=null;
+const SLEEP_TIPS=[
+  {t:'Left side pe soye',b:'Blood circulation best hoti hai — baby tak zyada nutrients.'},
+  {t:'Pillow support',b:'Pregnancy pillow ya regular pillows — knees ke beech aur pet ke neeche.'},
+  {t:'Screen band karein',b:'Sone se 1 ghante pehle phone/TV band karein — melatonin ke liye.'},
+  {t:'Room thanda rakho',b:'18–22°C ideal temperature hai neend ke liye.'},
+  {t:'Magnesium-rich food',b:'Raat ko banana ya doodh — leg cramps aur neend dono ke liye.'},
+  {t:'Consistent schedule',b:'Ek hi time pe sona aur uthna — body clock set hoti hai.'},
+];
+
+function logSleep(){
+  const start=document.getElementById('sleepStart').value;
+  const end=document.getElementById('sleepEnd').value;
+  const q=parseInt(document.getElementById('sleepQuality').value);
+  if(!start||!end)return;
+  const [sh,sm]=start.split(':').map(Number),[eh,em]=end.split(':').map(Number);
+  let hrs=eh*60+em-(sh*60+sm);if(hrs<0)hrs+=1440;hrs=Math.round(hrs/60*10)/10;
+  sleepLog2.unshift({start,end,hrs,q,date:new Date().toLocaleDateString('en-IN'),ts:Date.now()});
+  if(sleepLog2.length>30)sleepLog2.pop();
+  S.set('sleepLog',sleepLog2);renderSleep();flash('sleep-save');
+}
+function delSleep(i){sleepLog2.splice(i,1);S.set('sleepLog',sleepLog2);renderSleep();}
+function renderSleep(){
+  const avg=sleepLog2.length?Math.round(sleepLog2.slice(0,7).reduce((a,s)=>a+s.hrs,0)/Math.min(7,sleepLog2.length)*10)/10:0;
+  const lastQ=['','😞 Kharab','😐 Theek','😊 Achhi'][sleepLog2[0]?.q||0]||'—';
+  document.getElementById('sleepStats').innerHTML=`
+    <div class="stat"><div class="stat-v">${sleepLog2[0]?.hrs||'—'}h</div><div class="stat-l">Aaj</div></div>
+    <div class="stat"><div class="stat-v">${avg}h</div><div class="stat-l">7-Day Avg</div></div>
+    <div class="stat"><div class="stat-v" style="font-size:1.4rem">${lastQ}</div><div class="stat-l">Quality</div></div>`;
+  // chart
+  if(sleepChart2)sleepChart2.destroy();
+  const last7=sleepLog2.slice(0,7).reverse();
+  const ctx=document.getElementById('sleepChart').getContext('2d');
+  sleepChart2=new Chart(ctx,{type:'bar',data:{labels:last7.map(s=>s.date),datasets:[{label:'Hours',data:last7.map(s=>s.hrs),backgroundColor:last7.map(s=>s.hrs>=7?'rgba(106,184,154,.7)':s.hrs>=5?'rgba(232,160,168,.7)':'rgba(220,80,80,.6)'),borderRadius:8}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:12,grid:{color:'rgba(200,100,100,.06)'},ticks:{font:{size:11}}}}}});
+  // log
+  document.getElementById('sleepLog').innerHTML=sleepLog2.length===0?'<p style="font-size:13px;color:var(--muted);text-align:center;padding:16px">Abhi koi sleep log nahi. Oopar se add karein!</p>':
+    sleepLog2.slice(0,10).map((s,i)=>`<div class="sleep-entry"><span>${s.date} — <strong>${s.hrs}h</strong></span><span style="display:flex;align-items:center;gap:8px"><span class="pill ${s.hrs>=7?'pill-g':s.hrs>=5?'pill-b':'pill-r'}">${s.hrs>=7?'Great':s.hrs>=5?'OK':'Short'}</span><button class="del" onclick="delSleep(${i})">×</button></span></div>`).join('');
+  // tips
+  document.getElementById('sleepTips').innerHTML=SLEEP_TIPS.map(t=>`<div class="sleep-tip-card"><b>${t.t}</b><span style="font-size:12.5px;color:var(--muted);line-height:1.6">${t.b}</span></div>`).join('');
+}
+renderSleep();
+
+// ════════════════════════════════════
+// BIRTH PLAN
+// ════════════════════════════════════
+let bpData=S.get('birthPlan',{});
+function bpToggle(groupId,btn){
+  const btns=document.querySelectorAll(`#${groupId} .bp-opt`);
+  btns.forEach(b=>b.classList.remove('sel'));
+  btn.classList.toggle('sel');saveBirthPlan();
+}
+function saveBirthPlan(){
+  const data={};
+  ['bp_name','bp_doctor','bp_hospital','bp_due','bp_notes'].forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
+  ['bp_pain','bp_support','bp_move','bp_push','bp_cord','bp_newborn','bp_feed'].forEach(gid=>{
+    data[gid]=[];document.querySelectorAll(`#${gid} .bp-opt.sel`).forEach(b=>data[gid].push(b.textContent));
+  });
+  S.set('birthPlan',data);flash('bp-save');
+}
+// Restore birth plan
+const savedBP=S.get('birthPlan',null);
+if(savedBP){
+  setTimeout(()=>{
+    ['bp_name','bp_doctor','bp_hospital','bp_due','bp_notes'].forEach(id=>{const el=document.getElementById(id);if(el&&savedBP[id])el.value=savedBP[id];});
+    ['bp_pain','bp_support','bp_move','bp_push','bp_cord','bp_newborn','bp_feed'].forEach(gid=>{
+      if(savedBP[gid])savedBP[gid].forEach(txt=>{document.querySelectorAll(`#${gid} .bp-opt`).forEach(b=>{if(b.textContent===txt)b.classList.add('sel');});});
+    });
+  },200);
+}
+
+// ════════════════════════════════════
+// SOS / EMERGENCY
+// ════════════════════════════════════
+let emergencyContacts=S.get('emergencyContacts',[]);
+function findHospital(){
+  const r=document.getElementById('sosResult');
+  r.innerHTML='<p style="color:var(--muted);font-size:13px">📍 Location detect kar rahi hun...</p>';
+  if(!navigator.geolocation){r.innerHTML='<p style="color:var(--accent)">Geolocation supported nahi hai. Manually search karein.</p>';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const{latitude:lat,longitude:lng}=pos.coords;
+    const mapsUrl=`https://www.google.com/maps/search/maternity+hospital+near+me/@${lat},${lng},14z`;
+    const mapsUrl2=`https://www.google.com/maps/search/government+hospital/@${lat},${lng},13z`;
+    r.innerHTML=`
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+        <a href="${mapsUrl}" target="_blank" style="display:block;padding:14px 20px;background:linear-gradient(135deg,#e05c5c,#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px">🏥 Nearest Maternity Hospital →</a>
+        <a href="${mapsUrl2}" target="_blank" style="display:block;padding:14px 20px;background:linear-gradient(135deg,var(--blue),#4a98c4);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px">🏛️ Nearest Government Hospital →</a>
+        <a href="tel:108" style="display:block;padding:14px 20px;background:linear-gradient(135deg,var(--green),#4da888);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px">🚑 Ambulance — 108 Call Karein</a>
+      </div>`;
+  },err=>{
+    r.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+      <a href="https://www.google.com/maps/search/maternity+hospital+near+me" target="_blank" style="display:block;padding:14px 20px;background:linear-gradient(135deg,#e05c5c,#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600">🏥 Search Nearest Hospital →</a>
+      <a href="tel:108" style="display:block;padding:14px 20px;background:linear-gradient(135deg,var(--green),#4da888);color:white;border-radius:14px;text-decoration:none;font-weight:600">🚑 Ambulance — 108</a>
+    </div>`;
+  });
+}
+function renderContacts(){
+  document.getElementById('customContacts').innerHTML=emergencyContacts.map((c,i)=>`
+    <div class="sos-contact"><div><div class="name">👤 ${c.name}</div><div class="num">${c.phone}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${c.phone}">Call</a><button onclick="delEC(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px">×</button></div></div>`).join('');
+}
+function addEC(){
+  const n=document.getElementById('ecName').value.trim(),p=document.getElementById('ecPhone').value.trim();
+  if(!n||!p)return;emergencyContacts.push({name:n,phone:p});S.set('emergencyContacts',emergencyContacts);
+  document.getElementById('ecName').value='';document.getElementById('ecPhone').value='';renderContacts();
+}
+function delEC(i){emergencyContacts.splice(i,1);S.set('emergencyContacts',emergencyContacts);renderContacts();}
+renderContacts();
+
+// ════════════════════════════════════
+// MOOD
+// ════════════════════════════════════
+const MOOD_DATA={
+  anxious:{e:'😰',t:'Ghabhrahat / Anxiety',s:'Hormones aur naye changes — normal hai',tips:[['Saans ka jaadu','4 sec saans lo, 4 sec roko, 4 sec chhodho.'],['5-4-3-2-1','5 cheezein dekho, 4 chho lo, 3 suno — grounding.'],['Body scan','Aankhein band, pair se sir tak muscles dheel do.'],['Baat karo','Partner ya trusted insaan se share karo.']]},
+  sad:{e:'😢',t:'Udaasi / Sadness',s:'Rone ka mann? Rone do — emotions bahar aao',tips:[['Cry freely','Baad mein feel-good hormones release hote hain.'],['Warmth lo','Cozy blanket — oxytocin badhta hai.'],['Dhoop','Subah 10 min dhoop — serotonin boost.'],['Journal','Jo dil mein aaye woh likh do.']]},
+  angry:{e:'😤',t:'Gussa / Irritability',s:'Progesterone — aap galat nahi hain',tips:[['STOP','Stop, Breathe, Observe, Proceed — 10 sec.'],['Cold water','Haath thande paani mein — turant relief.'],['Walk','10 min walk — adrenaline khatam karta hai.'],['Trigger note','Kya trigger karta hai — pattern jaanno.']]},
+  tired:{e:'😴',t:'Thakaan / Exhaustion',s:'Extreme fatigue normal — guilt mat karo',tips:[['20 min nap','Full alertness wapas laati hai research ke mutabik.'],['Iron check','Anaemia common cause — test karwao.'],['Hydration','Dehydration #1 cause — paani peete raho.'],['Gentle stretch','5 min yoga blood flow badhata hai.']]},
+  happy:{e:'😊',t:'Khushi! 🎉',s:'Is feeling ko capture karo',tips:[['Gratitude','3 achhi cheezein aaj likhna.'],['Bump photo','Photos mat bhoolna!'],['Baby connect','Naam, nursery, playlist sochna.'],['Share karo','Partner ke saath khushi badhta hai.']]},
+  overwhelmed:{e:'🌊',t:'Overwhelmed',s:'Bahut saari zimmedaariyan — normal',tips:[['Brain dump','Sab kagaz par likh do.'],['3 priorities','Aaj sirf 3 kaam.'],['No bolna','Self-care hai, selfishness nahi.'],['Help lo','Maangna weakness nahi — wisdom hai.']]},
+  scared:{e:'😨',t:'Dar / Fear',s:'Delivery ka dar — valid feeling',tips:[['Jaankaari lo','Unknown zyada scary lagta hai — padho.'],['Birth plan','Control milne se dar kam hota hai.'],['Positive stories','Real birth videos dekho.'],['Therapist','Pregnancy anxiety — help lena smart hai.']]},
+  lonely:{e:'🥺',t:'Akela Mehsoos',s:'Common aur valid feeling hai',tips:[['Groups join karo','WhatsApp pregnancy groups.'],['Video call','Purani saheli — bas baat karo.'],['Baby se baat karo','Pet pe haath rakh ke — connection.'],['Hobby','Creative kaam — time meaningful banta.']]},
+};
+function selMood(btn){
+  document.querySelectorAll('[data-mood]').forEach(b=>{b.style.borderColor='rgba(232,160,168,.5)';b.style.background='white';b.style.color='var(--muted)';});
+  btn.style.borderColor='var(--accent)';btn.style.background='linear-gradient(135deg,#fce8e8,#fdf0e8)';btn.style.color='var(--warm)';
+  const d=MOOD_DATA[btn.dataset.mood];
+  const p=document.getElementById('moodTips');
+  p.innerHTML=`<div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:13px;background:linear-gradient(135deg,#fce8e8,#fdf5ee);margin-bottom:14px"><span style="font-size:32px">${d.e}</span><div><div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem">${d.t}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${d.s}</div></div></div><div class="g2">${d.tips.map(([l,t])=>`<div style="background:white;border-radius:13px;padding:13px;border-left:3px solid var(--rose)"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px;font-weight:600">${l}</div><div style="font-size:12.5px;color:var(--warm);line-height:1.6">${t}</div></div>`).join('')}</div>`;
+  p.style.display='block';p.style.animation='none';void p.offsetWidth;p.style.animation='fadeUp .35s ease';
   p.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// Breathing
-let bTimer=null,bCount=0;
-function startBreath(){if(bTimer)clearTimeout(bTimer);bCount=0;runBreath();}
-function runBreath(){
-  const ring=document.getElementById('breathRing'),st=document.getElementById('breathStatus');
-  const phases=[['Saans lo...','inhale',4000],['Roko...','hold',4000],['Chhodho...','exhale',4000]];
-  let i=0;
-  function next(){if(i>=phases.length){bCount++;if(bCount<4){i=0;next();}else{ring.textContent='✅';st.textContent='Bahut achha! Better feel kar rahi hongi 🌸';}return;}
-    ring.textContent=['Inhale','Hold','Exhale'][i];st.textContent=phases[i][0];i++;bTimer=setTimeout(next,phases[i-1][2]);}
-  next();
-}
-
-// AI Chat
-let chatHistory=[];
-function appendMsg(txt,role){const d=document.createElement('div');d.className='msg '+role;d.textContent=txt;document.getElementById('chatBox').appendChild(d);document.getElementById('chatBox').scrollTop=9999;}
+// Chat
+let chatH=[];
+function addMsg(txt,r){const d=document.createElement('div');d.className='msg '+r;d.textContent=txt;const b=document.getElementById('chatBox');b.appendChild(d);b.scrollTop=9999;}
 async function sendChat(){
   const inp=document.getElementById('chatInput');const txt=inp.value.trim();if(!txt)return;
-  inp.value='';appendMsg(txt,'user');chatHistory.push({role:'user',content:txt});
+  inp.value='';addMsg(txt,'user');chatH.push({role:'user',content:txt});
   const t=document.createElement('div');t.className='msg bot';t.textContent='Soch rahi hun... 💭';t.style.fontStyle='italic';t.style.color='var(--muted)';document.getElementById('chatBox').appendChild(t);document.getElementById('chatBox').scrollTop=9999;
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are MamaCare AI — a warm, empathetic pregnancy support companion. Speak in Hinglish (Hindi-English mix). Tone: caring elder sister + nurse. Keep responses 2-4 sentences. Validate feelings first. Soft emojis naturally. Recommend doctor for medical concerns.',messages:chatHistory})});
-    const data=await r.json();t.remove();const reply=data.content?.[0]?.text||'Kuch issue aa gaya, dobara try karein 🌸';
-    appendMsg(reply,'bot');chatHistory.push({role:'assistant',content:reply});
-  }catch{t.remove();appendMsg('Network issue — check karein 🌸','bot');}
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'You are MamaCare AI — warm, empathetic pregnancy support companion. Speak in Hinglish. Tone: caring elder sister + nurse. 2-4 sentences max. Validate feelings first. Soft emojis. Recommend doctor for medical concerns.',messages:chatH})});
+    const data=await r.json();t.remove();const reply=data.content?.[0]?.text||'Kuch issue aa gaya 🌸';addMsg(reply,'bot');chatH.push({role:'assistant',content:reply});
+  }catch{t.remove();addMsg('Network issue — try again 🌸','bot');}
 }
 
-// ══════════════════════════════════
-// NUTRITION
-// ══════════════════════════════════
-let waterCount=S.get('water',0);
-let foodLog=S.get('foodLog',[]);
-let foodCatFilter='all';
+// ════════════════════════════════════
+// PWA
+// ════════════════════════════════════
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').style.display='block';});
+function installPWA(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').style.display='none';});}}
+window.addEventListener('appinstalled',()=>{document.getElementById('installBanner').style.display='none';});
 
-function initWater(){
-  const w=document.getElementById('waterTrack');w.innerHTML='';
-  for(let i=0;i<10;i++){
-    const g=document.createElement('span');g.className='water-glass'+(i<waterCount?' filled':'');
-    g.textContent='🥤';g.onclick=()=>toggleWater(i);w.appendChild(g);
-  }
-  document.getElementById('waterMsg').textContent=waterCount>=10?'🎉 Daily goal complete! Bahut achha!':waterCount>=6?`✅ ${waterCount}/10 glasses — good progress!`:`💧 ${waterCount}/10 — ${10-waterCount} glasses aur peeni hain`;
+// Service Worker registration
+if('serviceWorker' in navigator){
+  const swCode=`
+const CACHE='mamacare-v4';
+const ASSETS=['${location.href}'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const clone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,clone));return res;}).catch(()=>caches.match('${location.href}')))));`;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
 }
-function toggleWater(i){waterCount=i<waterCount?i:i+1;S.set('water',waterCount);initWater();flashSave('nutri-save');}
-
-function initNutriBars(){
-  const calories=foodLog.reduce((a,f)=>a+f.cal,0);
-  const goal=2200;const pct=Math.min(100,Math.round(calories/goal*100));
-  document.getElementById('nutriBars').innerHTML=`
-    <div class="nutrients-bar"><div class="nb-label"><span>Calories</span><span>${calories} / ${goal} kcal</span></div><div class="nb-bar"><div class="nb-fill" style="width:${pct}%"></div></div></div>
-    <div class="nutrients-bar"><div class="nb-label"><span>Paani</span><span>${waterCount} / 10 glasses</span></div><div class="nb-bar"><div class="nb-fill" style="width:${Math.min(100,waterCount*10)}%;background:linear-gradient(90deg,var(--blue),#4da8d4)"></div></div></div>
-    <p style="font-size:12px;color:var(--muted);margin-top:8px">💡 Pregnancy mein ~300 extra calories chahiye hoti hain daily.</p>`;
-}
-
-function renderFoodLog(){
-  const list=document.getElementById('foodList');
-  const filtered=foodCatFilter==='all'?foodLog:foodLog.filter(f=>f.cat===foodCatFilter);
-  if(filtered.length===0){list.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:16px 0">Kuch log nahi kiya abhi. Khaana add karein!</p>';return;}
-  list.innerHTML=filtered.slice().reverse().map((f,i)=>`
-    <div class="food-log-item">
-      <span>${f.cat==='subah'?'🌅':f.cat==='dopahar'?'☀️':f.cat==='shaam'?'🌆':'🌙'} ${f.name}</span>
-      <span style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:12px;color:var(--muted)">${f.cal} cal</span>
-        <button class="del-btn" onclick="deleteFood(${foodLog.indexOf(f)})">×</button>
-      </span>
-    </div>`).join('');
-  initNutriBars();
-}
-function setFoodCat(cat,btn){
-  document.querySelectorAll('#foodCatBtns .name-filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');foodCatFilter=cat;renderFoodLog();
-}
-function addFood(){
-  const name=document.getElementById('foodInput').value.trim();if(!name)return;
-  const cal=parseInt(document.getElementById('foodCal').value);
-  foodLog.push({name,cal,cat:foodCatFilter==='all'?'subah':foodCatFilter,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
-  S.set('foodLog',foodLog);document.getElementById('foodInput').value='';renderFoodLog();flashSave('nutri-save');
-}
-function deleteFood(i){foodLog.splice(i,1);S.set('foodLog',foodLog);renderFoodLog();flashSave('nutri-save');}
-initWater();initNutriBars();renderFoodLog();
-
-// ══════════════════════════════════
-// HOSPITAL BAG
-// ══════════════════════════════════
-const BAG_ITEMS={
-  'Maa ke liye':[['Maternity nightgown / comfortable dress (2-3)','clothes'],['Comfortable undergarments','clothes'],['Non-slip slippers / chappals','clothes'],['Toiletries (soap, shampoo, toothbrush)','personal'],['Sanitary pads (heavy duty)','personal'],['Breast pads','personal'],['Snacks (healthy — dry fruits, crackers)','food'],['Water bottle','food'],['Phone charger + power bank','tech'],['Earphones','tech'],['Favourite pillow cover','comfort'],['Eye mask + ear plugs','comfort']],
-  'Baby ke liye':[['Onesies / jhabla (5-6 sets)','clothes'],['Soft blanket (2-3)','clothes'],['Baby cap, socks, mittens','clothes'],['Diapers (newborn size, 10-15)','care'],['Baby wipes (unscented)','care'],['Baby body lotion','care'],['Muslin swaddle cloths (2-3)','care'],['Baby nail filer','care'],['Going home outfit','special']],
-  'Documents':[['Aadhar card (original + copy)','docs'],['Health insurance card','docs'],['Hospital registration / past records','docs'],['Doctor\'s contact number (written)','docs'],['Blood group card','docs'],['Birth plan copy','docs'],['Emergency contacts list','docs']],
-  'Partner ke liye':[['Change of clothes (2 days)','clothes'],['Snacks & water','food'],['Cash + card','misc'],['Camera / phone fully charged','tech'],['Comfy pillow','comfort']]
-};
-let bagChecked=S.get('bagChecked',{});
-let customBagItems=S.get('customBagItems',[]);
-
-function renderBag(){
-  const container=document.getElementById('bagContainer');container.innerHTML='';
-  const allItems=[...Object.entries(BAG_ITEMS).flatMap(([cat,items])=>items.map(([name])=>cat+'::'+name)),...customBagItems.map(i=>i.cat+'::'+i.name)];
-  const total=allItems.length;const done=allItems.filter(k=>bagChecked[k]).length;
-  document.getElementById('bagPct').textContent=Math.round(done/total*100)+'%';
-  document.getElementById('bagBar').style.width=Math.round(done/total*100)+'%';
-  document.getElementById('bagCount').textContent=`${done} / ${total} items`;
-
-  const allCats={...BAG_ITEMS};
-  customBagItems.forEach(i=>{if(!allCats[i.cat])allCats[i.cat]=[];allCats[i.cat].push([i.name,i.cat]);});
-
-  Object.entries(allCats).forEach(([cat,items])=>{
-    const catDone=items.filter(([name])=>bagChecked[cat+'::'+name]).length;
-    const div=document.createElement('div');div.className='card bag-category';
-    div.innerHTML=`<div class="bag-cat-title">${getCatIcon(cat)} ${cat} <span style="margin-left:auto;font-size:12px;color:var(--muted)">${catDone}/${items.length}</span></div>`+
-      items.map(([name])=>{
-        const key=cat+'::'+name;const chk=!!bagChecked[key];
-        return`<div class="bag-item${chk?' checked':''}" onclick="toggleBagItem('${key}',this)"><input type="checkbox" ${chk?'checked':''} onclick="event.stopPropagation();toggleBagItem('${key}',this.closest('.bag-item'))"/><span>${name}</span></div>`;
-      }).join('');
-    container.appendChild(div);
-  });
-}
-function getCatIcon(c){return c.includes('Maa')?'👩':c.includes('Baby')?'👶':c.includes('Doc')?'📄':c.includes('Partner')?'👨':'📦';}
-function toggleBagItem(key,el){
-  bagChecked[key]=!bagChecked[key];
-  el.classList.toggle('checked',bagChecked[key]);
-  el.querySelector('input[type=checkbox]').checked=bagChecked[key];
-  S.set('bagChecked',bagChecked);renderBag();flashSave('bag-save');
-}
-function addCustomBagItem(){
-  const name=document.getElementById('customBagItem').value.trim();if(!name)return;
-  const cat=document.getElementById('customBagCat').value;
-  customBagItems.push({name,cat});S.set('customBagItems',customBagItems);
-  document.getElementById('customBagItem').value='';renderBag();flashSave('bag-save');
-}
-function resetBag(){if(!confirm('Sab uncheck kar dein?'))return;bagChecked={};S.set('bagChecked',{});renderBag();}
-renderBag();
-
-// ══════════════════════════════════
-// BABY NAMES
-// ══════════════════════════════════
-const NAMES=[
-  {n:'Aarav',m:'Peaceful, calm',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Vivaan',m:'Full of life, sunrise',o:'Sanskrit',g:'boy',r:['hindu','modern']},
-  {n:'Arjun',m:'Bright, shining, white',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Reyansh',m:'Part of god\'s light',o:'Sanskrit',g:'boy',r:['hindu','modern']},
-  {n:'Kabir',m:'Great, powerful',o:'Arabic',g:'boy',r:['muslim','hindu']},
-  {n:'Aryan',m:'Noble, honourable',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Dev',m:'Divine, godlike',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Ishaan',m:'Sun, gift of God',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Veer',m:'Brave, courageous',o:'Sanskrit',g:'boy',r:['hindu','sikh']},
-  {n:'Ayaan',m:'Gift of God',o:'Arabic',g:'boy',r:['muslim']},
-  {n:'Zayan',m:'Beauty, grace',o:'Arabic',g:'boy',r:['muslim','modern']},
-  {n:'Rayan',m:'Gates of heaven',o:'Arabic',g:'boy',r:['muslim']},
-  {n:'Advaith',m:'Unique, non-dual',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Arnav',m:'Ocean, sea',o:'Sanskrit',g:'boy',r:['hindu']},
-  {n:'Gurpreet',m:'Beloved of the Guru',o:'Punjabi',g:'boy',r:['sikh']},
-  {n:'Harjot',m:'God\'s light',o:'Punjabi',g:'boy',r:['sikh']},
-  {n:'Anaya',m:'Completely free, gift',o:'Sanskrit',g:'girl',r:['hindu','modern']},
-  {n:'Aarohi',m:'Rising, musical scale',o:'Sanskrit',g:'girl',r:['hindu']},
-  {n:'Pari',m:'Angel, fairy',o:'Persian',g:'girl',r:['muslim','hindu','modern']},
-  {n:'Myra',m:'Sweet, admirable',o:'Modern',g:'girl',r:['modern']},
-  {n:'Ahana',m:'Inner light, dawn',o:'Sanskrit',g:'girl',r:['hindu']},
-  {n:'Zara',m:'Bright as dawn, princess',o:'Arabic',g:'girl',r:['muslim','modern']},
-  {n:'Inaya',m:'Kindness, care of God',o:'Arabic',g:'girl',r:['muslim']},
-  {n:'Aisha',m:'Alive, prosperous',o:'Arabic',g:'girl',r:['muslim']},
-  {n:'Sara',m:'Pure, precious',o:'Hebrew/Arabic',g:'girl',r:['muslim','modern']},
-  {n:'Simran',m:'Meditation, God\'s remembrance',o:'Punjabi',g:'girl',r:['sikh']},
-  {n:'Harleen',m:'Absorbed in God',o:'Punjabi',g:'girl',r:['sikh']},
-  {n:'Kiara',m:'Bright, clear',o:'Modern',g:'girl',r:['modern']},
-  {n:'Diya',m:'Lamp, divine light',o:'Sanskrit',g:'girl',r:['hindu','modern']},
-  {n:'Navya',m:'Young, worthy of praise',o:'Sanskrit',g:'girl',r:['hindu','modern']},
-  {n:'Aadvik',m:'Unique, special',o:'Sanskrit',g:'unisex',r:['hindu','modern']},
-  {n:'Kiran',m:'Ray of light',o:'Sanskrit',g:'unisex',r:['hindu','sikh']},
-  {n:'Arya',m:'Noble, honoured',o:'Sanskrit',g:'unisex',r:['hindu','modern']},
-  {n:'Reva',m:'Star, swift',o:'Sanskrit',g:'unisex',r:['hindu']},
-  {n:'Robin',m:'Bright fame',o:'English',g:'unisex',r:['modern']},
-];
-let nameFilter='all';
-let savedNames=S.get('savedNames',[]);
-
-function setNameFilter(f,btn){
-  document.querySelectorAll('#nameFilters .name-filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');nameFilter=f;renderNames();
-}
-function renderNames(){
-  const q=(document.getElementById('nameSearch').value||'').toLowerCase();
-  let filtered=NAMES.filter(n=>{
-    const matchQ=!q||n.n.toLowerCase().includes(q)||n.m.toLowerCase().includes(q);
-    const matchF=nameFilter==='all'||n.g===nameFilter||n.r.includes(nameFilter);
-    return matchQ&&matchF;
-  });
-  document.getElementById('nameGrid').innerHTML=filtered.map(n=>{
-    const isSaved=savedNames.includes(n.n);
-    return`<div class="name-card${isSaved?' saved':''}" onclick="toggleSaveName('${n.n}',this)">
-      <div class="heart">${isSaved?'💗':'🤍'}</div>
-      <div class="nc-name">${n.n}</div>
-      <div class="nc-meaning">${n.m}</div>
-      <div class="nc-origin"><span class="pill ${n.g==='boy'?'pill-blue':n.g==='girl'?'pill-purple':'pill-orange'}">${n.g}</span> <span class="pill pill-green">${n.o}</span></div>
-    </div>`;}).join('')||'<p style="color:var(--muted);font-size:13px;padding:16px;grid-column:1/-1">Koi naam nahi mila — filter change karein.</p>';
-}
-function toggleSaveName(name,el){
-  const i=savedNames.indexOf(name);
-  if(i>-1)savedNames.splice(i,1);else savedNames.push(name);
-  S.set('savedNames',savedNames);flashSave('names-save');renderNames();renderSavedNames();
-}
-function renderSavedNames(){
-  const card=document.getElementById('savedNamesCard'),list=document.getElementById('savedNamesList');
-  card.style.display=savedNames.length?'block':'none';
-  list.innerHTML=savedNames.map(n=>`<div class="saved-name-pill">💗 ${n}<button onclick="removeSavedName('${n}')">×</button></div>`).join('');
-}
-function removeSavedName(n){savedNames=savedNames.filter(x=>x!==n);S.set('savedNames',savedNames);renderNames();renderSavedNames();}
-renderNames();renderSavedNames();
-
-// ══════════════════════════════════
-// MEDICINE
-// ══════════════════════════════════
-let medicines=S.get('medicines',[]);
-function renderMeds(){
-  const taken=medicines.filter(m=>m.taken).length;
-  document.getElementById('medTakenCount').textContent=taken;
-  document.getElementById('medTotalCount').textContent=medicines.length;
-  document.getElementById('medPct').textContent=medicines.length?Math.round(taken/medicines.length*100)+'%':'0%';
-  document.getElementById('medList').innerHTML=medicines.length===0?'<p style="font-size:13px;color:var(--muted);padding:10px 0">Abhi koi medicine add nahi ki. Neeche button se add karein.</p>':
-    medicines.map((m,i)=>`
-      <div class="med-card">
-        <div class="med-icon" style="background:${m.taken?'#e8f5e9':'#fce8e8'}">${m.icon}</div>
-        <div class="med-info">
-          <div class="med-name">${m.name}</div>
-          <div class="med-dose">${m.dose}${m.notes?' • '+m.notes:''}</div>
-          <div class="med-time">⏰ ${m.time}</div>
-        </div>
-        <div class="med-actions">
-          <button class="med-taken-btn${m.taken?' taken':''}" onclick="toggleMedTaken(${i})">${m.taken?'✓ Liya':'Liya?'}</button>
-          <button class="med-delete" onclick="deleteMed(${i})">×</button>
-        </div>
-      </div>`).join('');
-}
-function toggleMedTaken(i){medicines[i].taken=!medicines[i].taken;S.set('medicines',medicines);renderMeds();flashSave('med-save');}
-function deleteMed(i){if(!confirm('Delete karein?'))return;medicines.splice(i,1);S.set('medicines',medicines);renderMeds();}
-function toggleAddMed(){const f=document.getElementById('addMedForm');f.style.display=f.style.display==='none'?'block':'none';}
-function addMedicine(){
-  const name=document.getElementById('medName').value.trim();if(!name)return;
-  medicines.push({name,dose:document.getElementById('medDose').value||'1 tablet',time:document.getElementById('medTime').value||'08:00',icon:document.getElementById('medIcon').value,notes:document.getElementById('medNotes').value,taken:false});
-  S.set('medicines',medicines);['medName','medDose','medNotes'].forEach(id=>document.getElementById(id).value='');
-  toggleAddMed();renderMeds();flashSave('med-save');
-}
-// Reset taken status at midnight logic
-const today=new Date().toDateString();
-if(S.get('medDate','')!==today){medicines.forEach(m=>m.taken=false);S.set('medicines',medicines);S.set('medDate',today);}
-renderMeds();
-
-// ══════════════════════════════════
-// JOURNAL
-// ══════════════════════════════════
-let journalEntries=S.get('journalEntries',[]);
-let selectedJMood='😊';
-let photoData=null;
-document.getElementById('jDate').value=new Date().toISOString().split('T')[0];
-
-function selectJMood(el){
-  document.querySelectorAll('.mood-sel-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');selectedJMood=el.dataset.m;
-}
-function handlePhoto(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{photoData=e.target.result;const prev=document.getElementById('photoPreview');prev.src=photoData;prev.style.display='block';};
-  reader.readAsDataURL(file);
-}
-function saveJournalEntry(){
-  const text=document.getElementById('jText').value.trim();
-  const week=document.getElementById('jWeek').value;
-  const date=document.getElementById('jDate').value;
-  if(!text&&!photoData){alert('Kuch likhein ya photo add karein!');return;}
-  journalEntries.unshift({text,week:week||'?',date:date||new Date().toISOString().split('T')[0],mood:selectedJMood,photo:photoData,id:Date.now()});
-  S.set('journalEntries',journalEntries);
-  document.getElementById('jText').value='';document.getElementById('jWeek').value='';
-  photoData=null;document.getElementById('photoPreview').style.display='none';document.getElementById('photoUpload').value='';
-  flashSave('journal-save');renderJournal();
-}
-function deleteEntry(id){if(!confirm('Entry delete karein?'))return;journalEntries=journalEntries.filter(e=>e.id!==id);S.set('journalEntries',journalEntries);renderJournal();}
-function renderJournal(){
-  const container=document.getElementById('journalEntries');
-  if(!journalEntries.length){container.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13.5px;padding:24px">Abhi koi entry nahi hai. Upar form se apni pehli yaad likho! 🌸</p>';return;}
-  container.innerHTML=journalEntries.map(e=>`
-    <div class="journal-entry">
-      <div class="je-header">
-        <div>
-          <span class="je-mood">${e.mood}</span>
-          <span class="je-date" style="margin-left:8px">${formatDate(e.date)}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          ${e.week!=='?'?`<span class="je-week">Week ${e.week}</span>`:''}
-          <button class="je-delete" onclick="deleteEntry(${e.id})">🗑️</button>
-        </div>
-      </div>
-      ${e.text?`<div class="je-text">${e.text.replace(/\n/g,'<br>')}</div>`:''}
-      ${e.photo?`<div class="je-photo"><img src="${e.photo}" alt="Bump photo"/></div>`:''}
-    </div>`).join('');
-}
-function formatDate(d){if(!d)return'';const dt=new Date(d);return dt.toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'});}
-renderJournal();
 </script>
 </body>
 </html>

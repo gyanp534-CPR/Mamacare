@@ -214,6 +214,14 @@ footer{text-align:center;padding:30px 16px;font-size:12px;color:var(--muted);lin
       <button class="nav-tab" data-page="sleep">😴 Sleep</button>
       <button class="nav-tab" data-page="birth">📋 Birth Plan</button>
       <button class="nav-tab" data-page="sos">🚨 SOS</button>
+      <button class="nav-tab" data-page="dashboard">📊 Dashboard</button>
+      <button class="nav-tab" data-page="nutrition">🍎 Nutrition</button>
+      <button class="nav-tab" data-page="bag">🏥 Bag</button>
+      <button class="nav-tab" data-page="names">👶 Names</button>
+      <button class="nav-tab" data-page="medicine">💊 Meds</button>
+      <button class="nav-tab" data-page="journal">📸 Journal</button>
+      <button class="nav-tab" data-page="postpartum">🤰 Postpartum</button>
+      <button class="nav-tab" data-page="symptoms">🧑‍⚕️ Symptoms</button>
     </div>
   </div>
 </nav>
@@ -507,9 +515,287 @@ footer{text-align:center;padding:30px 16px;font-size:12px;color:var(--muted);lin
   <span style="font-size:11px">Yeh app medical advice replace nahi karta — serious concerns mein doctor se milein</span>
 </footer>
 
+<!-- ═══════════ DASHBOARD PAGE ═══════════ -->
+<div class="page" id="page-dashboard">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Overview</div>
+    <div class="sec-title">My Dashboard 📊</div>
+  </div>
+  <div class="card" id="db-hero" style="background:linear-gradient(135deg,rgba(232,160,168,.15),rgba(247,196,168,.12));text-align:center;padding:28px">
+    <div style="font-size:48px" id="db-emoji">🌸</div>
+    <div id="db-week-text" style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;margin-top:8px"></div>
+    <div id="db-due-text" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
+    <div style="margin-top:16px" id="db-progress-bar"></div>
+  </div>
+  <div class="g2" id="db-stats-top" style="margin-bottom:20px"></div>
+  <div class="g2" id="db-quick-actions" style="margin-bottom:20px"></div>
+  <div class="card">
+    <div class="sec-label">Today's Summary</div>
+    <div class="sec-title">Aaj ka Haal</div>
+    <div id="db-today"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Upcoming</div>
+    <div class="sec-title">Reminders & Milestones</div>
+    <div id="db-reminders"></div>
+  </div>
+</div>
+
+<!-- ═══════════ NUTRITION PAGE ═══════════ -->
+<div class="page" id="page-nutrition">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Daily Health</div>
+    <div class="sec-title">Nutrition & Diet Tracker 🍎 <span class="save-badge" id="nutri-save">✓ Saved</span></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Water Intake</div>
+    <div style="font-size:13.5px;color:var(--warm);margin-bottom:10px">Goal: <strong>8–10 glasses</strong> daily — tap to fill each glass</div>
+    <div id="waterTrack" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
+    <div id="waterMsg" style="font-size:12.5px;color:var(--muted)"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Calories Today</div>
+    <div class="sec-title">Nutrient Tracker</div>
+    <div id="nutriBars"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Food Log</div>
+    <div class="sec-title">Aaj Kya Khaya?</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px" id="mealTimeBtns">
+      <button class="tab-btn active" data-meal="breakfast">🌅 Breakfast</button>
+      <button class="tab-btn" data-meal="lunch">☀️ Lunch</button>
+      <button class="tab-btn" data-meal="snack">🍪 Snack</button>
+      <button class="tab-btn" data-meal="dinner">🌙 Dinner</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <input type="text" id="foodInput" placeholder="Khaane ka naam likhein..." style="flex:2"/>
+      <select id="foodCalSel" style="flex:1;min-width:120px">
+        <option value="80">Light (80 cal)</option>
+        <option value="150" selected>Snack (150)</option>
+        <option value="300">Meal (300)</option>
+        <option value="450">Heavy (450)</option>
+        <option value="600">Very Heavy (600)</option>
+      </select>
+      <button class="btn btn-p btn-sm" onclick="MC.addFood()">+ Add</button>
+    </div>
+    <div id="foodList"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Trimester-wise Meal Plan</div>
+    <div class="sec-title">Expert Diet Guide</div>
+    <div class="tab-row" id="triMealTabs">
+      <button class="tab-btn active" data-tri="1">🌱 1st Trimester</button>
+      <button class="tab-btn" data-tri="2">🌸 2nd Trimester</button>
+      <button class="tab-btn" data-tri="3">🌟 3rd Trimester</button>
+    </div>
+    <div id="mealPlanContent"></div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,rgba(255,250,240,.8),rgba(255,245,235,.8))">
+    <div class="sec-label">Foods to Avoid</div>
+    <div class="sec-title">⚠️ Pregnancy mein kya avoid karein</div>
+    <div id="avoidFoods" class="g2"></div>
+  </div>
+</div>
+
+<!-- ═══════════ HOSPITAL BAG PAGE ═══════════ -->
+<div class="page" id="page-bag">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Delivery Prep</div>
+    <div class="sec-title">Hospital Bag Checklist 🏥 <span class="save-badge" id="bag-save">✓ Saved</span></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--accent)" id="bagPct">0%</div>
+        <div style="font-size:12px;color:var(--muted)">Pack ho gaya</div>
+      </div>
+      <div style="flex:1;max-width:280px">
+        <div style="height:10px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div id="bagBar" style="height:100%;border-radius:50px;background:linear-gradient(90deg,var(--green),#4da888);transition:width .5s;width:0%"></div></div>
+        <div style="font-size:12px;color:var(--muted);text-align:right;margin-top:3px" id="bagCount">0 / 0</div>
+      </div>
+      <button class="btn btn-g btn-sm" onclick="MC.resetBag()">Reset</button>
+    </div>
+    <div class="tab-row" id="bagCatTabs"></div>
+  </div>
+  <div id="bagContainer"></div>
+  <div class="card">
+    <div class="sec-label">Custom Item Add Karein</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="text" id="customBagItem" placeholder="Item naam..." style="flex:2"/>
+      <select id="customBagCat" style="flex:1;min-width:130px" id="customBagCatSel"></select>
+      <button class="btn btn-p btn-sm" onclick="MC.addCustomBagItem()">+ Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ BABY NAMES PAGE ═══════════ -->
+<div class="page" id="page-names">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Baby ke liye</div>
+    <div class="sec-title">Baby Name Finder 👶 <span class="save-badge" id="names-save">✓ Saved</span></div>
+  </div>
+  <div class="card">
+    <input type="text" id="nameSearch" placeholder="🔍 Name ya meaning search karein..." style="margin-bottom:12px" oninput="MC.renderNames()"/>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px" id="nameFilterBtns"></div>
+    <div id="nameGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px"></div>
+  </div>
+  <div class="card" id="savedNamesCard" style="display:none">
+    <div class="sec-label">Pasandida Names 💗</div>
+    <div class="sec-title">Saved List</div>
+    <div id="savedNamesList" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  </div>
+</div>
+
+<!-- ═══════════ MEDICINE PAGE ═══════════ -->
+<div class="page" id="page-medicine">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Daily Health</div>
+    <div class="sec-title">Medicine & Supplement Tracker 💊 <span class="save-badge" id="med-save">✓ Saved</span></div>
+  </div>
+  <div class="card">
+    <div class="g3" id="medStats" style="margin-bottom:16px"></div>
+    <div style="height:8px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div id="medProgressBar" style="height:100%;background:linear-gradient(90deg,var(--green),#4da888);border-radius:50px;transition:width .5s;width:0%"></div></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Aaj ki Medications</div>
+    <div class="sec-title">Medicine List</div>
+    <div id="medList"></div>
+    <button class="btn btn-p btn-sm" style="margin-top:12px" onclick="MC.toggleAddMedForm()">+ Nayi Medicine Add Karein</button>
+    <div id="addMedForm" style="display:none;margin-top:14px;background:var(--cream);border-radius:16px;padding:18px">
+      <div class="g2" style="margin-bottom:10px">
+        <div><label>Medicine / Supplement naam</label><input type="text" id="medName" placeholder="e.g. Folic Acid, Iron..."/></div>
+        <div><label>Dose</label><input type="text" id="medDose" placeholder="e.g. 1 tablet, 5ml..."/></div>
+      </div>
+      <div class="g2" style="margin-bottom:10px">
+        <div><label>Time</label><input type="time" id="medTime"/></div>
+        <div><label>Icon</label>
+          <select id="medIcon">
+            <option value="💊">💊 Tablet</option><option value="🍊">🍊 Vitamin</option>
+            <option value="🧴">🧴 Syrup</option><option value="💉">💉 Injection</option>
+            <option value="🌿">🌿 Herbal</option><option value="🫁">🫁 Inhaler</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:12px"><label>Doctor's Notes</label><input type="text" id="medNotes" placeholder="Khane ke baad lena, paani ke saath..."/></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-p btn-sm" onclick="MC.addMedicine()">Save</button>
+        <button class="btn btn-g btn-sm" onclick="MC.toggleAddMedForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,rgba(235,248,240,.7),rgba(230,245,255,.7))">
+    <div class="sec-label">Doctor Guidelines</div>
+    <div class="sec-title">Common Pregnancy Supplements</div>
+    <div id="suppGuide"></div>
+  </div>
+</div>
+
+<!-- ═══════════ JOURNAL PAGE ═══════════ -->
+<div class="page" id="page-journal">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Yaadein Sanjao</div>
+    <div class="sec-title">Baby Bump Journal 📸 <span class="save-badge" id="journal-save">✓ Saved</span></div>
+  </div>
+  <div class="card" style="background:var(--cream)">
+    <div class="sec-label" style="margin-bottom:10px">✏️ Nayi Entry</div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><label>Pregnancy Week</label><input type="number" id="jWeek" placeholder="1–40" min="1" max="40"/></div>
+      <div><label>Date</label><input type="date" id="jDate"/></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <label>Aaj ka Mood</label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px" id="jMoodRow">
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😊" class="jmood active-jm">😊</span>
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="🥰">🥰</span>
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😢">😢</span>
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😴">😴</span>
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😤">😤</span>
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😰">😰</span>
+        <span style="font-size:26px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="🌟">🌟</span>
+      </div>
+    </div>
+    <div style="margin-bottom:12px"><label>Aaj ki Baat (kuch bhi likhein...)</label><textarea id="jText" placeholder="Baby ne kick kiya... ya koi special moment... ya bas man ki baat..."></textarea></div>
+    <div style="margin-bottom:12px">
+      <label>Baby Bump Photo (optional)</label>
+      <div id="photoUploadArea" style="border:2px dashed var(--blush);border-radius:14px;padding:18px;text-align:center;cursor:pointer;transition:.2s" onclick="document.getElementById('photoUpload').click()">
+        <div style="font-size:28px;margin-bottom:6px">📷</div>
+        <div style="font-size:13px;color:var(--muted)">Click karke photo upload karein</div>
+        <input type="file" id="photoUpload" accept="image/*" style="display:none" onchange="MC.handlePhoto(this)"/>
+        <img id="photoPreview" style="max-width:100%;max-height:150px;border-radius:12px;margin-top:10px;display:none"/>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="MC.saveJournalEntry()">💗 Entry Save Karein</button>
+  </div>
+  <div class="card">
+    <div class="sec-label">Timeline</div>
+    <div class="sec-title">Meri Pregnancy Diary</div>
+    <div id="journalEntries"></div>
+  </div>
+</div>
+
+<!-- ═══════════ POSTPARTUM PAGE ═══════════ -->
+<div class="page" id="page-postpartum">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Delivery ke Baad</div>
+    <div class="sec-title">Postpartum Care Guide 🤰</div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:24px">
+    <div style="font-size:40px;margin-bottom:10px">🎉</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;margin-bottom:8px">Congratulations, Maa! 💗</div>
+    <p style="font-size:13.5px;color:var(--muted);line-height:1.7;max-width:480px;margin:0 auto">Ab ek nayi journey shuru hoti hai. "4th trimester" kehte hain ise — aapka body aur baby dono adjust kar rahe hain. Apna khayal rakhna utna hi important hai jitna baby ka.</p>
+  </div>
+  <div class="card">
+    <div class="sec-label">Week-by-Week Recovery</div>
+    <div class="sec-title">Postpartum Timeline</div>
+    <div class="tab-row" id="ppWeekTabs">
+      <button class="tab-btn active" data-ppw="1">Week 1–2</button>
+      <button class="tab-btn" data-ppw="2">Week 3–6</button>
+      <button class="tab-btn" data-ppw="3">Week 6–12</button>
+      <button class="tab-btn" data-ppw="4">3–6 Months</button>
+    </div>
+    <div id="ppWeekContent"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Warning Signs</div>
+    <div class="sec-title">Postpartum Complications — Kab Doctor ko Call Karein</div>
+    <div id="ppWarnings"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Mental Health</div>
+    <div class="sec-title">Baby Blues vs Postpartum Depression</div>
+    <div id="ppMentalHealth"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Breastfeeding Guide</div>
+    <div class="sec-title">Breastfeeding Tips & Troubleshooting</div>
+    <div id="ppBreastfeeding"></div>
+  </div>
+  <div class="card">
+    <div class="sec-label">Newborn Care</div>
+    <div class="sec-title">Pehle Kuch Hafte — Baby Care Basics</div>
+    <div id="ppNewborn"></div>
+  </div>
+</div>
+
+<!-- ═══════════ SYMPTOM CHECKER PAGE ═══════════ -->
+<div class="page" id="page-symptoms">
+  <div style="padding:24px 0 8px">
+    <div class="sec-label">Health Guide</div>
+    <div class="sec-title">Symptom Checker 🧑‍⚕️</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:0;line-height:1.7;background:rgba(106,184,154,.08);padding:12px 14px;border-radius:12px">⚠️ Yeh guide general information ke liye hai — medical diagnosis replace nahi karta. Severe ya persistent symptoms mein always doctor se milein.</p>
+  </div>
+  <div class="card">
+    <input type="text" id="symptomSearch" placeholder="🔍 Symptom search karein (e.g. nausea, back pain, swelling...)" oninput="MC.filterSymptoms()"/>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px" id="symptomCatBtns"></div>
+  </div>
+  <div id="symptomsContainer"></div>
+</div>
+
 <!-- Chart.js CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <!-- Main App Logic -->
 <script src="app.js"></script>
+<!-- Extra Modules -->
+<script src="app-extra.js"></script>
 </body>
 </html>

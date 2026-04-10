@@ -1,11 +1,12 @@
--- ════════════════════════════════════════════
+-- ═══════════════════════════════════════════
 -- MamaCare v6 — Supabase SQL Schema
--- Run ONCE in Supabase SQL Editor
--- ════════════════════════════════════════════
+-- Run this in Supabase SQL Editor (one shot)
+-- ═══════════════════════════════════════════
 
+-- Enable UUID extension
 create extension if not exists "uuid-ossp";
 
--- ── USER PROFILE ──
+-- ── USER PROFILE ──────────────────────────
 create table if not exists public.user_profile (
   id uuid references auth.users on delete cascade primary key,
   email text,
@@ -14,12 +15,12 @@ create table if not exists public.user_profile (
   lmp_date date,
   pre_weight numeric(5,2),
   language text default 'hinglish',
-  emergency_contacts jsonb default '[]',
+  partner_email text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
 
--- ── WEIGHT LOGS ──
+-- ── WEIGHT LOGS ───────────────────────────
 create table if not exists public.weight_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -28,7 +29,7 @@ create table if not exists public.weight_logs (
   logged_at timestamptz default now()
 );
 
--- ── SLEEP LOGS ──
+-- ── SLEEP LOGS ────────────────────────────
 create table if not exists public.sleep_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -41,7 +42,7 @@ create table if not exists public.sleep_logs (
   logged_at timestamptz default now()
 );
 
--- ── FOOD LOGS ──
+-- ── FOOD LOGS ─────────────────────────────
 create table if not exists public.food_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -52,7 +53,7 @@ create table if not exists public.food_logs (
   logged_at timestamptz default now()
 );
 
--- ── WATER LOGS ──
+-- ── WATER LOGS ────────────────────────────
 create table if not exists public.water_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -61,7 +62,7 @@ create table if not exists public.water_logs (
   unique(user_id, log_date)
 );
 
--- ── MEDICINES ──
+-- ── MEDICINES ─────────────────────────────
 create table if not exists public.medicines (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -74,7 +75,7 @@ create table if not exists public.medicines (
   created_at timestamptz default now()
 );
 
--- ── MEDICINE LOGS (daily taken) ──
+-- ── MEDICINE LOGS (daily taken tracking) ──
 create table if not exists public.medicine_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -84,7 +85,7 @@ create table if not exists public.medicine_logs (
   unique(user_id, medicine_id, taken_date)
 );
 
--- ── JOURNAL ENTRIES ──
+-- ── JOURNAL ENTRIES ───────────────────────
 create table if not exists public.journal_entries (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -92,19 +93,22 @@ create table if not exists public.journal_entries (
   entry_date date default current_date,
   mood text,
   content_text text,
+  -- Photos stored as base64 locally / downloaded to gallery
+  -- No cloud photo storage to save bandwidth
   created_at timestamptz default now()
 );
 
--- ── SAVED BABY NAMES ──
+-- ── SAVED BABY NAMES ──────────────────────
 create table if not exists public.saved_names (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
   baby_name text not null,
+  notes text,
   saved_at timestamptz default now(),
   unique(user_id, baby_name)
 );
 
--- ── HOSPITAL BAG ──
+-- ── HOSPITAL BAG ──────────────────────────
 create table if not exists public.hospital_bag (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -115,7 +119,7 @@ create table if not exists public.hospital_bag (
   created_at timestamptz default now()
 );
 
--- ── BIRTH PLAN ──
+-- ── BIRTH PLAN ────────────────────────────
 create table if not exists public.birth_plan (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -124,7 +128,7 @@ create table if not exists public.birth_plan (
   unique(user_id)
 );
 
--- ── APPOINTMENTS ──
+-- ── APPOINTMENTS ──────────────────────────
 create table if not exists public.appointments (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
@@ -138,49 +142,66 @@ create table if not exists public.appointments (
   created_at timestamptz default now()
 );
 
--- ── MOOD LOGS ──
+-- ── MOOD LOGS ─────────────────────────────
 create table if not exists public.mood_logs (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users on delete cascade not null,
   mood_type text not null,
+  notes text,
   logged_at timestamptz default now()
 );
 
--- ════════════════════════════════════════════
--- ROW LEVEL SECURITY
--- ════════════════════════════════════════════
-alter table public.user_profile    enable row level security;
-alter table public.weight_logs     enable row level security;
-alter table public.sleep_logs      enable row level security;
-alter table public.food_logs       enable row level security;
-alter table public.water_logs      enable row level security;
-alter table public.medicines       enable row level security;
-alter table public.medicine_logs   enable row level security;
+-- ── KICK LOGS ─────────────────────────────
+create table if not exists public.kick_logs (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  session_date date default current_date,
+  kick_count int default 0,
+  session_start timestamptz,
+  session_end timestamptz,
+  updated_at timestamptz default now(),
+  unique(user_id, session_date)
+);
+
+-- ═══════════════════════════════════════════
+-- ROW LEVEL SECURITY — Users see only their data
+-- ═══════════════════════════════════════════
+alter table public.user_profile enable row level security;
+alter table public.weight_logs enable row level security;
+alter table public.sleep_logs enable row level security;
+alter table public.food_logs enable row level security;
+alter table public.water_logs enable row level security;
+alter table public.medicines enable row level security;
+alter table public.medicine_logs enable row level security;
 alter table public.journal_entries enable row level security;
-alter table public.saved_names     enable row level security;
-alter table public.hospital_bag    enable row level security;
-alter table public.birth_plan      enable row level security;
-alter table public.appointments    enable row level security;
-alter table public.mood_logs       enable row level security;
+alter table public.saved_names enable row level security;
+alter table public.hospital_bag enable row level security;
+alter table public.birth_plan enable row level security;
+alter table public.appointments enable row level security;
+alter table public.mood_logs enable row level security;
+alter table public.kick_logs enable row level security;
 
--- RLS Policies — user sees only their own data
-create policy "own_profile"    on public.user_profile    for all using (auth.uid()=id)      with check (auth.uid()=id);
-create policy "own_weight"     on public.weight_logs     for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_sleep"      on public.sleep_logs      for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_food"       on public.food_logs       for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_water"      on public.water_logs      for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_medicines"  on public.medicines       for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_medlogs"    on public.medicine_logs   for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_journal"    on public.journal_entries for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_names"      on public.saved_names     for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_bag"        on public.hospital_bag    for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_birthplan"  on public.birth_plan      for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_appts"      on public.appointments    for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_mood"       on public.mood_logs       for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+-- RLS Policies (select, insert, update, delete)
+do $$
+declare
+  t text;
+  tables text[] := array[
+    'weight_logs','sleep_logs','food_logs','water_logs',
+    'medicines','medicine_logs','journal_entries','saved_names',
+    'hospital_bag','birth_plan','appointments','mood_logs','kick_logs'
+  ];
+begin
+  foreach t in array tables loop
+    execute format('create policy "%s_own" on public.%I for all using (auth.uid() = user_id) with check (auth.uid() = user_id)', t, t);
+  end loop;
+end $$;
 
--- ════════════════════════════════════════════
+create policy "profile_own" on public.user_profile
+  for all using (auth.uid() = id) with check (auth.uid() = id);
+
+-- ═══════════════════════════════════════════
 -- AUTO-CREATE PROFILE ON SIGNUP
--- ════════════════════════════════════════════
+-- ═══════════════════════════════════════════
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer as $$
 begin
@@ -196,4 +217,15 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
--- ✅ Schema complete! All tables + RLS + auto-profile trigger ready.
+-- Done! All tables created with RLS. ✓
+
+-- Add emergency_contacts to user_profile (run this separately if table already exists)
+ALTER TABLE public.user_profile ADD COLUMN IF NOT EXISTS emergency_contacts jsonb default '[]';
+
+-- ════════════════════════════════════════════
+-- ADD PARTNER ACCESS COLUMNS (run if upgrading)
+-- ════════════════════════════════════════════
+alter table public.user_profile
+  add column if not exists partner_email text,
+  add column if not exists partner_token text,
+  add column if not exists partner_perms text;

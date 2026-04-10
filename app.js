@@ -992,7 +992,16 @@ function renderAppointments(){
 
 function initAppointmentChecklist(){
   const el=$('apptChecklist');if(!el)return;
-  el.innerHTML=[{w:'8-12',t:'Dating scan + NT scan',d:'Baby size confirm, chromosomal screen'},{'w':'16-20',t:'Anatomy scan (Level 2)',d:'All major organs, gender'},{'w':'24-28',t:'Glucose tolerance test',d:'Gestational diabetes screen'},{'w':'28+',t:'Blood tests — Hb, iron',d:'Anaemia check'},{'w':'32-36',t:'Group B Strep test',d:'Antibiotic if needed during labor'},{'w':'36+',t:'Weekly NST',d:'Non-stress test if high risk'},{'w:'40+',t:'Post-dates monitoring',d:'Induction discussion if needed'}].map(t=>`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(232,160,168,.12);align-items:flex-start"><span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 8px;border-radius:50px;font-weight:600;white-space:nowrap;flex-shrink:0">W${t.w}</span><div><div style="font-weight:600;font-size:13px">${t.t}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${t.d}</div></div></div>`).join('');
+  const TESTS=[
+    {w:'8-12',  t:'Dating scan + NT scan',       d:'Baby size confirm, chromosomal screen'},
+    {w:'16-20', t:'Anatomy scan (Level 2)',       d:'All major organs, gender'},
+    {w:'24-28', t:'Glucose tolerance test',       d:'Gestational diabetes screen'},
+    {w:'28+',   t:'Blood tests — Hb, iron',       d:'Anaemia check'},
+    {w:'32-36', t:'Group B Strep test',           d:'Antibiotic if needed during labor'},
+    {w:'36+',   t:'Weekly NST',                   d:'Non-stress test if high risk'},
+    {w:'40+',   t:'Post-dates monitoring',        d:'Induction discussion if needed'},
+  ];
+  el.innerHTML=TESTS.map(function(t){return'<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(232,160,168,.12);align-items:flex-start"><span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 8px;border-radius:50px;font-weight:600;white-space:nowrap;flex-shrink:0">W'+t.w+'</span><div><div style="font-weight:600;font-size:13px">'+t.t+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+t.d+'</div></div></div>';}).join('');
 }
 
 // ══════════════════════════════════════
@@ -1142,7 +1151,7 @@ async function renderDashboard(){
   const now=new Date();let week=0,daysLeft=0,pct=0,tri=0;
   if(due&&!isNaN(due)){const el=Math.max(0,Math.floor((now-new Date(due.getTime()-280*86400000))/86400000));week=Math.min(40,Math.floor(el/7)+1);daysLeft=Math.max(0,Math.round((due-now)/86400000));pct=Math.min(100,Math.round(el/280*100));tri=week<=13?1:week<=27?2:3;}
   const hero=$('dbHero');
-  if(hero){const tn=[T.t1,T.t2,T.t3][tri-1]||'';hero.innerHTML=due?`<div style="font-size:44px;margin-bottom:10px">${tri===1?'🌱':tri===2?'🌸':'🌟'}</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div><p style="font-size:13px;color:var(--muted)">${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p><div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:50px;transition:width 1s"></div></div><div style="font-size:11px;color:var(--muted);margin-top:4px">${pct}% ${T.done}</div>`:`<div style="font-size:44px;margin-bottom:8px">🌸</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare mein Aapka Swagat! 💗</div><p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC_goTo('due')" style="color:var(--accent)">📅 Due date add karein →</a></p>`;}
+  if(hero){const tn=[T.t1,T.t2,T.t3][tri-1]||'';hero.innerHTML=due?`<div style="font-size:44px;margin-bottom:10px">${tri===1?'🌱':tri===2?'🌸':'🌟'}</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div><p style="font-size:13px;color:var(--muted)">${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p><div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:50px;transition:width 1s"></div></div><div style="font-size:11px;color:var(--muted);margin-top:4px">${pct}% ${T.done}</div>`:`<div style="font-size:44px;margin-bottom:8px">🌸</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare mein Aapka Swagat! 💗</div><p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent)">📅 Due date add karein →</a></p>`;}
 
   // Stats
   const [slRes,wtRes,medRes]=await Promise.all([supa.from('sleep_logs').select('duration_hrs').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('weight_logs').select('weight_kg').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('medicines').select('id').eq('user_id',user.id).eq('is_active',true)]);

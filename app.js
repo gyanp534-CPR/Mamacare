@@ -11,6 +11,7 @@
 const SUPA_URL = 'https://denspwxohwxconxfbaor.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlbnNwd3hvaHd4Y29ueGZiYW9yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MjkwNjIsImV4cCI6MjA5MTMwNTA2Mn0.LgZFCpyPi1W521PkYLRO--nLV6fpAnNgg1G40SMmAVU';
 const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+window.supa = supa; // Expose for app-features.js and app-coach.js
 
 // ══════════════════════════════════════
 // LANGUAGE STRINGS
@@ -348,6 +349,7 @@ function otpInput(el, idx) {
 
 async function onLogin(u) {
   user=u;
+  window.user = u; // Expose for app-features.js and app-coach.js
   $('authScreen').style.display='none';
   $('langBar').style.display='flex';
   $('topBar').style.display='block';
@@ -378,12 +380,13 @@ async function onLogin(u) {
   initSymptoms();
   initAppointmentChecklist();
   initJournal();
+  initSupplementGuide();
   renderDashboard();
 }
 
 async function logout(){
   if(!confirm(T.logoutQ)) return;
-  await supa.auth.signOut(); user=null;
+  await supa.auth.signOut(); user=null; window.user=null;
   $('authScreen').style.display='flex';
   $('langBar').style.display='none';
   $('topBar').style.display='none';
@@ -601,7 +604,7 @@ function showTimeline(due){
   $('weekDetailCard').style.display='block';
   setText('weekDetailTitle',`${T.wk} ${week} of 40`);
   $('weekDetailGrid').innerHTML=`<div class="g3"><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:5px;font-weight:600">👶 ${T.baby}</div><p style="font-size:12.5px;line-height:1.65">${wd.b}</p></div><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:5px;font-weight:600">🤱 ${T.body}</div><p style="font-size:12.5px;line-height:1.65">${wd.body}</p></div><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:5px;font-weight:600">💡 ${T.tip}</div><p style="font-size:12.5px;line-height:1.65">${wd.tip}</p></div></div>`;
-  $('weekMoodTip').innerHTML=`<strong style="color:var(--accent)">🌸 ${T.moodTip}:</strong> ${getMoodTipW(week)}`;
+  $('weekMoodTip').innerHTML=`<strong style="color:var(--accent)">🌸 ${T.mTip}:</strong> ${getMoodTipW(week)}`;
 }
 
 // ══════════════════════════════════════
@@ -857,7 +860,7 @@ async function toggleBagItem(id){
   item.is_checked=!item.is_checked;
   await supa.from('hospital_bag').update({is_checked:item.is_checked}).eq('id',id);
   flash('bag-save',T.synced);
-  const activeTab=$('#bagCatTabs .tab-btn.active');
+  const activeTab=document.querySelector('#bagCatTabs .tab-btn.active');
   renderBag(activeTab?.dataset.bc==='All'?null:activeTab?.dataset.bc);
 }
 

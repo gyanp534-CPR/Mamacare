@@ -253,7 +253,7 @@ footer{text-align:center;padding:24px 16px;font-size:12px;color:var(--muted);lin
         <input class="otp-input" type="text" maxlength="1" id="otp5" oninput="MC.otpInput(this,5)"/>
       </div>
       <button class="auth-btn auth-btn-primary" id="authVerifyBtn" onclick="MC.verifyOTP()">Verify & Login</button>
-      <p class="auth-msg"><a onclick="MC.showAuthStep(1)">← Wapas jaao</a> &nbsp;|&nbsp; <a onclick="MC.sendOTP()">Code dobara bhejo</a></p>
+      <p class="auth-msg"><a onclick="MC.showStep(1)">← Wapas jaao</a> &nbsp;|&nbsp; <a onclick="MC.sendOTP()">Code dobara bhejo</a></p>
     </div>
   </div>
 </div>
@@ -464,7 +464,7 @@ footer{text-align:center;padding:24px 16px;font-size:12px;color:var(--muted);lin
     <div class="sec-label">Food Log</div><div class="sec-title" id="foodLogTitle">Kya Khaya?</div>
     <div class="tab-row" id="mealTimeBtns"><button class="tab-btn active" data-meal="breakfast">🌅 Breakfast</button><button class="tab-btn" data-meal="lunch">☀️ Lunch</button><button class="tab-btn" data-meal="snack">🍪 Snack</button><button class="tab-btn" data-meal="dinner">🌙 Dinner</button></div>
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-      <input type="text" id="foodInput" style="flex:2" id="foodInputEl"/>
+      <input type="text" id="foodInput" style="flex:2"/>
       <select id="foodCalSel" style="flex:1;min-width:110px"><option value="80">Light (80)</option><option value="150" selected>Snack (150)</option><option value="300">Meal (300)</option><option value="500">Heavy (500)</option></select>
       <button class="btn btn-p btn-sm" onclick="MC.addFood()" id="foodAddBtn">+ Add</button>
     </div>
@@ -603,8 +603,6 @@ footer{text-align:center;padding:24px 16px;font-size:12px;color:var(--muted);lin
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <!-- App -->
 <script src="app.js"></script>
-<!-- App-extra -->
-<script src="app-extra.js"></script>
 <!-- New Features -->
 <script src="app-features.js"></script>
 <!-- AI Coach -->

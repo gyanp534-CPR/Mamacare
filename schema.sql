@@ -229,3 +229,9 @@ alter table public.user_profile
   add column if not exists partner_email text,
   add column if not exists partner_token text,
   add column if not exists partner_perms text;
+
+-- ════════════════════════════════════════════
+-- AI COACH — Add column (run if upgrading)
+-- ════════════════════════════════════════════
+alter table public.user_profile
+  add column if not exists latest_coach_report jsonb;

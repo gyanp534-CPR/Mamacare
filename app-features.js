@@ -866,10 +866,13 @@ function createWhiteNoise(ctx) {
 }
 
 function createRain(ctx) {
-  const src = createWhiteNoise(ctx);
+  const noise = createWhiteNoise(ctx);
   const filter = ctx.createBiquadFilter();
   filter.type = 'bandpass'; filter.frequency.value = 4000; filter.Q.value = 0.5;
-  return src;
+  const gain = ctx.createGain(); gain.gain.value = 0.6;
+  noise.connect(filter); filter.connect(gain);
+  gain.stop = () => { try{noise.stop();}catch(e){} };
+  return gain;
 }
 
 function createOcean(ctx) {

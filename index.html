@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#e8a0a8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="MamaCare"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <title>MamaCare — Pregnancy Companion</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -601,11 +604,31 @@ footer{text-align:center;padding:24px 16px;font-size:12px;color:var(--muted);lin
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<!-- App -->
+<!-- App Core -->
 <script src="app.js"></script>
-<!-- New Features -->
+<!-- New Features (Reminders, Partner, Report, Relax) -->
 <script src="app-features.js"></script>
 <!-- AI Coach -->
 <script src="app-coach.js"></script>
+<!-- Medical Trackers (Kick, BP, Sugar, Contractions) -->
+<script src="app-tracker.js"></script>
+<!-- Onboarding Wizard -->
+<script src="app-onboard.js"></script>
+<!-- Premium & Monetization -->
+<script src="app-monetize.js"></script>
+<!-- Baby's First Year -->
+<script src="app-baby.js"></script>
+<!-- India Features (Schemes, Ayurveda, Emergency Card, Diary, Search) -->
+<script src="app-india.js"></script>
+<!-- Smart AI + Doctor Portal + Share Cards -->
+<script src="app-smart.js"></script>
+<!-- PWA Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>

@@ -382,6 +382,14 @@ async function onLogin(u) {
   initJournal();
   initSupplementGuide();
   renderDashboard();
+  // New modules (v6.1)
+  if (window.TRACKER)  window.TRACKER.initTrackers();
+  if (window.ONBOARD)  window.ONBOARD.checkOnboarding(u);
+  if (window.PREMIUM)  { window.PREMIUM.load().then(() => { window.PREMIUM.loadBadge(); window.PREMIUM.updatePage(); }); }
+  // New modules (v6.2)
+  if (window.BABY)     window.BABY.initBaby();
+  if (window.INDIA)    window.INDIA.initIndia();
+  if (window.SMART)    window.SMART.initSmart();
 }
 
 async function logout(){
@@ -429,7 +437,21 @@ function goTo(id){
   // Lazy load data
   const loads={dashboard:renderDashboard,weight:loadWeights,sleep:loadSleepLogs,
     nutrition:()=>{loadFoodLog();loadWater();},medicine:loadMedicines,
-    bag:loadBag,names:loadNames,journal:loadJournal,appointments:loadAppointments};
+    bag:loadBag,names:loadNames,journal:loadJournal,appointments:loadAppointments,
+    kick:()=>{ if(window.TRACKER) window.TRACKER.initKickCounter(); },
+    bp:()=>{ if(window.TRACKER) window.TRACKER.loadBP(); },
+    sugar:()=>{ if(window.TRACKER) window.TRACKER.loadSugar(); },
+    premium:()=>{ if(window.PREMIUM) window.PREMIUM.updatePage(); },
+    baby:()=>{ if(window.BABY) window.BABY.initBaby(); },
+    vaccines:()=>{ if(window.BABY) window.BABY.loadVaccinations(); },
+    milestones:()=>{ if(window.BABY) window.BABY.loadMilestones(); },
+    'baby-feed':()=>{ if(window.BABY) window.BABY.renderBabyFeedLog(); },
+    'baby-sleep':()=>{ if(window.BABY) window.BABY.loadBabySleepLogs(); },
+    india:()=>{ if(window.INDIA) window.INDIA.renderGovSchemes(); },
+    ayurveda:()=>{ if(window.INDIA) window.INDIA.renderAyurvedaTri(1); },
+    sympdiary:()=>{ if(window.INDIA) window.INDIA.loadSymptomTrend(); },
+    doctor:()=>{ if(window.SMART) window.SMART.loadDoctorPortal(); },
+  };
   if(loads[id]) loads[id]();
 }
 
@@ -540,15 +562,22 @@ function addUserMsg(txt){
 
 async function sendChat(){
   const inp=$('chatInput'); const txt=inp.value.trim(); if(!txt) return;
+  // Premium gate — free users 10 msgs/day
+  if(window.PREMIUM && !(await window.PREMIUM.checkChatGate())) return;
   inp.value=''; addUserMsg(txt); chatHist.push({role:'user',content:txt});
   const typing=document.createElement('div');typing.className='msg bot';typing.style.cssText='font-style:italic;color:var(--muted)';typing.textContent='...💭';
   $('chatBox').appendChild(typing);$('chatBox').scrollTop=9999;
   try{
     const langName={hinglish:'Hinglish (natural Hindi-English mix)',hi:'Hindi',en:'English',ta:'Tamil',bn:'Bengali',mr:'Marathi',te:'Telugu'}[lang]||'Hinglish';
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are MamaCare AI — warm, empathetic pregnancy support companion. Speak in ${langName}. Tone: caring elder sister + certified nurse-midwife. 2-4 sentences max. Validate feelings first. Soft emojis naturally. Recommend doctor for medical concerns.`,messages:chatHist})});
-    const data=await r.json();typing.remove();
-    const reply=data.content?.[0]?.text||'🌸';addBotMsg(reply);chatHist.push({role:'assistant',content:reply});
-  }catch{typing.remove();addBotMsg('Network issue 🌸');}
+    const {data,error}=await supa.functions.invoke('claude-proxy',{body:{
+      model:'claude-sonnet-4-20250514',max_tokens:1000,
+      system:`You are MamaCare AI — warm, empathetic pregnancy support companion. Speak in ${langName}. Tone: caring elder sister + certified nurse-midwife. 2-4 sentences max. Validate feelings first. Soft emojis naturally. Recommend doctor for medical concerns.`,
+      messages:chatHist
+    }});
+    typing.remove();
+    if(error) throw error;
+    const reply=data?.content?.[0]?.text||'🌸';addBotMsg(reply);chatHist.push({role:'assistant',content:reply});
+  }catch(e){typing.remove();addBotMsg('Network issue 🌸');console.error('Chat error:',e);}
 }
 
 // ══════════════════════════════════════

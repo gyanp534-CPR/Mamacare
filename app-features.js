@@ -828,20 +828,24 @@ function setVolume(v) {
   if (masterGain) masterGain.gain.setTargetAtTime(parseFloat(v), getAudioCtx().currentTime, 0.1);
 }
 
+let sleepCountdownInterval = null;
+
 function setSleepTimer(mins) {
   if (sleepTimerTO) { clearTimeout(sleepTimerTO); sleepTimerTO = null; }
+  if (sleepCountdownInterval) { clearInterval(sleepCountdownInterval); sleepCountdownInterval = null; }
   const display = document.getElementById('timerDisplay');
   if (!mins || mins === '0') { if (display) display.textContent = ''; return; }
   const ms = parseInt(mins) * 60 * 1000;
   let remaining = ms;
-  const interval = setInterval(() => {
+  sleepCountdownInterval = setInterval(() => {
     remaining -= 1000;
     if (display) {
       const m = Math.floor(remaining / 60000), s = Math.floor((remaining % 60000) / 1000);
       display.textContent = `⏱ ${m}:${s.toString().padStart(2,'0')} remaining`;
     }
     if (remaining <= 0) {
-      clearInterval(interval);
+      clearInterval(sleepCountdownInterval);
+      sleepCountdownInterval = null;
       stopAll();
       if (display) display.textContent = '✅ Timer complete — sweet dreams! 🌙';
     }

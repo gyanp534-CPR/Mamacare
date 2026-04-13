@@ -361,11 +361,10 @@ async function generate() {
     // Build prompt
     const prompt = buildCoachPrompt(data);
 
-    // Call Claude API
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // Call Claude via Supabase Edge Function (API key is server-side)
+    const supaRef = window.supa;
+    const { data: aiData, error: aiError } = await supaRef.functions.invoke('claude-proxy', {
+      body: {
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
         system: `You are Dr. MamaCare — a warm, expert pregnancy health coach combining the knowledge of an OB-GYN, nutritionist, sleep specialist, and mental health counselor. You speak in Hinglish (natural Hindi-English mix).
@@ -406,14 +405,13 @@ doctorAlert: null OR a specific concern to discuss with doctor
 
 Include sections for: Sleep, Nutrition, Hydration, Weight, Mood & Mental Health, Medicines (if any), and one Pregnancy-specific tip based on their current week.`,
         messages: [{ role: 'user', content: prompt }],
-      }),
+      }
     });
 
     clearInterval(stepInterval);
 
-    if (!response.ok) throw new Error(`API error: ${response.status}`);
-    const apiData = await response.json();
-    const rawText = apiData.content?.[0]?.text || '';
+    if (aiError) throw new Error(aiError.message || 'Edge Function error');
+    const rawText = aiData?.content?.[0]?.text || '';
 
     // Parse JSON response
     let coachResult;

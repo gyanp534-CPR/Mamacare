@@ -235,3 +235,168 @@ alter table public.user_profile
 -- ════════════════════════════════════════════
 alter table public.user_profile
   add column if not exists latest_coach_report jsonb;
+
+-- ════════════════════════════════════════════
+-- v6.1 ADDITIONS — Run if upgrading from v6
+-- ════════════════════════════════════════════
+
+-- Blood Pressure Logs
+create table if not exists public.bp_logs (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  systolic int not null,
+  diastolic int not null,
+  pulse int,
+  bp_date date default current_date,
+  notes text,
+  logged_at timestamptz default now()
+);
+alter table public.bp_logs enable row level security;
+create policy "bp_logs_own" on public.bp_logs for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Blood Sugar Logs
+create table if not exists public.sugar_logs (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  reading numeric(5,2) not null,
+  reading_type text default 'random', -- fasting, post_meal, random
+  sugar_date date default current_date,
+  notes text,
+  logged_at timestamptz default now()
+);
+alter table public.sugar_logs enable row level security;
+create policy "sugar_logs_own" on public.sugar_logs for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Contraction Sessions
+create table if not exists public.contraction_sessions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  contractions jsonb default '[]',
+  session_date date default current_date,
+  created_at timestamptz default now()
+);
+alter table public.contraction_sessions enable row level security;
+create policy "contraction_sessions_own" on public.contraction_sessions for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Subscriptions (Premium)
+create table if not exists public.subscriptions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null unique,
+  plan text default 'free',
+  razorpay_subscription_id text,
+  razorpay_payment_id text,
+  status text default 'active',
+  started_at timestamptz default now(),
+  expires_at timestamptz
+);
+alter table public.subscriptions enable row level security;
+create policy "subscriptions_own" on public.subscriptions for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Add blood_group to user_profile
+alter table public.user_profile add column if not exists blood_group text;
+alter table public.user_profile add column if not exists name text;
+
+-- ════════════════════════════════════════════
+-- v6.2 ADDITIONS
+-- ════════════════════════════════════════════
+
+-- Baby Feeds
+create table if not exists public.baby_feeds (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  feed_type text not null, -- breast, bottle_breast, formula, solid
+  side text,               -- left, right, both
+  duration_min int,
+  amount_ml numeric(6,2),
+  fed_at timestamptz default now()
+);
+alter table public.baby_feeds enable row level security;
+create policy "baby_feeds_own" on public.baby_feeds for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Baby Diapers
+create table if not exists public.baby_diapers (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  diaper_type text not null, -- wet, dirty, mixed
+  changed_at timestamptz default now()
+);
+alter table public.baby_diapers enable row level security;
+create policy "baby_diapers_own" on public.baby_diapers for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Baby Sleeps
+create table if not exists public.baby_sleeps (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  sleep_start timestamptz not null,
+  sleep_end timestamptz,
+  duration_min int,
+  sleep_type text default 'nap', -- nap, night
+  sleep_date date default current_date
+);
+alter table public.baby_sleeps enable row level security;
+create policy "baby_sleeps_own" on public.baby_sleeps for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Baby Weights
+create table if not exists public.baby_weights (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  weight_kg numeric(5,3) not null,
+  height_cm numeric(5,2),
+  age_days int,
+  logged_at timestamptz default now()
+);
+alter table public.baby_weights enable row level security;
+create policy "baby_weights_own" on public.baby_weights for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Baby Vaccinations
+create table if not exists public.baby_vaccinations (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  vaccine_id text not null,
+  given_date date not null,
+  hospital text,
+  batch_number text,
+  unique(user_id, vaccine_id)
+);
+alter table public.baby_vaccinations enable row level security;
+create policy "baby_vaccinations_own" on public.baby_vaccinations for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Baby Milestones
+create table if not exists public.baby_milestones (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  milestone_id text not null,
+  milestone_date date not null,
+  note text,
+  photo_url text,
+  unique(user_id, milestone_id)
+);
+alter table public.baby_milestones enable row level security;
+create policy "baby_milestones_own" on public.baby_milestones for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Daily Symptom Diary
+create table if not exists public.symptom_diary (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  diary_date date not null default current_date,
+  swelling int default 0 check (swelling between 0 and 5),
+  heartburn int default 0 check (heartburn between 0 and 5),
+  fatigue int default 0 check (fatigue between 0 and 5),
+  nausea int default 0 check (nausea between 0 and 5),
+  back_pain int default 0 check (back_pain between 0 and 5),
+  headache int default 0 check (headache between 0 and 5),
+  note text,
+  unique(user_id, diary_date)
+);
+alter table public.symptom_diary enable row level security;
+create policy "symptom_diary_own" on public.symptom_diary for all using (auth.uid()=user_id) with check (auth.uid()=user_id);
+
+-- Add baby fields to user_profile
+alter table public.user_profile add column if not exists baby_dob date;
+alter table public.user_profile add column if not exists baby_name text;
+alter table public.user_profile add column if not exists baby_gender text;
+alter table public.user_profile add column if not exists doctor_email text;
+alter table public.user_profile add column if not exists doctor_name text;
+alter table public.user_profile add column if not exists doctor_token text;
+alter table public.user_profile add column if not exists allergies text;
+alter table public.user_profile add column if not exists medical_notes text;

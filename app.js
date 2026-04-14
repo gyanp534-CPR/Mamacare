@@ -372,9 +372,9 @@ function otpInput(el, idx) {
 async function onLogin(u) {
   user=u;
   window.user = u; // Expose for app-features.js and app-coach.js
-  $('authScreen').style.display='none';
-  $('langBar').style.display='flex';
-  $('topBar').style.display='block';
+ if ($('authScreen')) $('authScreen').style.display='none';
+  if ($('langBar')) $('langBar').style.display='flex';
+  if ($('topBar')) $('topBar').style.display='block';
   const em=u.email||''; setText('topUserEmail', em.length>22?em.slice(0,19)+'...':em);
   
   if(supa) {

@@ -160,222 +160,81 @@
 </div>
 
 <div class="page" id="page-dashboard">
-  <div style="padding:20px 0 8px"><div class="sec-label">Overview</div><div class="sec-title" id="dbTitle">My Dashboard <i data-lucide="bar-chart-2" class="app-icon-inline"></i></div></div>
-  <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:24px"></div>
-  <div class="g2" id="dbStats" style="margin-bottom:18px"></div>
-  <div class="g2" id="dbQuickActions" style="margin-bottom:18px"></div>
-  <div class="card"><div class="sec-label" id="dbTodayLabel">Today</div><div class="sec-title" id="dbTodayTitle">Aaj ka Haal</div><div id="dbToday"></div></div>
-  <div class="card"><div class="sec-label" id="dbMilestonesLabel">Upcoming</div><div class="sec-title" id="dbMilestonesTitle">Milestones</div><div id="dbMilestones"></div></div>
-</div>
+  <div class="dashboard-section">
+    <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:24px"></div>
+  </div>
 
-<div class="page" id="page-due">
-  <div style="padding:20px 0 8px"><div class="sec-label">Calculator</div><div class="sec-title">Due Date & Timeline <i data-lucide="calendar" class="app-icon-inline"></i> <span class="sync-badge" id="due-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card">
-    <div class="g2" style="margin-bottom:14px">
-      <div><label id="lmpLabel">Last Menstrual Period</label><input type="date" id="lmpDate" onchange="MC.calcDue()"/></div>
-      <div><label id="dueDateLabel">Ya Due Date daalo</label><input type="date" id="directDue" onchange="MC.calcFromDue()"/></div>
+  <div class="dashboard-section">
+    <div class="section-header">
+      <div class="sec-label">Rozana Tracking</div>
     </div>
-    <div id="dueResult"></div>
-  </div>
-  <div class="card" id="timelineCard" style="display:none">
-    <div class="sec-label">Progress</div>
-    <div class="sec-title" id="timelineTitle">Journey</div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span id="startLabel">Start</span><span id="pctText" style="font-weight:600;color:var(--accent)">0%</span><span id="endLabel">Due</span></div>
-    <div class="timeline-bar"><div class="timeline-fill" id="timelineFill" style="width:0%"></div></div>
-    <div class="tri-cards" id="triCards"></div>
-  </div>
-  <div class="card" id="weekDetailCard" style="display:none">
-    <div class="sec-label" id="thisWeekLabel">This Week</div>
-    <div class="sec-title" id="weekDetailTitle">Week —</div>
-    <div id="weekDetailGrid"></div>
-    <div id="weekMoodTip" style="margin-top:12px;background:linear-gradient(135deg,#fce8e8,#fef0e8);border-radius:12px;padding:13px;font-size:13px;line-height:1.7"></div>
-  </div>
-</div>
-
-<div class="page" id="page-weight">
-  <div style="padding:20px 0 8px"><div class="sec-label">Health</div><div class="sec-title">Weight Tracker <i data-lucide="scale" class="app-icon-inline"></i> <span class="sync-badge" id="wt-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card">
-    <div class="g3" id="wtStats" style="margin-bottom:16px"></div>
-    <div class="g2" style="margin-bottom:10px">
-      <div><label id="wtKgLabel">Weight (kg)</label><input type="number" id="wtInput" placeholder="62.5" step="0.1" min="30" max="200"/></div>
-      <div><label id="wtWeekLabel">Week</label><input type="number" id="wtWeek" placeholder="1-40" min="1" max="40"/></div>
-    </div>
-    <div style="margin-bottom:10px"><label id="preWeightLabel">Pre-pregnancy weight (kg)</label><input type="number" id="preWeight" placeholder="55" step="0.1" oninput="MC.savePreWeight()"/></div>
-    <button class="btn btn-p btn-sm" onclick="MC.addWeight()" id="wtAddBtn"><i data-lucide="plus" class="app-icon-inline"></i> Log</button>
-  </div>
-  <div class="card"><div class="sec-label">Graph</div><div class="sec-title" id="wtChartTitle">Journey</div><canvas id="weightChart" style="max-height:200px"></canvas></div>
-  <div class="card"><div class="sec-label">History</div><div class="sec-title" id="wtHistTitle">Log</div><div id="weightLog"></div></div>
-</div>
-
-<div class="page" id="page-yoga">
-  <div style="padding:20px 0 8px"><div class="sec-label">Exercise</div><div class="sec-title" id="yogaTitle">Prenatal Yoga <i data-lucide="activity" class="app-icon-inline"></i></div></div>
-  <div class="card"><div class="tab-row" id="yogaFilterRow"></div><div class="yoga-grid" id="yogaGrid"></div></div>
-  <div class="card" style="background:linear-gradient(135deg,#fff5f5,#fff0f0)"><div class="sec-label" style="color:#c94040">⚠️ Avoid</div><div class="sec-title" id="avoidTitle">Mat Karo</div><div id="avoidList" class="g2"></div></div>
-</div>
-
-<div class="page" id="page-sleep">
-  <div style="padding:20px 0 8px"><div class="sec-label">Rest</div><div class="sec-title">Sleep Tracker <i data-lucide="moon" class="app-icon-inline"></i> <span class="sync-badge" id="sleep-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card">
-    <div class="g3" id="sleepStats" style="margin-bottom:14px"></div>
-    <div class="g2" style="margin-bottom:10px">
-      <div><label id="bedtimeLabel">Bedtime</label><input type="time" id="sleepStart"/></div>
-      <div><label id="wakeLabel">Wake time</label><input type="time" id="sleepEnd"/></div>
-    </div>
-    <div class="g2" style="margin-bottom:10px">
-      <div><label id="qualityLabel">Quality</label><select id="sleepQuality"><option value="3">Achhi</option><option value="2">Theek</option><option value="1">Kharab</option></select></div>
-      <div><label id="issueLabel">Issue</label><select id="sleepIssue"><option value="">Koi issue nahi</option><option value="back_pain">Back pain</option><option value="leg_cramps">Leg cramps</option><option value="urination">Baar baar bathroom</option><option value="heartburn">Heartburn</option><option value="anxiety">Anxiety</option><option value="kicks">Baby kicks</option></select></div>
-    </div>
-    <button class="btn btn-p btn-sm" onclick="MC.logSleep()" id="sleepLogBtn"><i data-lucide="plus" class="app-icon-inline"></i> Log Sleep</button>
-  </div>
-  <div class="card"><div class="sec-label">7-Day</div><div class="sec-title" id="sleepChartTitle">Pattern</div><canvas id="sleepChart" style="max-height:180px"></canvas></div>
-  <div class="card"><div class="sec-label">History</div><div class="sec-title" id="sleepHistTitle">Log</div><div id="sleepLog"></div></div>
-  <div class="card"><div class="sec-label">Tips</div><div class="sec-title" id="sleepTipsTitle">Better Sleep</div><div id="sleepTipsGrid" class="g2"></div></div>
-</div>
-
-<div class="page" id="page-nutrition">
-  <div style="padding:20px 0 8px"><div class="sec-label">Daily</div><div class="sec-title">Nutrition Tracker <i data-lucide="apple" class="app-icon-inline"></i> <span class="sync-badge" id="nutri-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card"><div class="sec-label" id="waterLabel">Water</div><div style="font-size:13px;color:var(--warm);margin-bottom:8px" id="waterGoalText"></div><div id="waterTrack" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:7px"></div><div id="waterMsg" style="font-size:12.5px;color:var(--muted)"></div></div>
-  <div class="card"><div class="sec-label">Nutrients</div><div class="sec-title" id="nutriTitle">Today</div><div id="nutriBars"></div></div>
-  <div class="card">
-    <div class="sec-label">Food Log</div><div class="sec-title" id="foodLogTitle">Kya Khaya?</div>
-    <div class="tab-row" id="mealTimeBtns">
-      <button class="tab-btn active" data-meal="breakfast"><i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast</button>
-      <button class="tab-btn" data-meal="lunch"><i data-lucide="sun" class="app-icon-inline"></i> Lunch</button>
-      <button class="tab-btn" data-meal="snack"><i data-lucide="cookie" class="app-icon-inline"></i> Snack</button>
-      <button class="tab-btn" data-meal="dinner"><i data-lucide="moon" class="app-icon-inline"></i> Dinner</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-      <input type="text" id="foodInput" style="flex:2"/>
-      <select id="foodCalSel" style="flex:1;min-width:110px"><option value="80">Light (80)</option><option value="150" selected>Snack (150)</option><option value="300">Meal (300)</option><option value="500">Heavy (500)</option></select>
-      <button class="btn btn-p btn-sm" onclick="MC.addFood()" id="foodAddBtn"><i data-lucide="plus" class="app-icon-inline"></i> Add</button>
-    </div>
-    <div id="foodList"></div>
-  </div>
-  <div class="card"><div class="sec-label">Meal Plan</div><div class="sec-title" id="mealPlanTitle">Expert Diet Guide</div><div class="tab-row" id="triMealTabs">
-    <button class="tab-btn active" data-tri="1"><i data-lucide="sprout" class="app-icon-inline"></i> 1st</button>
-    <button class="tab-btn" data-tri="2"><i data-lucide="flower-2" class="app-icon-inline"></i> 2nd</button>
-    <button class="tab-btn" data-tri="3"><i data-lucide="star" class="app-icon-inline"></i> 3rd</button>
-  </div><div id="mealPlanContent"></div></div>
-</div>
-
-<div class="page" id="page-medicine">
-  <div style="padding:20px 0 8px"><div class="sec-label">Health</div><div class="sec-title">Medicine Tracker <i data-lucide="pill" class="app-icon-inline"></i> <span class="sync-badge" id="med-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card"><div class="g3" id="medStats" style="margin-bottom:12px"></div><div style="height:8px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div id="medProgressBar" style="height:100%;background:linear-gradient(90deg,var(--green),#4da888);border-radius:50px;transition:width .5s;width:0%"></div></div></div>
-  <div class="card">
-    <div class="sec-label">Medicines</div><div class="sec-title" id="medListTitle">List</div>
-    <div id="medList"></div>
-    <button class="btn btn-p btn-sm" style="margin-top:10px" onclick="MC.toggleAddMedForm()" id="addMedBtn"><i data-lucide="plus" class="app-icon-inline"></i> Add Medicine</button>
-    <div id="addMedForm" style="display:none;margin-top:14px;background:var(--cream);border-radius:14px;padding:16px">
-      <div class="g2" style="margin-bottom:10px"><div><label>Name</label><input type="text" id="medName" placeholder="Folic Acid..."/></div><div><label>Dose</label><input type="text" id="medDose" placeholder="1 tablet..."/></div></div>
-      <div class="g2" style="margin-bottom:10px"><div><label>Time</label><input type="time" id="medTime"/></div><div><label>Icon</label><select id="medIcon"><option value="💊">Tablet</option><option value="🍊">Vitamin</option><option value="🧴">Syrup</option><option value="💉">Injection</option><option value="🌿">Herbal</option></select></div></div>
-      <div style="margin-bottom:10px"><label>Notes</label><input type="text" id="medNotes" placeholder="Khane ke baad lena..."/></div>
-      <div style="display:flex;gap:8px"><button class="btn btn-p btn-sm" onclick="MC.addMedicine()" id="saveMedBtn">Save</button><button class="btn btn-g btn-sm" onclick="MC.toggleAddMedForm()">Cancel</button></div>
-    </div>
-  </div>
-  <div class="card" style="background:linear-gradient(135deg,rgba(235,248,240,.7),rgba(230,245,255,.7))"><div class="sec-label">Guide</div><div class="sec-title" id="suppTitle">Supplements</div><div id="suppGuide"></div></div>
-</div>
-
-<div class="page" id="page-bag">
-  <div style="padding:20px 0 8px"><div class="sec-label">Prep</div><div class="sec-title">Hospital Bag <i data-lucide="briefcase-medical" class="app-icon-inline"></i> <span class="sync-badge" id="bag-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
-      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--accent)" id="bagPct">0%</div><div style="font-size:12px;color:var(--muted)" id="bagPctLabel">Packed</div></div>
-      <div style="flex:1;max-width:260px"><div style="height:9px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div id="bagBar" style="height:100%;border-radius:50px;background:linear-gradient(90deg,var(--green),#4da888);transition:width .5s;width:0%"></div></div><div style="font-size:12px;color:var(--muted);text-align:right;margin-top:2px" id="bagCount"></div></div>
-      <button class="btn btn-g btn-sm" onclick="MC.resetBag()" id="bagResetBtn"><i data-lucide="rotate-ccw" class="app-icon-inline"></i> Reset</button>
-    </div>
-    <div class="tab-row" id="bagCatTabs"></div>
-  </div>
-  <div id="bagContainer"></div>
-  <div class="card"><div class="sec-label">Custom</div><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="text" id="customBagItem" style="flex:2"/><select id="customBagCatSel" style="flex:1;min-width:120px"></select><button class="btn btn-p btn-sm" onclick="MC.addCustomBagItem()" id="bagAddBtn"><i data-lucide="plus" class="app-icon-inline"></i> Add</button></div></div>
-</div>
-
-<div class="page" id="page-names">
-  <div style="padding:20px 0 8px"><div class="sec-label">Baby</div><div class="sec-title">Name Finder <i data-lucide="baby" class="app-icon-inline"></i> <span class="sync-badge" id="names-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card">
-    <input type="text" id="nameSearch" placeholder="🔍 Name ya meaning..." style="margin-bottom:10px" oninput="MC.renderNames()"/>
-    <div class="tab-row" id="nameFilterBtns"></div>
-    <div id="nameGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px"></div>
-  </div>
-  <div class="card" id="savedNamesCard" style="display:none"><div class="sec-label" id="savedNamesLabel">Saved <i data-lucide="heart" class="app-icon-inline" style="color:var(--rose);fill:currentColor"></i></div><div id="savedNamesList" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px"></div></div>
-</div>
-
-<div class="page" id="page-journal">
-  <div style="padding:20px 0 8px"><div class="sec-label">Memories</div><div class="sec-title">Baby Bump Journal <i data-lucide="book-heart" class="app-icon-inline"></i> <span class="sync-badge" id="journal-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-  <div class="card" style="background:var(--cream)">
-    <div class="sec-label" style="margin-bottom:8px"><i data-lucide="pen-line" class="app-icon-inline"></i> New Entry</div>
-    <div class="g2" style="margin-bottom:10px"><div><label id="jWeekLabel">Week</label><input type="number" id="jWeek" placeholder="1-40" min="1" max="40"/></div><div><label id="jDateLabel">Date</label><input type="date" id="jDate"/></div></div>
-    <div style="margin-bottom:10px"><label id="jMoodLabel">Mood</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="jMoodRow">
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😊" class="jmood">😊</span>
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="🥰" class="jmood">🥰</span>
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😢" class="jmood">😢</span>
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😴" class="jmood">😴</span>
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😤" class="jmood">😤</span>
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="😰" class="jmood">😰</span>
-      <span style="font-size:24px;cursor:pointer;padding:5px;border-radius:10px;border:2px solid transparent;transition:.2s" data-jm="🌟" class="jmood">🌟</span>
-    </div></div>
-    <div style="margin-bottom:10px"><label id="jTextLabel">Baat</label><textarea id="jText"></textarea></div>
-    <div style="margin-bottom:10px">
-      <label id="jPhotoLabel">Photo (device mein save hoga)</label>
-      <div style="border:2px dashed var(--blush);border-radius:12px;padding:16px;text-align:center;cursor:pointer" onclick="document.getElementById('photoUpload').click()">
-        <div style="font-size:24px;margin-bottom:4px; color:var(--rose)"><i data-lucide="camera"></i></div>
-        <div style="font-size:12.5px;color:var(--muted)" id="photoUploadText">Tap to select photo</div>
-        <input type="file" id="photoUpload" accept="image/*" style="display:none" onchange="MC.handlePhoto(this)"/>
-        <img id="photoPreview" style="max-width:100%;max-height:140px;border-radius:10px;margin-top:8px;display:none"/>
+    <div class="feature-grid">
+      <div class="feature-item" onclick="MC.goTo('weight')">
+        <div class="mi-icon"><i data-lucide="scale"></i></div>
+        <div class="mi-label">Weight</div>
       </div>
-      <div id="photoSaveHint" style="font-size:12px;color:var(--muted);margin-top:6px;display:none">💡 Photo aapke device mein save hogi — cloud pe nahi jaayegi (storage bachane ke liye)</div>
+      <div class="feature-item" onclick="MC.goTo('sleep')">
+        <div class="mi-icon"><i data-lucide="moon"></i></div>
+        <div class="mi-label">Sleep</div>
+      </div>
+      <div class="feature-item" onclick="MC.goTo('nutrition')">
+        <div class="mi-icon"><i data-lucide="apple"></i></div>
+        <div class="mi-label">Nutrition</div>
+      </div>
+      <div class="feature-item" onclick="MC.goTo('medicine')">
+        <div class="mi-icon"><i data-lucide="pill"></i></div>
+        <div class="mi-label">Meds</div>
+      </div>
+      <div class="feature-item" onclick="MC.goTo('journal')">
+        <div class="mi-icon"><i data-lucide="book-heart"></i></div>
+        <div class="mi-label">Diary</div>
+      </div>
+      <div class="feature-item" onclick="MC.goTo('appointments')">
+        <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
+        <div class="mi-label">Appts</div>
+      </div>
     </div>
-    <button class="btn btn-p" onclick="MC.saveJournalEntry()" id="saveJournalBtn"><i data-lucide="heart" class="app-icon-inline" style="fill:currentColor"></i> Save</button>
   </div>
-  <div class="card"><div class="sec-label">Timeline</div><div class="sec-title" id="journalTimelineTitle">Diary</div><div id="journalEntries"></div></div>
-</div>
 
-<div class="page" id="page-appointments">
-  <div style="padding:20px 0 8px"><div class="sec-label">Tracking</div><div class="sec-title">Doctor Appointments <i data-lucide="calendar-days" class="app-icon-inline"></i> <span class="sync-badge" id="appt-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
+  <div class="dashboard-section">
+    <div class="section-header">
+      <div class="sec-label">Smart AI Tools</div>
+    </div>
+    <div class="feature-grid" style="grid-template-columns: 1fr 1fr;"> <div class="feature-item" style="background: #f3e5f5;" onclick="MC.goTo('mood')">
+        <div class="mi-icon"><i data-lucide="bot"></i></div>
+        <div class="mi-label">AI Coach</div>
+      </div>
+      <div class="feature-item" style="background: #e3f2fd;" onclick="MC.goTo('symptoms')">
+        <div class="mi-icon"><i data-lucide="search"></i></div>
+        <div class="mi-label">Symptom AI</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-section">
+    <div class="section-header">
+      <div class="sec-label">Safety & Planning</div>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-item" onclick="MC.goTo('bag')">
+        <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
+        <div class="mi-label">Hosp Bag</div>
+      </div>
+      <div class="feature-item" onclick="MC.goTo('birth')">
+        <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
+        <div class="mi-label">Birth Plan</div>
+      </div>
+      <div class="feature-item emergency-item" onclick="MC.goTo('sos')">
+        <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
+        <div class="mi-label" style="color:var(--danger)">SOS</div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
-    <div class="sec-label" style="margin-bottom:8px"><i data-lucide="plus" class="app-icon-inline"></i> New Appointment</div>
-    <div class="g2" style="margin-bottom:10px"><div><label>Title</label><input type="text" id="apptTitle" placeholder="NT Scan, Glucose Test..."/></div><div><label>Doctor</label><input type="text" id="apptDoctor" placeholder="Dr. Sharma..."/></div></div>
-    <div class="g2" style="margin-bottom:10px"><div><label>Date</label><input type="date" id="apptDate"/></div><div><label>Time</label><input type="time" id="apptTime"/></div></div>
-    <div style="margin-bottom:10px"><label>Hospital</label><input type="text" id="apptHospital" placeholder="Hospital naam..."/></div>
-    <div style="margin-bottom:10px"><label>Notes</label><textarea id="apptNotes" style="min-height:55px" placeholder="Fasting required? Reports saath laaein?"></textarea></div>
-    <button class="btn btn-p btn-sm" onclick="MC.addAppointment()" id="addApptBtn"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Save Appointment</button>
+    <div class="sec-label" id="dbMilestonesLabel">Upcoming</div>
+    <div id="dbMilestones"></div>
   </div>
-  <div class="card"><div class="sec-label">Upcoming</div><div class="sec-title" id="apptUpcomingTitle">Appointments</div><div id="apptList"></div></div>
-  <div class="card" style="background:linear-gradient(135deg,rgba(235,248,240,.6),rgba(230,245,255,.6))">
-    <div class="sec-label">Checklist</div>
-    <div class="sec-title" id="apptChecklistTitle">Important Tests</div>
-    <div id="apptChecklist"></div>
-  </div>
-</div>
-
-<div class="page" id="page-birth">
-  <div style="padding:20px 0 8px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px">
-    <div><div class="sec-label">Hospital</div><div class="sec-title">Birth Plan <i data-lucide="clipboard-list" class="app-icon-inline"></i> <span class="sync-badge" id="bp-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div></div>
-    <div class="no-print"><button class="btn btn-p btn-sm" onclick="window.print()"><i data-lucide="printer" class="app-icon-inline"></i> Print</button></div>
-  </div>
-  <div class="card"><p style="font-size:13px;color:var(--muted);line-height:1.7;background:rgba(106,184,154,.08);padding:12px 14px;border-radius:10px;margin-bottom:16px" id="bpNote"></p><div id="birthPlanForm"></div></div>
-</div>
-
-<div class="page" id="page-postpartum">
-  <div style="padding:20px 0 8px"><div class="sec-label">After Delivery</div><div class="sec-title" id="ppTitle">Postpartum Care <i data-lucide="heart-pulse" class="app-icon-inline"></i></div></div>
-  <div class="card" style="background:linear-gradient(135deg,rgba(232,160,168,.1),rgba(247,196,168,.08));text-align:center;padding:22px"><div style="font-size:38px;margin-bottom:8px;color:var(--rose)"><i data-lucide="party-popper" style="width:38px;height:38px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:7px" id="ppCongrats"></div><p style="font-size:13px;color:var(--muted);line-height:1.7;max-width:440px;margin:0 auto" id="ppSubtext"></p></div>
-  <div class="card"><div class="tab-row" id="ppWeekTabs"><button class="tab-btn active" data-ppw="1">Week 1-2</button><button class="tab-btn" data-ppw="2">Week 3-6</button><button class="tab-btn" data-ppw="3">Week 6-12</button><button class="tab-btn" data-ppw="4">3-6 Months</button></div><div id="ppWeekContent"></div></div>
-  <div class="card"><div class="sec-label" id="ppWarnLabel">Warning</div><div class="sec-title" id="ppWarnTitle">Doctor Call Karein</div><div id="ppWarnings"></div></div>
-  <div class="card"><div class="sec-label">Mental Health</div><div class="sec-title" id="ppMHTitle">Baby Blues vs PPD</div><div id="ppMentalHealth"></div></div>
-  <div class="card"><div class="sec-label">Feeding</div><div class="sec-title" id="ppBFTitle">Breastfeeding</div><div id="ppBreastfeeding"></div></div>
-</div>
-
-<div class="page" id="page-symptoms">
-  <div style="padding:20px 0 8px"><div class="sec-label">Health Guide</div><div class="sec-title" id="sympTitle">Symptom Checker <i data-lucide="thermometer" class="app-icon-inline"></i></div></div>
-  <div class="card"><p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;background:rgba(106,184,154,.08);padding:10px 12px;border-radius:10px" id="sympDisclaimer"></p><input type="text" id="symptomSearch" oninput="MC.filterSymptoms()"/><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px" id="symptomCatBtns"></div></div>
-  <div id="symptomsContainer"></div>
-</div>
-
-<div class="page" id="page-sos">
-  <div style="padding:20px 0 8px"><div class="sec-label">Emergency</div><div class="sec-title" id="sosTitle">SOS <i data-lucide="alert-triangle" class="app-icon-inline" style="color:#e05c5c"></i></div></div>
-  <div class="card" style="text-align:center;padding:28px"><p style="font-size:13px;color:var(--muted);margin-bottom:20px" id="sosDesc"></p><button class="sos-btn" onclick="MC.findHospital()"><span style="font-size:32px"><i data-lucide="siren" style="width:32px;height:32px;"></i></span><span>EMERGENCY</span><span style="font-size:10px;opacity:.8">GPS Hospital</span></button><div id="sosResult" style="margin-top:20px"></div></div>
-  <div class="card"><div class="sec-label">Helplines</div><div class="sec-title" id="sosHelpTitle">Numbers <i data-lucide="phone" class="app-icon-inline"></i></div><div id="sosFastDial"></div></div>
-  <div class="card"><div class="sec-label">My Contacts</div><div class="sec-title" id="sosContactTitle">Emergency Contacts <span class="sync-badge" id="sos-save"><i data-lucide="cloud" class="app-icon-inline"></i> Synced</span></div><div class="g2" style="margin-bottom:10px"><div><label>Naam</label><input type="text" id="ecName"/></div><div><label>Phone</label><input type="tel" id="ecPhone"/></div></div><select id="ecRelation" style="margin-bottom:10px"><option>Pati</option><option>Maa</option><option>Saas</option><option>Doctor</option><option>Other</option></select><button class="btn btn-p btn-sm" onclick="MC.addEC()" id="ecAddBtn"><i data-lucide="plus" class="app-icon-inline"></i> Add</button><div id="customContacts" style="margin-top:12px"></div></div>
-  <div class="card" style="background:linear-gradient(135deg,#fff5f5,#fff0e8)"><div class="sec-label" style="color:#c94040">Warning Signs</div><div class="sec-title" id="warnSignsTitle">Turant Doctor</div><div id="warningSigns"></div></div>
 </div>
 
 <footer><strong style="color:var(--accent)">MamaCare <i data-lucide="flower-2" class="app-icon-inline"></i></strong> v7.6 | <i data-lucide="cloud" class="app-icon-inline"></i> Cloud sync enabled | <i data-lucide="lock" class="app-icon-inline"></i> Your data is private<br/><span style="font-size:11px">Yeh app medical advice replace nahi karta</span></footer>

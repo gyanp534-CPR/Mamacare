@@ -1223,16 +1223,41 @@ function renderContacts(){
 // ══════════════════════════════════════
 // DASHBOARD
 // ══════════════════════════════════════
-const MILESTONES=[{w:4,t:'Test positive! Journey shuru 🌱'},{w:8,t:'Pehla heartbeat scan 💗'},{w:12,t:'1st trimester complete ✓'},{w:16,t:'Gender scan possible 👶'},{w:20,t:'Anatomy scan — halfway 🎉'},{w:24,t:'Viability milestone ⭐'},{w:28,t:'3rd trimester shuru 🌟'},{w:32,t:'Hospital bag pack karo 🏥'},{w:36,t:'Full term approaching 🌸'},{w:40,t:'Due date! 🎊'}];
+const MILESTONES = [{w:4,t:'Test positive! Journey shuru 🌱'},{w:8,t:'Pehla heartbeat scan 💗'},{w:12,t:'1st trimester complete ✓'},{w:16,t:'Gender scan possible 👶'},{w:20,t:'Anatomy scan — halfway 🎉'},{w:24,t:'Viability milestone ⭐'},{w:28,t:'3rd trimester shuru 🌟'},{w:32,t:'Hospital bag pack karo 🏥'},{w:36,t:'Full term approaching 🌸'},{w:40,t:'Due date! 🎊'}];
 
-async function renderDashboard(){
-  if(!user || !supa)return;
-  const dueStr=$('directDue')?.value;const due=dueStr?new Date(dueStr):null;
-  const now=new Date();let week=0,daysLeft=0,pct=0,tri=0;
-  if(due&&!isNaN(due)){const el=Math.max(0,Math.floor((now-new Date(due.getTime()-280*86400000))/86400000));week=Math.min(40,Math.floor(el/7)+1);daysLeft=Math.max(0,Math.round((due-now)/86400000));pct=Math.min(100,Math.round(el/280*100));tri=week<=13?1:week<=27?2:3;}
-  const hero=$('dbHero');
-  if(hero){const tn=[T.t1,T.t2,T.t3][tri-1]||'';hero.innerHTML=due?`<div style="font-size:44px;margin-bottom:10px; color:var(--rose)"><i data-lucide="${tri===1?'sprout':tri===2?'flower-2':'star'}" style="width:44px;height:44px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div><p style="font-size:13px;color:var(--muted)"><i data-lucide="calendar" class="app-icon-inline"></i> ${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p><div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),var(--peach));border-radius:50px;transition:width 1s"></div></div><div style="font-size:11px;color:var(--muted);margin-top:4px">${pct}% ${T.done}</div>`:`<div style="font-size:44px;margin-bottom:8px; color:var(--rose)"><i data-lucide="flower-2" style="width:44px;height:44px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare mein Aapka Swagat!</div><p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent); text-decoration:none;"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Due date add karein →</a></p>`;}
+async function renderDashboard() {
+  if (!user || !supa) return;
 
+  const dueStr = $('directDue')?.value;
+  const due = dueStr ? new Date(dueStr) : null;
+  const now = new Date();
+  let week = 0, daysLeft = 0, pct = 0, tri = 0;
+
+  if (due && !isNaN(due)) {
+    const el = Math.max(0, Math.floor((now - new Date(due.getTime() - 280 * 86400000)) / 86400000));
+    week = Math.min(40, Math.floor(el / 7) + 1);
+    daysLeft = Math.max(0, Math.round((due - now) / 86400000));
+    pct = Math.min(100, Math.round(el / 280 * 100));
+    tri = week <= 13 ? 1 : week <= 27 ? 2 : 3;
+  }
+
+  // 1. Hero Section Fix
+  const hero = $('dbHero');
+  if (hero) {
+    const tn = [T.t1, T.t2, T.t3][tri - 1] || '';
+    hero.innerHTML = due ? `
+      <div style="font-size:44px;margin-bottom:10px; color:var(--rose)"><i data-lucide="${tri === 1 ? 'sprout' : tri === 2 ? 'flower-2' : 'star'}"></i></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div>
+      <p style="font-size:13px;color:var(--muted)"><i data-lucide="calendar" class="app-icon-inline"></i> ${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p>
+      <div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),var(--peach));border-radius:50px;transition:width 1s"></div>
+      </div>
+    ` : `
+      <div style="font-size:44px;margin-bottom:8px; color:var(--rose)"><i data-lucide="flower-2"></i></div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare Swagat Hai!</div>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent); text-decoration:none;"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Due date set karein →</a></p>
+    `;
+  }
   // Stats
   const [slRes,wtRes,medRes]=await Promise.all([supa.from('sleep_logs').select('duration_hrs').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('weight_logs').select('weight_kg').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('medicines').select('id').eq('user_id',user.id).eq('is_active',true)]);
   const slHrs=slRes.data?.[0]?.duration_hrs||'—',wtKg=wtRes.data?.[0]?.weight_kg||'—',medTotal=medRes.data?.length||0;
@@ -1249,9 +1274,19 @@ async function renderDashboard(){
   const cal=todayFoods?.reduce((a,f)=>a+(f.calories||0),0)||0;
   $('dbToday').innerHTML=[['<i data-lucide="flame" class="app-icon-inline" style="color:#e07040"></i> Calories',`${cal} kcal`],['<i data-lucide="droplet" class="app-icon-inline" style="color:#4a98c4"></i> Water',`${wc}/10 glasses`],['<i data-lucide="pill" class="app-icon-inline" style="color:var(--rose)"></i> Medicines',`${mt}/${medTotal} done`],['<i data-lucide="moon" class="app-icon-inline" style="color:var(--lavender)"></i> Last sleep',`${slHrs} hours`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><span>${l}</span><strong>${v}</strong></div>`).join('');
 
-  // Milestones
-  const upcoming=MILESTONES.filter(m=>m.w>=week).slice(0,4);
-  $('dbMilestones').innerHTML=upcoming.length?upcoming.map(m=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--peach));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">W${m.w}</div><div>${m.t}</div></div>`).join(''):'<p style="font-size:13px;color:var(--muted)">Due date add karein milestones ke liye.</p>';
+ // 2. Milestones Fix
+  const msContainer = $('dbMilestones');
+  if (msContainer) {
+    const upcoming = MILESTONES.filter(m => m.w >= week).slice(0, 3);
+    msContainer.innerHTML = upcoming.length ? upcoming.map(m => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px">
+        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--peach));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">W${m.w}</div>
+        <div>${m.t}</div>
+      </div>
+    `).join('') : '<p style="font-size:12px;color:var(--muted)">Sare milestones poore huye! 🎉</p>';
+  }
+
+  // Final Call to ensure Lucide icons are drawn in the new elements
   renderIcons();
 }
 

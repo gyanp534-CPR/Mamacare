@@ -1,8 +1,6 @@
-console.log("Hello from app.js! The file is successfully loading.");
 /**
- * MamaCare v6.5 — app.js (COMPLETE)
- * Supabase Auth + Failsafe + Lucide Icon Integration
- * Photo → Gallery only (no cloud storage)
+ * MamaCare v7.6 — app.js (COMPLETE)
+ * Fixes: Preserved original UI hooks, Failsafe DB, Dynamic Lucide Icon Rendering
  */
 'use strict';
 
@@ -15,13 +13,13 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 let supa = null;
 try {
   supa = supabase.createClient(SUPA_URL, SUPA_KEY);
-  window.supa = supa; // Expose for app-features.js and app-coach.js
+  window.supa = supa;
 } catch(err) {
-  console.warn("Database connection delayed or blocked. UI will still load.", err);
+  console.warn("Database connection delayed. UI will load offline.", err);
 }
 
 // ══════════════════════════════════════
-// HELPER FOR LUCIDE ICONS
+// VITAL HELPER: DRAW ICONS AFTER DOM UPDATE
 // ══════════════════════════════════════
 function renderIcons() {
   if (window.lucide) {
@@ -231,7 +229,7 @@ let T = LANG[lang];
 let chatHist = [];
 let breathTimer = null, breathOn = false, breathRounds = 0;
 let affIdx = 0;
-let jMood = '😊';
+let jMood = '😊'; // User-typed emojis kept as-is for journal
 let photoFile = null;
 let mealTab = 'breakfast';
 let yogaFilterKey = 'all';
@@ -266,7 +264,6 @@ function applyLang(l) {
   localStorage.setItem('mc_lang', l);
   document.getElementById('htmlRoot').lang = {hi:'hi',mr:'hi',ta:'ta',bn:'bn',te:'te'}[l]||'en';
 
-  // Static text map
   const M = {
     moodHeroText:       {html: T.moodHero},
     breathTitle:        {text: T.breathTitle},
@@ -321,27 +318,23 @@ function applyLang(l) {
     else if(op.ph) el.placeholder = op.ph;
   });
 
-  // Re-render dynamic content that uses T
   renderMoodGrid();
   renderYogaGrid();
   renderIcons();
-  
-  if(user && supa) {
-    supa.from('user_profile').update({language:l}).eq('id',user.id).then(()=>{});
-  }
+  if(user && supa) { supa.from('user_profile').update({language:l}).eq('id',user.id).then(()=>{}); }
 }
 
 // ══════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════
 async function sendOTP() {
-  if(!supa) { alert("Database connecting... Please wait a second."); return; }
+  if(!supa) { alert("Database connecting... Please wait."); return; }
   const email = $('authEmail')?.value?.trim();
-  if(!email||!email.includes('@')) { setHTML('authMsg','<span style="color:var(--color-danger)">Valid email daalo <i data-lucide="alert-circle" class="app-icon-inline"></i></span>'); renderIcons(); return; }
+  if(!email||!email.includes('@')) { setHTML('authMsg','<span style="color:#e05c5c">Valid email daalo <i data-lucide="alert-circle" class="app-icon-inline"></i></span>'); renderIcons(); return; }
   const btn=$('authSendBtn'); btn.disabled=true; btn.textContent='Sending...';
   const {error} = await supa.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
   btn.disabled=false; btn.innerHTML='Magic Link Bhejo <i data-lucide="wand-2" class="app-icon-inline"></i>';
-  if(error) setHTML('authMsg',`<span style="color:var(--color-danger)">${error.message}</span>`);
+  if(error) setHTML('authMsg',`<span style="color:#e05c5c">${error.message}</span>`);
   else { setHTML('authOTPMsg',`<strong>${email}</strong> pe OTP bheja! Spam bhi check karein.`); showStep(2); }
   renderIcons();
 }
@@ -355,11 +348,11 @@ async function verifyOTP() {
   if(!supa) return;
   const email=$('authEmail')?.value?.trim();
   const token=[0,1,2,3,4,5].map(i=>$('otp'+i)?.value||'').join('');
-  if(token.length!==6){setHTML('authMsg','<span style="color:var(--color-danger)">6-digit code daalo</span>');return;}
+  if(token.length!==6){setHTML('authMsg','<span style="color:#e05c5c">6-digit code daalo</span>');return;}
   const btn=$('authVerifyBtn'); btn.disabled=true; btn.textContent='Verifying...';
   const {data,error}=await supa.auth.verifyOtp({email,token,type:'email'});
   btn.disabled=false; btn.textContent='Verify & Login';
-  if(error) setHTML('authMsg','<span style="color:var(--color-danger)">Wrong code. Try again.</span>');
+  if(error) setHTML('authMsg','<span style="color:#e05c5c">Wrong code. Try again.</span>');
   else if(data.user) onLogin(data.user);
 }
 
@@ -370,9 +363,8 @@ function otpInput(el, idx) {
 }
 
 async function onLogin(u) {
-  user=u;
-  window.user = u; // Expose for app-features.js and app-coach.js
- if ($('authScreen')) $('authScreen').style.display='none';
+  user=u; window.user=u;
+  if ($('authScreen')) $('authScreen').style.display='none';
   if ($('langBar')) $('langBar').style.display='flex';
   if ($('topBar')) $('topBar').style.display='block';
   const em=u.email||''; setText('topUserEmail', em.length>22?em.slice(0,19)+'...':em);
@@ -384,9 +376,9 @@ async function onLogin(u) {
         lang=prof.language;
         document.querySelectorAll('.lang-btn').forEach(b=>{b.classList.toggle('active',b.dataset.lang===lang);});
       }
-      if(prof.due_date){$('directDue').value=prof.due_date; calcFromDue();}
-      if(prof.lmp_date) $('lmpDate').value=prof.lmp_date;
-      if(prof.pre_weight) $('preWeight').value=prof.pre_weight;
+      if(prof.due_date){if($('directDue')) $('directDue').value=prof.due_date; calcFromDue();}
+      if(prof.lmp_date) if($('lmpDate')) $('lmpDate').value=prof.lmp_date;
+      if(prof.pre_weight) if($('preWeight')) $('preWeight').value=prof.pre_weight;
     }
   }
   
@@ -395,16 +387,9 @@ async function onLogin(u) {
   affIdx=Math.floor(Math.random()*AFFIRMATIONS.length);
   setText('affirmText',AFFIRMATIONS[affIdx]);
   
-  initYogaFilters();
-  initNutrition();
-  initBirthPlan();
-  initPostpartum();
-  initSOS();
-  initSymptoms();
-  initAppointmentChecklist();
-  initJournal();
-  initSupplementGuide();
-  renderDashboard();
+  initYogaFilters(); initNutrition(); initBirthPlan(); initPostpartum();
+  initSOS(); initSymptoms(); initAppointmentChecklist(); initJournal();
+  initSupplementGuide(); renderDashboard();
   
   if (window.TRACKER)  window.TRACKER.initTrackers();
   if (window.ONBOARD)  window.ONBOARD.checkOnboarding(u);
@@ -412,7 +397,6 @@ async function onLogin(u) {
   if (window.BABY)     window.BABY.initBaby();
   if (window.INDIA)    window.INDIA.initIndia();
   if (window.SMART)    window.SMART.initSmart();
-  
   renderIcons();
 }
 
@@ -420,11 +404,11 @@ async function logout(){
   if(!confirm(T.logoutQ)) return;
   if(supa) await supa.auth.signOut(); 
   user=null; window.user=null;
-  $('authScreen').style.display='flex';
-  $('langBar').style.display='none';
-  $('topBar').style.display='none';
+  if ($('authScreen')) $('authScreen').style.display='flex';
+  if ($('langBar')) $('langBar').style.display='none';
+  if ($('topBar')) $('topBar').style.display='none';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  $('page-mood').classList.add('active');
+  if ($('page-mood')) $('page-mood').classList.add('active');
 }
 
 window.addEventListener('DOMContentLoaded',async()=>{
@@ -460,7 +444,7 @@ function goTo(id){
   const pg=$('page-'+id); if(pg) pg.classList.add('active');
   const tab=document.querySelector(`.top-tab[data-page="${id}"]`); if(tab) tab.classList.add('active');
   const bn=document.querySelector(`#bottomNav .bn-item[data-page="${id}"]`); if(bn) bn.classList.add('active');
-  $('moreMenu').style.display='none';
+  if($('moreMenu')) $('moreMenu').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
   
   const loads={dashboard:renderDashboard,weight:loadWeights,sleep:loadSleepLogs,
@@ -520,11 +504,11 @@ function showMoodTips(mood){
     <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,#fce8e8,#fdf5ee);margin-bottom:14px">
       <span style="font-size:34px; color:var(--accent)">${d.e}</span>
       <div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--color-text-main)">${T[d.key]||mood}</div>
-        <div style="font-size:12px;color:var(--color-text-muted);margin-top:2px;line-height:1.55">${d.why}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--warm)">${T[d.key]||mood}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.55">${d.why}</div>
       </div>
     </div>
-    <div class="g2">${d.tips.map(([l,t])=>`<div style="background:white;border-radius:13px;padding:12px 14px;border-left:3px solid var(--color-primary)"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px;font-weight:600">${l}</div><div style="font-size:12.5px;color:var(--color-text-main);line-height:1.65">${t}</div></div>`).join('')}</div>`;
+    <div class="g2">${d.tips.map(([l,t])=>`<div style="background:white;border-radius:13px;padding:12px 14px;border-left:3px solid var(--rose)"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:3px;font-weight:600">${l}</div><div style="font-size:12.5px;color:var(--warm);line-height:1.65">${t}</div></div>`).join('')}</div>`;
   card.style.display='block';
   card.style.animation='none'; void card.offsetWidth; card.style.animation='fadeUp .35s ease';
   card.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -597,7 +581,7 @@ async function sendChat(){
   const inp=$('chatInput'); const txt=inp.value.trim(); if(!txt) return;
   if(window.PREMIUM && !(await window.PREMIUM.checkChatGate())) return;
   inp.value=''; addUserMsg(txt); chatHist.push({role:'user',content:txt});
-  const typing=document.createElement('div');typing.className='msg bot';typing.style.cssText='font-style:italic;color:var(--color-text-muted)';typing.textContent='...💭';
+  const typing=document.createElement('div');typing.className='msg bot';typing.style.cssText='font-style:italic;color:var(--muted)';typing.textContent='...💭';
   $('chatBox').appendChild(typing);$('chatBox').scrollTop=9999;
   try{
     if(!supa) throw new Error("DB Offline");
@@ -658,14 +642,14 @@ function showTimeline(due){
   const week=Math.min(40,Math.floor(elapsed/7)+1),pct=Math.min(100,Math.round(elapsed/280*100));
   const daysLeft=Math.max(0,Math.round((due-now)/86400000)),tri=week<=13?1:week<=27?2:3;
   const tn=[T.t1,T.t2,T.t3][tri-1];
-  $('dueResult').innerHTML=`<div class="g3"><div class="stat"><div class="stat-v">${T.wk} ${week}</div><div class="stat-l">Current</div></div><div class="stat"><div class="stat-v">${daysLeft}</div><div class="stat-l">${T.days}</div></div><div class="stat"><div class="stat-v">${pct}%</div><div class="stat-l">${T.done}</div></div></div><p style="font-size:13px;color:var(--color-text-muted);margin-top:10px;padding:9px 13px;background:rgba(232,160,168,.08);border-radius:10px"><i data-lucide="calendar" class="app-icon-inline"></i> Due: <strong>${fmtDate(due.toISOString().split('T')[0])}</strong> | ${getSizeEmoji(week)}</p>`;
+  $('dueResult').innerHTML=`<div class="g3"><div class="stat"><div class="stat-v">${T.wk} ${week}</div><div class="stat-l">Current</div></div><div class="stat"><div class="stat-v">${daysLeft}</div><div class="stat-l">${T.days}</div></div><div class="stat"><div class="stat-v">${pct}%</div><div class="stat-l">${T.done}</div></div></div><p style="font-size:13px;color:var(--muted);margin-top:10px;padding:9px 13px;background:rgba(232,160,168,.08);border-radius:10px"><i data-lucide="calendar" class="app-icon-inline"></i> Due: <strong>${fmtDate(due.toISOString().split('T')[0])}</strong> | ${getSizeEmoji(week)}</p>`;
   $('timelineCard').style.display='block'; setText('pctText',pct+'%');
   setTimeout(()=>$('timelineFill').style.width=pct+'%',100);
-  $('triCards').innerHTML=[{n:`${T.t1} ${T.tri}`,w:'Week 1–13',d:'Organ formation, nausea, fatigue'},{n:`${T.t2} ${T.tri}`,w:'Week 14–27',d:'Energy boost, baby kicks!'},{n:`${T.t3} ${T.tri}`,w:'Week 28–40',d:'Growth, delivery prep'}].map((t,i)=>`<div class="tri-c${tri===i+1?' current':''}"><div style="font-size:10px;font-weight:600;color:var(--accent);margin-bottom:3px">${t.w}</div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;margin-bottom:4px">${t.n}</div><div style="font-size:11.5px;color:var(--color-text-muted);line-height:1.5">${t.d}</div>${tri===i+1?'<div style="font-size:11px;color:var(--accent);font-weight:600;margin-top:5px"><i data-lucide="arrow-left" class="app-icon-inline"></i> You are here</div>':''}</div>`).join('');
+  $('triCards').innerHTML=[{n:`${T.t1} ${T.tri}`,w:'Week 1–13',d:'Organ formation, nausea, fatigue'},{n:`${T.t2} ${T.tri}`,w:'Week 14–27',d:'Energy boost, baby kicks!'},{n:`${T.t3} ${T.tri}`,w:'Week 28–40',d:'Growth, delivery prep'}].map((t,i)=>`<div class="tri-c${tri===i+1?' current':''}"><div style="font-size:10px;font-weight:600;color:var(--accent);margin-bottom:3px">${t.w}</div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;margin-bottom:4px">${t.n}</div><div style="font-size:11.5px;color:var(--muted);line-height:1.5">${t.d}</div>${tri===i+1?'<div style="font-size:11px;color:var(--accent);font-weight:600;margin-top:5px"><i data-lucide="arrow-left" class="app-icon-inline"></i> You are here</div>':''}</div>`).join('');
   const wd=getWD(week);
   $('weekDetailCard').style.display='block';
   setText('weekDetailTitle',`${T.wk} ${week} of 40`);
-  $('weekDetailGrid').innerHTML=`<div class="g3"><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:5px;font-weight:600"><i data-lucide="baby" class="app-icon-inline"></i> ${T.baby}</div><p style="font-size:12.5px;line-height:1.65">${wd.b}</p></div><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--color-primary);margin-bottom:5px;font-weight:600"><i data-lucide="heart-pulse" class="app-icon-inline"></i> ${T.body}</div><p style="font-size:12.5px;line-height:1.65">${wd.body}</p></div><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--color-success);margin-bottom:5px;font-weight:600"><i data-lucide="lightbulb" class="app-icon-inline"></i> ${T.tip}</div><p style="font-size:12.5px;line-height:1.65">${wd.tip}</p></div></div>`;
+  $('weekDetailGrid').innerHTML=`<div class="g3"><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:5px;font-weight:600"><i data-lucide="baby" class="app-icon-inline"></i> ${T.baby}</div><p style="font-size:12.5px;line-height:1.65">${wd.b}</p></div><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:5px;font-weight:600"><i data-lucide="heart-pulse" class="app-icon-inline"></i> ${T.body}</div><p style="font-size:12.5px;line-height:1.65">${wd.body}</p></div><div style="background:white;border-radius:13px;padding:13px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:5px;font-weight:600"><i data-lucide="lightbulb" class="app-icon-inline"></i> ${T.tip}</div><p style="font-size:12.5px;line-height:1.65">${wd.tip}</p></div></div>`;
   $('weekMoodTip').innerHTML=`<strong style="color:var(--accent)"><i data-lucide="smile" class="app-icon-inline"></i> ${T.mTip}:</strong> ${getMoodTipW(week)}`;
   renderIcons();
 }
@@ -692,7 +676,7 @@ function renderWeights(ws){
   const gain=ws.length>=2?(last.weight_kg-ws[0].weight_kg).toFixed(1):'—';
   const tg=pre&&last?(last.weight_kg-pre).toFixed(1):'—';
   $('wtStats').innerHTML=`<div class="stat"><div class="stat-v">${last?last.weight_kg+'kg':'—'}</div><div class="stat-l">Current</div></div><div class="stat"><div class="stat-v">${gain!=='—'?(parseFloat(gain)>=0?'+':'')+gain+'kg':'—'}</div><div class="stat-l">Change</div></div><div class="stat"><div class="stat-v">${tg!=='—'?(parseFloat(tg)>=0?'+':'')+tg+'kg':'—'}</div><div class="stat-l">Total Gain</div></div>`;
-  $('weightLog').innerHTML=ws.length?ws.slice().reverse().map(w=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px"><span>W${w.week_number||'?'} — <strong>${w.weight_kg}kg</strong></span><span style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--color-text-muted)">${new Date(w.logged_at).toLocaleDateString('en-IN')}</span><button onclick="MC.deleteWeight('${w.id}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></span></div>`).join(''):'<p style="font-size:13px;color:var(--color-text-muted);text-align:center;padding:14px">Koi entry nahi.</p>';
+  $('weightLog').innerHTML=ws.length?ws.slice().reverse().map(w=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px"><span>W${w.week_number||'?'} — <strong>${w.weight_kg}kg</strong></span><span style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--muted)">${new Date(w.logged_at).toLocaleDateString('en-IN')}</span><button onclick="MC.deleteWeight('${w.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></span></div>`).join(''):'<p style="font-size:13px;color:var(--muted);text-align:center;padding:14px">Koi entry nahi.</p>';
   if(wtChart){wtChart.destroy();wtChart=null;}
   if(ws.length>=2){const ctx=$('weightChart')?.getContext('2d');if(ctx)wtChart=new Chart(ctx,{type:'line',data:{labels:ws.map(w=>`W${w.week_number||'?'}`),datasets:[{label:'kg',data:ws.map(w=>w.weight_kg),borderColor:'#e8a0a8',backgroundColor:'rgba(232,160,168,.12)',tension:.4,pointBackgroundColor:'#c97b7b',pointRadius:5,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(200,100,100,.06)'},ticks:{font:{size:11}}}}}});}
   renderIcons();
@@ -718,7 +702,7 @@ function initYogaFilters(){
   const fr=$('yogaFilterRow');if(!fr||fr.children.length) return;
   fr.innerHTML=YCATS.map(c=>`<button class="tab-btn${c.k==='all'?' active':''}" data-ycat="${c.k}">${c.l}</button>`).join('');
   fr.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{fr.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');yogaFilterKey=b.dataset.ycat;renderYogaGrid();}));
-  const av=$('avoidList');if(av)av.innerHTML=[['Flat back (W12+)','IVC compression — dizziness, reduced blood flow.'],['Intense ab crunches','Diastasis recti risk.'],['Contact sports/skiing','Fall + impact risk.'],['Hot yoga/sauna','Overheating danger.'],['Breath holding','Fetal oxygenation reduce hoti hai.'],['Heavy lifting >10kg','Intra-abdominal pressure.'],['High altitude','Oxygen reduction.'],['Exercise through pain','Pain = stop signal.']].map(([t,d])=>`<div style="background:white;border-radius:12px;padding:12px;border-left:3px solid var(--color-danger)"><div style="font-weight:600;font-size:13px;margin-bottom:2px"><i data-lucide="alert-triangle" class="app-icon-inline" style="color:var(--color-danger)"></i> ${t}</div><div style="font-size:12px;color:var(--color-text-muted);line-height:1.55">${d}</div></div>`).join('');
+  const av=$('avoidList');if(av)av.innerHTML=[['Flat back (W12+)','IVC compression — dizziness, reduced blood flow.'],['Intense ab crunches','Diastasis recti risk.'],['Contact sports/skiing','Fall + impact risk.'],['Hot yoga/sauna','Overheating danger.'],['Breath holding','Fetal oxygenation reduce hoti hai.'],['Heavy lifting >10kg','Intra-abdominal pressure.'],['High altitude','Oxygen reduction.'],['Exercise through pain','Pain = stop signal.']].map(([t,d])=>`<div style="background:white;border-radius:12px;padding:12px;border-left:3px solid #e05c5c"><div style="font-weight:600;font-size:13px;margin-bottom:2px"><i data-lucide="alert-triangle" class="app-icon-inline" style="color:#e05c5c"></i> ${t}</div><div style="font-size:12px;color:var(--muted);line-height:1.55">${d}</div></div>`).join('');
   renderYogaGrid();
 }
 
@@ -727,16 +711,16 @@ function renderYogaGrid(){
   const filtered=yogaFilterKey==='all'?YOGA:YOGA.filter(y=>y.cat.includes(yogaFilterKey));
   g.innerHTML=filtered.map(y=>`
     <div class="yoga-card" onclick="this.classList.toggle('open')">
-      <div style="font-size:38px;margin-bottom:8px; color:var(--color-primary)">${y.icon}</div>
+      <div style="font-size:38px;margin-bottom:8px; color:var(--rose)">${y.icon}</div>
       <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">${y.name}</div>
       <div style="display:flex;gap:5px;margin-bottom:7px"><span class="pill pill-g"><i data-lucide="clock" class="app-icon-inline" style="width:12px; height:12px;"></i> ${y.dur}</span><span class="pill pill-b">${y.lvl}</span></div>
-      <div style="font-size:12.5px;color:var(--color-text-muted);line-height:1.55">${y.short}</div>
+      <div style="font-size:12.5px;color:var(--muted);line-height:1.55">${y.short}</div>
       <div style="font-size:11.5px;color:var(--accent);margin-top:8px;font-weight:500">▼ Tap for details</div>
       <div class="yoga-detail">
-        <p style="font-size:12.5px;color:var(--color-text-muted);line-height:1.65;margin-bottom:10px"><strong style="color:var(--color-success)">Why:</strong> ${y.why}</p>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:10px"><strong style="color:var(--green)">Why:</strong> ${y.why}</p>
         ${y.steps.map((s,i)=>`<div class="yoga-step"><div class="yoga-step-num">${i+1}</div><div style="font-size:12.5px;line-height:1.6">${s}</div></div>`).join('')}
-        <div style="background:var(--color-background);border-radius:10px;padding:9px 12px;margin-top:8px;font-size:12px"><strong style="color:var(--color-success)">Benefits:</strong> ${y.benefits}</div>
-        <div style="background:var(--color-danger-bg);border-radius:10px;padding:8px 12px;margin-top:6px;font-size:12px;color:var(--color-danger)"><i data-lucide="alert-triangle" class="app-icon-inline"></i> ${y.avoid}</div>
+        <div style="background:var(--cream);border-radius:10px;padding:9px 12px;margin-top:8px;font-size:12px"><strong style="color:var(--green)">Benefits:</strong> ${y.benefits}</div>
+        <div style="background:#fff5f5;border-radius:10px;padding:8px 12px;margin-top:6px;font-size:12px;color:#c94040"><i data-lucide="alert-triangle" class="app-icon-inline"></i> ${y.avoid}</div>
       </div>
     </div>`).join('');
   renderIcons();
@@ -777,9 +761,9 @@ async function deleteSleep(id){if(supa) await supa.from('sleep_logs').delete().e
 
 function renderSleepUI(logs){
   const avg7=logs.length?(logs.slice(0,7).reduce((a,s)=>a+parseFloat(s.duration_hrs),0)/Math.min(7,logs.length)).toFixed(1):0;
-  $('sleepStats').innerHTML=`<div class="stat"><div class="stat-v">${logs[0]?.duration_hrs||'—'}h</div><div class="stat-l">Last Night</div></div><div class="stat"><div class="stat-v">${avg7}h</div><div class="stat-l">7-Day Avg</div></div><div class="stat"><div class="stat-v" style="font-size:1.4rem">${['','<i data-lucide="frown" style="color:var(--color-danger)"></i>','<i data-lucide="meh" style="color:var(--color-primary)"></i>','<i data-lucide="smile" style="color:var(--color-success)"></i>'][logs[0]?.quality||0]||'—'}</div><div class="stat-l">Quality</div></div>`;
-  $('sleepLog').innerHTML=logs.length?logs.slice(0,14).map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px"><span>${new Date(s.logged_at).toLocaleDateString('en-IN')} — <strong>${s.duration_hrs}h</strong></span><span style="display:flex;align-items:center;gap:6px"><span class="pill ${parseFloat(s.duration_hrs)>=7?'pill-g':parseFloat(s.duration_hrs)>=5?'pill-b':'pill-r'}">${parseFloat(s.duration_hrs)>=7?'Good':parseFloat(s.duration_hrs)>=5?'OK':'Short'}</span><button onclick="MC.deleteSleep('${s.id}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></span></div>`).join(''):'<p style="font-size:13px;color:var(--color-text-muted);text-align:center;padding:14px">Koi entry nahi.</p>';
-  $('sleepTipsGrid').innerHTML=SLEEP_TIPS.map(t=>`<div style="background:white;border-radius:14px;padding:13px;border-left:3px solid #b8a8d0"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#b8a8d0;margin-bottom:3px;font-weight:600">${t.t}</div><div style="font-size:12.5px;color:var(--color-text-muted);line-height:1.65">${t.b}</div></div>`).join('');
+  $('sleepStats').innerHTML=`<div class="stat"><div class="stat-v">${logs[0]?.duration_hrs||'—'}h</div><div class="stat-l">Last Night</div></div><div class="stat"><div class="stat-v">${avg7}h</div><div class="stat-l">7-Day Avg</div></div><div class="stat"><div class="stat-v" style="font-size:1.4rem">${['','<i data-lucide="frown" style="color:#e05c5c"></i>','<i data-lucide="meh" style="color:var(--gold)"></i>','<i data-lucide="smile" style="color:var(--green)"></i>'][logs[0]?.quality||0]||'—'}</div><div class="stat-l">Quality</div></div>`;
+  $('sleepLog').innerHTML=logs.length?logs.slice(0,14).map(s=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px"><span>${new Date(s.logged_at).toLocaleDateString('en-IN')} — <strong>${s.duration_hrs}h</strong></span><span style="display:flex;align-items:center;gap:6px"><span class="pill ${parseFloat(s.duration_hrs)>=7?'pill-g':parseFloat(s.duration_hrs)>=5?'pill-b':'pill-r'}">${parseFloat(s.duration_hrs)>=7?'Good':parseFloat(s.duration_hrs)>=5?'OK':'Short'}</span><button onclick="MC.deleteSleep('${s.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></span></div>`).join(''):'<p style="font-size:13px;color:var(--muted);text-align:center;padding:14px">Koi entry nahi.</p>';
+  $('sleepTipsGrid').innerHTML=SLEEP_TIPS.map(t=>`<div style="background:white;border-radius:14px;padding:13px;border-left:3px solid var(--lavender)"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--lavender);margin-bottom:3px;font-weight:600">${t.t}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.65">${t.b}</div></div>`).join('');
   if(slChart){slChart.destroy();slChart=null;}
   const last7=logs.slice(0,7).reverse();
   if(last7.length){const ctx=$('sleepChart')?.getContext('2d');if(ctx)slChart=new Chart(ctx,{type:'bar',data:{labels:last7.map(s=>new Date(s.logged_at).toLocaleDateString('en-IN',{day:'numeric',month:'numeric'})),datasets:[{label:'hrs',data:last7.map(s=>s.duration_hrs),backgroundColor:last7.map(s=>parseFloat(s.duration_hrs)>=7?'rgba(106,184,154,.75)':parseFloat(s.duration_hrs)>=5?'rgba(232,160,168,.75)':'rgba(220,80,80,.65)'),borderRadius:8}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:12,ticks:{font:{size:11},callback:v=>v+'h'}},x:{ticks:{font:{size:10}}}}}});}
@@ -803,9 +787,9 @@ function initNutrition(){
 
 function renderMealPlan(tri){
   const plan=MEAL_PLANS[tri];const el=$('mealPlanContent');if(!el||!plan) return;
-  el.innerHTML=`<div style="background:rgba(232,160,168,.08);border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:var(--color-text-muted);line-height:1.7"><strong style="color:var(--accent)">Focus:</strong> ${plan.focus}</div>`+
-    plan.meals.map(m=>`<div style="margin-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:6px">${m.t}</div>${m.i.map(i=>`<div style="font-size:12.5px;color:var(--color-text-muted);padding:4px 0 4px 12px;border-left:2px solid var(--color-border);margin-bottom:3px;line-height:1.5">${i}</div>`).join('')}</div>`).join('')+
-    `<div style="background:var(--color-danger-bg);border-radius:10px;padding:10px 12px;margin-top:8px"><div style="font-size:11px;font-weight:600;color:var(--color-danger);margin-bottom:5px"><i data-lucide="alert-triangle" class="app-icon-inline"></i> Avoid this trimester:</div>${plan.avoid.map(a=>`<div style="font-size:12.5px;color:var(--color-text-muted);padding:2px 0">• ${a}</div>`).join('')}</div>`;
+  el.innerHTML=`<div style="background:rgba(232,160,168,.08);border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.7"><strong style="color:var(--accent)">Focus:</strong> ${plan.focus}</div>`+
+    plan.meals.map(m=>`<div style="margin-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:6px">${m.t}</div>${m.i.map(i=>`<div style="font-size:12.5px;color:var(--muted);padding:4px 0 4px 12px;border-left:2px solid var(--blush);margin-bottom:3px;line-height:1.5">${i}</div>`).join('')}</div>`).join('')+
+    `<div style="background:#fff5f5;border-radius:10px;padding:10px 12px;margin-top:8px"><div style="font-size:11px;font-weight:600;color:#c94040;margin-bottom:5px"><i data-lucide="alert-triangle" class="app-icon-inline"></i> Avoid this trimester:</div>${plan.avoid.map(a=>`<div style="font-size:12.5px;color:var(--muted);padding:2px 0">• ${a}</div>`).join('')}</div>`;
   renderIcons();
 }
 
@@ -819,7 +803,7 @@ function renderWater(){
   const el=$('waterTrack');if(!el) return;el.innerHTML='';
   for(let i=0;i<10;i++){
     const g=document.createElement('span');
-    g.style.cssText=`font-size:25px;cursor:pointer;transition:.2s;filter:${i<waterCount?'none':'grayscale(1)'};opacity:${i<waterCount?'1':'0.3'}; color:var(--color-blue)`;
+    g.style.cssText=`font-size:25px;cursor:pointer;transition:.2s;filter:${i<waterCount?'none':'grayscale(1)'};opacity:${i<waterCount?'1':'0.3'}; color:var(--blue)`;
     g.innerHTML='<i data-lucide="droplet" style="fill:currentColor"></i>';
     g.onclick=async()=>{
       waterCount=i<waterCount?i:i+1;
@@ -828,7 +812,7 @@ function renderWater(){
     };
     el.appendChild(g);
   }
-  const msg=$('waterMsg');if(msg)msg.innerHTML=waterCount>=10?'<i data-lucide="check-circle-2" class="app-icon-inline" style="color:var(--color-success)"></i> Goal complete!':waterCount>=6?`<i data-lucide="check" class="app-icon-inline" style="color:var(--color-success)"></i> ${waterCount}/10 — Good!`:`<i data-lucide="droplet" class="app-icon-inline"></i> ${waterCount}/10 — ${10-waterCount} more needed`;
+  const msg=$('waterMsg');if(msg)msg.innerHTML=waterCount>=10?'<i data-lucide="check-circle-2" class="app-icon-inline" style="color:var(--green)"></i> Goal complete!':waterCount>=6?`<i data-lucide="check" class="app-icon-inline" style="color:var(--green)"></i> ${waterCount}/10 — Good!`:`<i data-lucide="droplet" class="app-icon-inline"></i> ${waterCount}/10 — ${10-waterCount} more needed`;
   updateNutriBars();
   renderIcons();
 }
@@ -836,7 +820,7 @@ function renderWater(){
 function updateNutriBars(){
   const el=$('nutriBars');if(!el) return;
   const cal=foodLogs.reduce((a,f)=>a+(f.calories||0),0),goal=2200;
-  el.innerHTML=`<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-muted);margin-bottom:3px"><span><i data-lucide="flame" class="app-icon-inline" style="color:#e07040"></i> Calories</span><span>${cal}/${goal} kcal</span></div><div style="height:8px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(cal/goal*100))}%;background:linear-gradient(90deg,var(--color-primary),var(--color-secondary));border-radius:50px;transition:width .5s"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-muted);margin-bottom:3px"><span><i data-lucide="droplet" class="app-icon-inline" style="color:#4a98c4"></i> Water</span><span>${waterCount}/10</span></div><div style="height:8px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div style="height:100%;width:${waterCount*10}%;background:linear-gradient(90deg,#7ab8d4,#4a98c4);border-radius:50px;transition:width .5s"></div></div></div><p style="font-size:12px;color:var(--color-text-muted);margin-top:9px"><i data-lucide="info" class="app-icon-inline"></i> Pregnancy mein ~300 extra calories needed daily.</p>`;
+  el.innerHTML=`<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span><i data-lucide="flame" class="app-icon-inline" style="color:#e07040"></i> Calories</span><span>${cal}/${goal} kcal</span></div><div style="height:8px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(cal/goal*100))}%;background:linear-gradient(90deg,var(--rose),var(--peach));border-radius:50px;transition:width .5s"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span><i data-lucide="droplet" class="app-icon-inline" style="color:#4a98c4"></i> Water</span><span>${waterCount}/10</span></div><div style="height:8px;background:#f0e0e0;border-radius:50px;overflow:hidden"><div style="height:100%;width:${waterCount*10}%;background:linear-gradient(90deg,#7ab8d4,#4a98c4);border-radius:50px;transition:width .5s"></div></div></div><p style="font-size:12px;color:var(--muted);margin-top:9px"><i data-lucide="info" class="app-icon-inline"></i> Pregnancy mein ~300 extra calories needed daily.</p>`;
   renderIcons();
 }
 
@@ -849,7 +833,7 @@ async function loadFoodLog(){
 function renderFoodLog(){
   const list=$('foodList');if(!list) return;
   const filtered=mealTab==='all'?foodLogs:foodLogs.filter(f=>f.meal_type===mealTab);
-  list.innerHTML=filtered.length?filtered.slice().reverse().map(f=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px"><span>${f.food_name}</span><span style="display:flex;align-items:center;gap:7px"><span style="font-size:12px;color:var(--color-text-muted)">${f.calories} cal</span><button onclick="MC.deleteFood('${f.id}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></span></div>`).join(''):'<p style="font-size:13px;color:var(--color-text-muted);text-align:center;padding:12px">Koi food log nahi.</p>';
+  list.innerHTML=filtered.length?filtered.slice().reverse().map(f=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:white;border-radius:11px;margin-bottom:6px;font-size:13px"><span>${f.food_name}</span><span style="display:flex;align-items:center;gap:7px"><span style="font-size:12px;color:var(--muted)">${f.calories} cal</span><button onclick="MC.deleteFood('${f.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></span></div>`).join(''):'<p style="font-size:13px;color:var(--muted);text-align:center;padding:12px">Koi food log nahi.</p>';
   renderIcons();
 }
 
@@ -877,7 +861,7 @@ function renderMedicines(){
   const taken=Object.keys(medTaken).length,total=medicines.length,pct=total?Math.round(taken/total*100):0;
   $('medStats').innerHTML=`<div class="stat"><div class="stat-v">${taken}</div><div class="stat-l">Liya</div></div><div class="stat"><div class="stat-v">${total-taken}</div><div class="stat-l">Baaki</div></div><div class="stat"><div class="stat-v">${pct}%</div><div class="stat-l">Done</div></div>`;
   $('medProgressBar').style.width=pct+'%';
-  $('medList').innerHTML=medicines.length?medicines.map(m=>`<div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:13px;margin-bottom:8px"><div style="width:42px;height:42px;border-radius:12px;background:${medTaken[m.id]?'var(--color-success-bg)':'var(--color-danger-bg)'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${m.icon}</div><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${m.name}</div><div style="font-size:12px;color:var(--color-text-muted);margin-top:1px">${m.dose||''}${m.notes?' • '+m.notes:''}</div><div style="font-size:11.5px;color:var(--accent);margin-top:2px"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${m.time_of_day||'—'}</div></div><div style="display:flex;gap:6px"><button onclick="MC.toggleMedTaken('${m.id}')" style="padding:6px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid ${medTaken[m.id]?'var(--color-success)':'var(--color-border)'};background:${medTaken[m.id]?'var(--color-success)':'white'};color:${medTaken[m.id]?'white':'var(--color-text-muted)'};font-family:var(--font-sans)">${medTaken[m.id]?'✓ Liya':'Liya?'}</button><button onclick="MC.deleteMed('${m.id}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:20px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:13px;color:var(--color-text-muted);padding:10px 0">Koi medicine nahi. Neeche se add karein.</p>';
+  $('medList').innerHTML=medicines.length?medicines.map(m=>`<div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:13px;margin-bottom:8px"><div style="width:42px;height:42px;border-radius:12px;background:${medTaken[m.id]?'#e8f5e9':'#fce8e8'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${m.icon}</div><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${m.name}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${m.dose||''}${m.notes?' • '+m.notes:''}</div><div style="font-size:11.5px;color:var(--accent);margin-top:2px"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${m.time_of_day||'—'}</div></div><div style="display:flex;gap:6px"><button onclick="MC.toggleMedTaken('${m.id}')" style="padding:6px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid ${medTaken[m.id]?'var(--green)':'var(--blush)'};background:${medTaken[m.id]?'var(--green)':'white'};color:${medTaken[m.id]?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${medTaken[m.id]?'✓ Liya':'Liya?'}</button><button onclick="MC.deleteMed('${m.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:10px 0">Koi medicine nahi. Neeche se add karein.</p>';
   renderIcons();
 }
 
@@ -899,7 +883,7 @@ function toggleAddMedForm(){const f=$('addMedForm');if(f)f.style.display=f.style
 
 function initSupplementGuide(){
   const el=$('suppGuide');if(!el)return;
-  el.innerHTML=[{i:'<i data-lucide="pill" style="color:var(--color-primary)"></i>',n:'Folic Acid (400-800mcg)',w:'Pre-conception to W12',r:'Neural tube defects 70% prevent.'},{i:'<i data-lucide="apple" style="color:var(--color-success)"></i>',n:'Iron + Vit C',w:'Throughout, esp 2nd+3rd',r:'Anaemia prevent. Vit C se iron 3x.'},{i:'<i data-lucide="bone" style="color:var(--color-text-muted)"></i>',n:'Calcium (1000mg)',w:'2nd trimester+',r:"Baby bones. Maa ki bones protect."},{i:'<i data-lucide="sun" style="color:var(--color-secondary)"></i>',n:'Vitamin D (600 IU)',w:'Throughout',r:'Calcium absorption.'},{i:'<i data-lucide="fish" style="color:var(--color-blue)"></i>',n:'DHA/Omega-3 (200mg)',w:'2nd trimester+',r:'Baby brain + vision.'},{i:'<i data-lucide="leaf" style="color:var(--color-success)"></i>',n:'Magnesium (350mg)',w:'3rd trimester esp',r:'Leg cramps + sleep.'}].map(s=>`<div style="display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--color-border);align-items:flex-start"><span style="font-size:22px;flex-shrink:0">${s.i}</span><div><div style="font-weight:600;font-size:13px">${s.n}</div><div style="font-size:11.5px;color:var(--accent);margin-top:1px"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${s.w}</div><div style="font-size:12.5px;color:var(--color-text-muted);line-height:1.6;margin-top:2px">${s.r}</div></div></div>`).join('')+'<p style="font-size:12px;color:var(--color-text-muted);margin-top:10px;padding:9px;background:var(--color-danger-bg);border-radius:9px"><i data-lucide="alert-triangle" class="app-icon-inline" style="color:var(--color-danger)"></i> Doctor ki salah ke bina koi supplement mat lo.</p>';
+  el.innerHTML=[{i:'<i data-lucide="pill" style="color:var(--rose)"></i>',n:'Folic Acid (400-800mcg)',w:'Pre-conception to W12',r:'Neural tube defects 70% prevent.'},{i:'<i data-lucide="apple" style="color:var(--green)"></i>',n:'Iron + Vit C',w:'Throughout, esp 2nd+3rd',r:'Anaemia prevent. Vit C se iron 3x.'},{i:'<i data-lucide="bone" style="color:var(--muted)"></i>',n:'Calcium (1000mg)',w:'2nd trimester+',r:"Baby bones. Maa ki bones protect."},{i:'<i data-lucide="sun" style="color:var(--gold)"></i>',n:'Vitamin D (600 IU)',w:'Throughout',r:'Calcium absorption.'},{i:'<i data-lucide="fish" style="color:var(--blue)"></i>',n:'DHA/Omega-3 (200mg)',w:'2nd trimester+',r:'Baby brain + vision.'},{i:'<i data-lucide="leaf" style="color:var(--green)"></i>',n:'Magnesium (350mg)',w:'3rd trimester esp',r:'Leg cramps + sleep.'}].map(s=>`<div style="display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--blush);align-items:flex-start"><span style="font-size:22px;flex-shrink:0">${s.i}</span><div><div style="font-weight:600;font-size:13px">${s.n}</div><div style="font-size:11.5px;color:var(--accent);margin-top:1px"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${s.w}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:2px">${s.r}</div></div></div>`).join('')+'<p style="font-size:12px;color:var(--muted);margin-top:10px;padding:9px;background:#ffebee;border-radius:9px"><i data-lucide="alert-triangle" class="app-icon-inline" style="color:#e05c5c"></i> Doctor ki salah ke bina koi supplement mat lo.</p>';
   renderIcons();
 }
 
@@ -932,7 +916,7 @@ function renderBag(filterCat=null){
   const cats=filterCat?[filterCat]:[...new Set(bagItems.map(i=>i.category))];
   $('bagContainer').innerHTML=cats.map(cat=>{
     const items=bagItems.filter(i=>i.category===cat);const catDone=items.filter(i=>i.is_checked).length;
-    return`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-weight:600;font-size:13.5px">${cat}</div><div style="font-size:12px;color:var(--color-text-muted)">${catDone}/${items.length}</div></div>`+items.map(item=>`<div onclick="MC.toggleBagItem('${item.id}')" style="display:flex;align-items:center;gap:9px;padding:8px 10px;background:white;border-radius:10px;margin-bottom:5px;cursor:pointer;opacity:${item.is_checked?'.6':'1'}"><input type="checkbox" ${item.is_checked?'checked':''} onclick="event.stopPropagation();MC.toggleBagItem('${item.id}')" style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0"/><span style="font-size:13px;${item.is_checked?'text-decoration:line-through;color:var(--color-text-muted)':''}">${item.item_name}</span></div>`).join('')+'</div>';
+    return`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div style="font-weight:600;font-size:13.5px">${cat}</div><div style="font-size:12px;color:var(--muted)">${catDone}/${items.length}</div></div>`+items.map(item=>`<div onclick="MC.toggleBagItem('${item.id}')" style="display:flex;align-items:center;gap:9px;padding:8px 10px;background:white;border-radius:10px;margin-bottom:5px;cursor:pointer;opacity:${item.is_checked?'.6':'1'}"><input type="checkbox" ${item.is_checked?'checked':''} onclick="event.stopPropagation();MC.toggleBagItem('${item.id}')" style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0"/><span style="font-size:13px;${item.is_checked?'text-decoration:line-through;color:var(--muted)':''}">${item.item_name}</span></div>`).join('')+'</div>';
   }).join('');
   renderIcons();
 }
@@ -987,7 +971,7 @@ function renderNames(){
   const q=($('nameSearch')?.value||'').toLowerCase();
   const filtered=NAME_DB.filter(n=>{const mq=!q||n.n.toLowerCase().includes(q)||n.m.toLowerCase().includes(q);const mf=nameFilterKey==='all'||n.g===nameFilterKey||n.r.includes(nameFilterKey);return mq&&mf;});
   const g=$('nameGrid');if(!g)return;
-  g.innerHTML=filtered.map(n=>{const sv=savedNames.includes(n.n);return`<div onclick="MC.toggleSaveName('${n.n}')" style="background:white;border-radius:16px;padding:14px;border:1.5px solid ${sv?'var(--accent)':'var(--color-border)'};cursor:pointer;transition:.2s;position:relative" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"><div style="position:absolute;top:10px;right:10px;font-size:17px; color:${sv?'var(--color-primary)':'var(--color-text-muted)'}"><i data-lucide="heart" style="${sv?'fill:currentColor':''}"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--color-text-main);margin-bottom:2px">${n.n}</div><div style="font-size:12px;color:var(--color-text-muted);line-height:1.5;margin-bottom:5px">${n.m}</div><span class="pill ${n.g==='boy'?'pill-b':n.g==='girl'?'pill-p':'pill-o'}">${n.g}</span><span class="pill pill-g">${n.o}</span></div>`;}).join('')||'<p style="color:var(--color-text-muted);font-size:13px;padding:12px;grid-column:1/-1">Koi naam nahi mila.</p>';
+  g.innerHTML=filtered.map(n=>{const sv=savedNames.includes(n.n);return`<div onclick="MC.toggleSaveName('${n.n}')" style="background:white;border-radius:16px;padding:14px;border:1.5px solid ${sv?'var(--accent)':'var(--blush)'};cursor:pointer;transition:.2s;position:relative" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"><div style="position:absolute;top:10px;right:10px;font-size:17px; color:${sv?'var(--rose)':'var(--muted)'}"><i data-lucide="heart" style="${sv?'fill:currentColor':''}"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--warm);margin-bottom:2px">${n.n}</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:5px">${n.m}</div><span class="pill ${n.g==='boy'?'pill-b':n.g==='girl'?'pill-p':'pill-o'}">${n.g}</span><span class="pill pill-g">${n.o}</span></div>`;}).join('')||'<p style="color:var(--muted);font-size:13px;padding:12px;grid-column:1/-1">Koi naam nahi mila.</p>';
   renderIcons();
 }
 
@@ -1001,7 +985,7 @@ async function toggleSaveName(name){
 function renderSavedNames(){
   const card=$('savedNamesCard'),list=$('savedNamesList');if(!card||!list)return;
   card.style.display=savedNames.length?'block':'none';
-  list.innerHTML=savedNames.map(n=>`<div style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:white;border-radius:50px;border:1.5px solid var(--color-border);font-size:13px;font-weight:500"><i data-lucide="heart" class="app-icon-inline" style="color:var(--color-primary); fill:currentColor"></i> ${n}<button onclick="MC.toggleSaveName('${n}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:15px;line-height:1;margin-left:2px"><i data-lucide="x" class="app-icon-inline"></i></button></div>`).join('');
+  list.innerHTML=savedNames.map(n=>`<div style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:white;border-radius:50px;border:1.5px solid var(--blush);font-size:13px;font-weight:500"><i data-lucide="heart" class="app-icon-inline" style="color:var(--rose); fill:currentColor"></i> ${n}<button onclick="MC.toggleSaveName('${n}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;margin-left:2px"><i data-lucide="x" class="app-icon-inline"></i></button></div>`).join('');
   renderIcons();
 }
 
@@ -1010,8 +994,8 @@ function renderSavedNames(){
 // ══════════════════════════════════════
 function initJournal(){
   const d=$('jDate');if(d)d.value=todayStr();
-  document.querySelectorAll('.jmood').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('.jmood').forEach(e=>{e.style.borderColor='transparent';e.style.background='transparent';});el.style.borderColor='var(--color-primary)';el.style.background='var(--color-background)';jMood=el.dataset.jm;});});
-  const first=document.querySelector('.jmood');if(first){first.style.borderColor='var(--color-primary)';first.style.background='var(--color-background)';}
+  document.querySelectorAll('.jmood').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('.jmood').forEach(e=>{e.style.borderColor='transparent';e.style.background='transparent';});el.style.borderColor='var(--rose)';el.style.background='var(--blush)';jMood=el.dataset.jm;});});
+  const first=document.querySelector('.jmood');if(first){first.style.borderColor='var(--rose)';first.style.background='var(--blush)';}
 }
 
 function handlePhoto(input){
@@ -1039,8 +1023,8 @@ async function deleteJournalEntry(id){if(!confirm('Delete karein?'))return;if(su
 
 function renderJournal(){
   const el=$('journalEntries');if(!el)return;
-  if(!journalList.length){el.innerHTML='<p style="text-align:center;color:var(--color-text-muted);font-size:13.5px;padding:22px">Koi entry nahi. Upar se pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--color-primary)"></i></p>'; renderIcons(); return;}
-  el.innerHTML=journalList.map(e=>`<div style="background:white;border-radius:18px;padding:16px;margin-bottom:11px;border:1.5px solid var(--color-border)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'10px':'0'}"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">${e.mood||'😊'}</span><span style="font-size:12px;color:var(--color-text-muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--color-background);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:16px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13.5px;line-height:1.75;color:var(--color-text-main)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`).join('');
+  if(!journalList.length){el.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13.5px;padding:22px">Koi entry nahi. Upar se pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>'; renderIcons(); return;}
+  el.innerHTML=journalList.map(e=>`<div style="background:white;border-radius:18px;padding:16px;margin-bottom:11px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'10px':'0'}"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">${e.mood||'😊'}</span><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13.5px;line-height:1.75;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`).join('');
   renderIcons();
 }
 
@@ -1074,8 +1058,8 @@ async function deleteAppt(id){if(!confirm('Delete karein?'))return;if(supa) awai
 function renderAppointments(){
   const el=$('apptList');if(!el)return;
   const upcoming=apptList.filter(a=>!a.is_completed);const done=apptList.filter(a=>a.is_completed);
-  if(!apptList.length){el.innerHTML='<p style="font-size:13px;color:var(--color-text-muted);text-align:center;padding:14px">Koi appointment nahi. Upar se add karein!</p>';return;}
-  el.innerHTML=[...upcoming,...done].map(a=>{const d=new Date(a.appt_date);return`<div class="appt-item" style="opacity:${a.is_completed?'.6':'1'}"><div class="appt-date-box" style="${a.is_completed?'background:var(--color-border); color:var(--color-text-muted)':''}"><div class="appt-day">${d.getDate()}</div><div class="appt-mon">${d.toLocaleDateString('en-IN',{month:'short'})}</div></div><div class="appt-info"><div class="appt-title" style="${a.is_completed?'text-decoration:line-through':''}">${a.title}</div><div class="appt-sub">${[a.doctor_name,a.hospital,a.appt_time].filter(Boolean).join(' • ')}</div>${a.notes?`<div style="font-size:12px;color:var(--color-text-muted);margin-top:3px">${a.notes}</div>`:''}</div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><button onclick="MC.toggleApptDone('${a.id}')" style="padding:5px 11px;border-radius:50px;font-size:11.5px;cursor:pointer;border:1.5px solid ${a.is_completed?'var(--color-success)':'var(--color-border)'};background:${a.is_completed?'var(--color-success)':'white'};color:${a.is_completed?'white':'var(--color-text-muted)'};font-family:var(--font-sans)">${a.is_completed?'<i data-lucide="check" class="app-icon-inline"></i>':'Done?'}</button><button onclick="MC.deleteAppt('${a.id}')" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`;}).join('');
+  if(!apptList.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:14px">Koi appointment nahi. Upar se add karein!</p>';return;}
+  el.innerHTML=[...upcoming,...done].map(a=>{const d=new Date(a.appt_date);return`<div class="appt-item" style="opacity:${a.is_completed?'.6':'1'}"><div class="appt-date-box" style="${a.is_completed?'background:var(--blush); color:var(--muted)':''}"><div class="appt-day">${d.getDate()}</div><div class="appt-mon">${d.toLocaleDateString('en-IN',{month:'short'})}</div></div><div class="appt-info"><div class="appt-title" style="${a.is_completed?'text-decoration:line-through':''}">${a.title}</div><div class="appt-sub">${[a.doctor_name,a.hospital,a.appt_time].filter(Boolean).join(' • ')}</div>${a.notes?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${a.notes}</div>`:''}</div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><button onclick="MC.toggleApptDone('${a.id}')" style="padding:5px 11px;border-radius:50px;font-size:11.5px;cursor:pointer;border:1.5px solid ${a.is_completed?'var(--green)':'var(--blush)'};background:${a.is_completed?'var(--green)':'white'};color:${a.is_completed?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${a.is_completed?'<i data-lucide="check" class="app-icon-inline"></i>':'Done?'}</button><button onclick="MC.deleteAppt('${a.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`;}).join('');
   renderIcons();
 }
 
@@ -1090,7 +1074,7 @@ function initAppointmentChecklist(){
     {w:'36+',   t:'Weekly NST',                  d:'Non-stress test if high risk'},
     {w:'40+',   t:'Post-dates monitoring',       d:'Induction discussion if needed'},
   ];
-  el.innerHTML=TESTS.map(function(t){return'<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--color-border);align-items:flex-start"><span style="font-size:11px;background:var(--color-background);color:var(--accent);padding:3px 8px;border-radius:50px;font-weight:600;white-space:nowrap;flex-shrink:0">W'+t.w+'</span><div><div style="font-weight:600;font-size:13px">'+t.t+'</div><div style="font-size:12px;color:var(--color-text-muted);margin-top:2px">'+t.d+'</div></div></div>';}).join('');
+  el.innerHTML=TESTS.map(function(t){return'<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(232,160,168,.12);align-items:flex-start"><span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 8px;border-radius:50px;font-weight:600;white-space:nowrap;flex-shrink:0">W'+t.w+'</span><div><div style="font-weight:600;font-size:13px">'+t.t+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+t.d+'</div></div></div>';}).join('');
 }
 
 // ══════════════════════════════════════
@@ -1145,16 +1129,16 @@ const PP={
 function initPostpartum(){
   document.querySelectorAll('#ppWeekTabs .tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#ppWeekTabs .tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderPPWeek(parseInt(b.dataset.ppw));}));
   renderPPWeek(1);
-  $('ppWarnings').innerHTML=['Heavy bleeding after 24hrs (soaking pad/hr)','Fever >38°C — infection sign','Wound redness, pus, or opening','Leg pain/swelling — DVT blood clot','Severe headache + vision changes (postpartum preeclampsia)','Difficulty breathing, chest pain','Thoughts of harming yourself or baby — IMMEDIATE help','Inability to urinate'].map(w=>`<p style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(232,160,168,.1);font-size:13px"><i data-lucide="alert-circle" class="app-icon-inline" style="color:var(--color-danger)"></i> <span>${w}</span></p>`).join('');
-  $('ppMentalHealth').innerHTML=`<div class="g2"><div style="background:var(--color-success-bg);border-radius:14px;padding:14px"><div style="font-weight:600;font-size:13px;color:var(--color-success);margin-bottom:7px"><i data-lucide="smile" class="app-icon-inline"></i> Baby Blues (Normal)</div><div style="font-size:12.5px;line-height:1.7">Day 2-14. Crying, mood swings, overwhelm. 70-80% women. Hormonal shift — estrogen/progesterone drop. <strong>Passes on its own with rest + support.</strong></div></div><div style="background:var(--color-danger-bg);border-radius:14px;padding:14px"><div style="font-weight:600;font-size:13px;color:var(--color-danger);margin-bottom:7px"><i data-lucide="frown" class="app-icon-inline"></i> Postpartum Depression</div><div style="font-size:12.5px;line-height:1.7">2+ weeks persistent. Hopelessness, inability to function. 10-15% women. NOT weakness — medical condition. <strong>Treatment safe, effective. Please seek help.</strong></div></div></div><div style="background:rgba(232,160,168,.08);border-radius:10px;padding:11px 13px;margin-top:12px;font-size:13px;color:var(--color-text-muted)"><i data-lucide="phone" class="app-icon-inline"></i> iCall: 9152987821 | Vandrevala: 1860-2662-345 (24/7)</div>`;
-  $('ppBreastfeeding').innerHTML=[['<i data-lucide="baby" class="app-icon-inline"></i> Correct Latch','Poora areola andar hona chahiye — sirf nipple nahi. Chin breast pe touch kare, nose clear.'],['<i data-lucide="clock" class="app-icon-inline"></i> Frequency','8-12 times/day. On-demand — cues dekho, clock nahi.'],['<i data-lucide="trending-up" class="app-icon-inline"></i> Supply','Supply = demand. Frequent feeding = more milk. Stress supply reduce karta hai.'],['<i data-lucide="alert-triangle" class="app-icon-inline"></i> Problems','Cracked nipples: lanolin cream + breastmilk apply. Mastitis: fever + hard lump + redness = immediate doctor.'],['<i data-lucide="milk" class="app-icon-inline"></i> Formula OK','Fed is best. No guilt for any feeding choice. Formula-fed babies thrive equally.']].map(([t,b])=>`<div style="background:white;border-radius:13px;padding:13px;margin-bottom:8px"><div style="font-weight:600;font-size:13.5px;margin-bottom:5px">${t}</div><div style="font-size:12.5px;color:var(--color-text-muted);line-height:1.65">${b}</div></div>`).join('');
+  $('ppWarnings').innerHTML=['Heavy bleeding after 24hrs (soaking pad/hr)','Fever >38°C — infection sign','Wound redness, pus, or opening','Leg pain/swelling — DVT blood clot','Severe headache + vision changes (postpartum preeclampsia)','Difficulty breathing, chest pain','Thoughts of harming yourself or baby — IMMEDIATE help','Inability to urinate'].map(w=>`<p style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(232,160,168,.1);font-size:13px"><i data-lucide="alert-circle" class="app-icon-inline" style="color:#e05c5c"></i> <span>${w}</span></p>`).join('');
+  $('ppMentalHealth').innerHTML=`<div class="g2"><div style="background:#e8f5e9;border-radius:14px;padding:14px"><div style="font-weight:600;font-size:13px;color:var(--green);margin-bottom:7px"><i data-lucide="smile" class="app-icon-inline"></i> Baby Blues (Normal)</div><div style="font-size:12.5px;line-height:1.7">Day 2-14. Crying, mood swings, overwhelm. 70-80% women. Hormonal shift — estrogen/progesterone drop. <strong>Passes on its own with rest + support.</strong></div></div><div style="background:#ffebee;border-radius:14px;padding:14px"><div style="font-weight:600;font-size:13px;color:#c62828;margin-bottom:7px"><i data-lucide="frown" class="app-icon-inline"></i> Postpartum Depression</div><div style="font-size:12.5px;line-height:1.7">2+ weeks persistent. Hopelessness, inability to function. 10-15% women. NOT weakness — medical condition. <strong>Treatment safe, effective. Please seek help.</strong></div></div></div><div style="background:rgba(232,160,168,.08);border-radius:10px;padding:11px 13px;margin-top:12px;font-size:13px;color:var(--muted)"><i data-lucide="phone" class="app-icon-inline"></i> iCall: 9152987821 | Vandrevala: 1860-2662-345 (24/7)</div>`;
+  $('ppBreastfeeding').innerHTML=[['<i data-lucide="baby" class="app-icon-inline"></i> Correct Latch','Poora areola andar hona chahiye — sirf nipple nahi. Chin breast pe touch kare, nose clear.'],['<i data-lucide="clock" class="app-icon-inline"></i> Frequency','8-12 times/day. On-demand — cues dekho, clock nahi.'],['<i data-lucide="trending-up" class="app-icon-inline"></i> Supply','Supply = demand. Frequent feeding = more milk. Stress supply reduce karta hai.'],['<i data-lucide="alert-triangle" class="app-icon-inline"></i> Problems','Cracked nipples: lanolin cream + breastmilk apply. Mastitis: fever + hard lump + redness = immediate doctor.'],['<i data-lucide="milk" class="app-icon-inline"></i> Formula OK','Fed is best. No guilt for any feeding choice. Formula-fed babies thrive equally.']].map(([t,b])=>`<div style="background:white;border-radius:13px;padding:13px;margin-bottom:8px"><div style="font-weight:600;font-size:13.5px;margin-bottom:5px">${t}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.65">${b}</div></div>`).join('');
   renderIcons();
 }
 
 function renderPPWeek(w){
   const data=PP[w];const el=$('ppWeekContent');if(!el||!data)return;
-  el.innerHTML=`<div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--color-text-main);margin-bottom:14px">${data.title}</div>`+
-    data.secs.map(s=>`<div style="background:white;border-radius:14px;padding:15px;margin-bottom:11px"><div style="font-weight:600;font-size:13.5px;margin-bottom:9px;display:flex;align-items:center;gap:6px">${s.i} ${s.t}</div>${s.items.map(item=>`<p style="font-size:13px;color:var(--color-text-muted);line-height:1.7;padding:5px 0;border-bottom:1px solid rgba(232,160,168,.08)">• ${item}</p>`).join('')}</div>`).join('');
+  el.innerHTML=`<div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--warm);margin-bottom:14px">${data.title}</div>`+
+    data.secs.map(s=>`<div style="background:white;border-radius:14px;padding:15px;margin-bottom:11px"><div style="font-weight:600;font-size:13.5px;margin-bottom:9px;display:flex;align-items:center;gap:6px">${s.i} ${s.t}</div>${s.items.map(item=>`<p style="font-size:13px;color:var(--muted);line-height:1.7;padding:5px 0;border-bottom:1px solid rgba(232,160,168,.08)">• ${item}</p>`).join('')}</div>`).join('');
   renderIcons();
 }
 
@@ -1188,9 +1172,9 @@ function initSymptoms(){
 function filterSymptoms(){
   const q=($('symptomSearch')?.value||'').toLowerCase();
   const filtered=SYMPTOMS.filter(s=>{const mq=!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q);const mf=sympFilterKey==='all'||s.cat===sympFilterKey||s.urg===sympFilterKey;return mq&&mf;});
-  const uc={normal:{bg:'rgba(106,184,154,.08)',border:'var(--color-success)',lbl:'<i data-lucide="check" class="app-icon-inline"></i> Normal'},watch:{bg:'rgba(212,168,83,.08)',border:'#d4a853',lbl:'<i data-lucide="eye" class="app-icon-inline"></i> Monitor'},serious:{bg:'rgba(220,120,80,.08)',border:'#e07040',lbl:'<i data-lucide="alert-triangle" class="app-icon-inline"></i> Serious'},emergency:{bg:'rgba(220,80,80,.1)',border:'var(--color-danger)',lbl:'<i data-lucide="siren" class="app-icon-inline"></i> Emergency'}};
+  const uc={normal:{bg:'rgba(106,184,154,.08)',border:'var(--green)',lbl:'<i data-lucide="check" class="app-icon-inline"></i> Normal'},watch:{bg:'rgba(212,168,83,.08)',border:'var(--gold)',lbl:'<i data-lucide="eye" class="app-icon-inline"></i> Monitor'},serious:{bg:'rgba(220,120,80,.08)',border:'#e07040',lbl:'<i data-lucide="alert-triangle" class="app-icon-inline"></i> Serious'},emergency:{bg:'rgba(220,80,80,.1)',border:'#e05c5c',lbl:'<i data-lucide="siren" class="app-icon-inline"></i> Emergency'}};
   const cont=$('symptomsContainer');if(!cont)return;
-  cont.innerHTML=filtered.map(s=>{const u=uc[s.urg]||uc.normal;return`<div class="card" style="border-left:3px solid ${u.border}"><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px"><span style="font-size:32px; color:${u.border}">${s.icon}</span><div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--color-text-main)">${s.name}</div><div style="display:flex;gap:5px;margin-top:3px"><span style="font-size:11px;padding:2px 9px;border-radius:50px;background:${u.bg};color:${u.border};font-weight:600">${u.lbl}</span><span class="pill pill-b" style="font-size:10px">T${s.tri}</span></div></div></div><p style="font-size:13px;color:var(--color-text-muted);line-height:1.7;margin-bottom:12px">${s.desc}</p><div class="g2" style="margin-bottom:10px"><div style="background:var(--color-background);border-radius:12px;padding:11px"><div style="font-size:10.5px;font-weight:600;color:var(--accent);text-transform:uppercase;margin-bottom:5px">Kyon hota hai</div>${s.causes.map(c=>`<p style="font-size:12px;color:var(--color-text-muted);line-height:1.6;padding:2px 0">• ${c}</p>`).join('')}</div><div style="background:rgba(106,184,154,.06);border-radius:12px;padding:11px"><div style="font-size:10.5px;font-weight:600;color:var(--color-success);text-transform:uppercase;margin-bottom:5px">Relief</div>${s.relief.map(r=>`<p style="font-size:12px;color:var(--color-text-muted);line-height:1.6;padding:2px 0">• ${r}</p>`).join('')}</div></div><div style="background:${u.bg};border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--color-text-main);line-height:1.6"><strong style="color:${u.border}"><i data-lucide="alert-circle" class="app-icon-inline"></i> Warning:</strong> ${s.warn}</div></div>`;}).join('')||'<div class="card"><p style="color:var(--color-text-muted);font-size:13px;text-align:center;padding:14px">Koi symptom nahi mila.</p></div>';
+  cont.innerHTML=filtered.map(s=>{const u=uc[s.urg]||uc.normal;return`<div class="card" style="border-left:3px solid ${u.border}"><div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px"><span style="font-size:32px; color:${u.border}">${s.icon}</span><div><div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--warm)">${s.name}</div><div style="display:flex;gap:5px;margin-top:3px"><span style="font-size:11px;padding:2px 9px;border-radius:50px;background:${u.bg};color:${u.border};font-weight:600">${u.lbl}</span><span class="pill pill-b" style="font-size:10px">T${s.tri}</span></div></div></div><p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px">${s.desc}</p><div class="g2" style="margin-bottom:10px"><div style="background:var(--cream);border-radius:12px;padding:11px"><div style="font-size:10.5px;font-weight:600;color:var(--accent);text-transform:uppercase;margin-bottom:5px">Kyon hota hai</div>${s.causes.map(c=>`<p style="font-size:12px;color:var(--muted);line-height:1.6;padding:2px 0">• ${c}</p>`).join('')}</div><div style="background:rgba(106,184,154,.06);border-radius:12px;padding:11px"><div style="font-size:10.5px;font-weight:600;color:var(--green);text-transform:uppercase;margin-bottom:5px">Relief</div>${s.relief.map(r=>`<p style="font-size:12px;color:var(--muted);line-height:1.6;padding:2px 0">• ${r}</p>`).join('')}</div></div><div style="background:${u.bg};border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--warm);line-height:1.6"><strong style="color:${u.border}"><i data-lucide="alert-circle" class="app-icon-inline"></i> Warning:</strong> ${s.warn}</div></div>`;}).join('')||'<div class="card"><p style="color:var(--muted);font-size:13px;text-align:center;padding:14px">Koi symptom nahi mila.</p></div>';
   renderIcons();
 }
 
@@ -1201,22 +1185,22 @@ const EC_NUMBERS=[{n:'Ambulance',i:'<i data-lucide="ambulance" class="app-icon-i
 let myContacts=[];
 
 function initSOS(){
-  $('sosFastDial').innerHTML=EC_NUMBERS.map(n=>`<div class="sos-contact"><div><div class="sname">${n.i} ${n.n}</div><div class="snum">${n.d}</div></div><a href="tel:${n.num}" style="padding:8px 16px;border-radius:50px;background:linear-gradient(135deg,var(--color-success),#4da888);color:white;text-decoration:none;font-size:12.5px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i> ${n.num}</a></div>`).join('');
-  $('warningSigns').innerHTML=['Bahut zyada vaginal bleeding (soaking pad in 1 hr)','Severe abdominal pain jo kam nahi ho raha','Baby movements suddenly stop ya dramatically kam','Severe headache + vision changes + swelling — preeclampsia','Sudden severe swelling face/hands','High fever (38°C+) with chills','Water break (amniotic fluid) — any amount','Regular contractions before 37 weeks','Chest pain ya difficulty breathing','Seizure ya loss of consciousness'].map(w=>`<p style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(220,80,80,.08);font-size:13px"><i data-lucide="alert-triangle" class="app-icon-inline" style="color:var(--color-danger)"></i> <span>${w}</span></p>`).join('');
+  $('sosFastDial').innerHTML=EC_NUMBERS.map(n=>`<div class="sos-contact"><div><div class="sname">${n.i} ${n.n}</div><div class="snum">${n.d}</div></div><a href="tel:${n.num}" style="padding:8px 16px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12.5px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i> ${n.num}</a></div>`).join('');
+  $('warningSigns').innerHTML=['Bahut zyada vaginal bleeding (soaking pad in 1 hr)','Severe abdominal pain jo kam nahi ho raha','Baby movements suddenly stop ya dramatically kam','Severe headache + vision changes + swelling — preeclampsia','Sudden severe swelling face/hands','High fever (38°C+) with chills','Water break (amniotic fluid) — any amount','Regular contractions before 37 weeks','Chest pain ya difficulty breathing','Seizure ya loss of consciousness'].map(w=>`<p style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(220,80,80,.08);font-size:13px"><i data-lucide="alert-triangle" class="app-icon-inline" style="color:#e05c5c"></i> <span>${w}</span></p>`).join('');
   
   if(user && supa) supa.from('user_profile').select('*').eq('id',user.id).maybeSingle().then(({data})=>{if(data?.emergency_contacts)myContacts=data.emergency_contacts||[];renderContacts();});
   renderIcons();
 }
 
 function findHospital(){
-  const r=$('sosResult');r.innerHTML='<p style="color:var(--color-text-muted);font-size:13px;text-align:center;padding:14px"><i data-lucide="map-pin" class="app-icon-inline"></i> Location detect kar rahi hun...</p>';
+  const r=$('sosResult');r.innerHTML='<p style="color:var(--muted);font-size:13px;text-align:center;padding:14px"><i data-lucide="map-pin" class="app-icon-inline"></i> Location detect kar rahi hun...</p>';
   renderIcons();
-  if(!navigator.geolocation){r.innerHTML=`<div style="display:flex;flex-direction:column;gap:9px"><a href="https://www.google.com/maps/search/maternity+hospital+near+me" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--color-danger),#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="search" class="app-icon-inline"></i> Search Nearest Hospital →</a><a href="tel:108" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--color-success),#4da888);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="ambulance" class="app-icon-inline"></i> Ambulance — 108</a></div>`;renderIcons();return;}
+  if(!navigator.geolocation){r.innerHTML=`<div style="display:flex;flex-direction:column;gap:9px"><a href="https://www.google.com/maps/search/maternity+hospital+near+me" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,#e05c5c,#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="search" class="app-icon-inline"></i> Search Nearest Hospital →</a><a href="tel:108" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--green),#4da888);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="ambulance" class="app-icon-inline"></i> Ambulance — 108</a></div>`;renderIcons();return;}
   navigator.geolocation.getCurrentPosition(pos=>{
     const{latitude:la,longitude:lo}=pos.coords;
-    r.innerHTML=`<div style="display:flex;flex-direction:column;gap:9px"><a href="https://www.google.com/maps/search/maternity+hospital/@${la},${lo},14z" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--color-danger),#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="building" class="app-icon-inline"></i> Nearest Maternity Hospital →</a><a href="https://www.google.com/maps/search/government+hospital/@${la},${lo},13z" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,#7ab8d4,#4a98c4);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="landmark" class="app-icon-inline"></i> Government Hospital →</a><a href="tel:108" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--color-success),#4da888);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="ambulance" class="app-icon-inline"></i> Ambulance — 108</a></div>`;
+    r.innerHTML=`<div style="display:flex;flex-direction:column;gap:9px"><a href="https://www.google.com/maps/search/maternity+hospital/@${la},${lo},14z" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,#e05c5c,#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="building" class="app-icon-inline"></i> Nearest Maternity Hospital →</a><a href="https://www.google.com/maps/search/government+hospital/@${la},${lo},13z" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--blue),#4a98c4);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="landmark" class="app-icon-inline"></i> Government Hospital →</a><a href="tel:108" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--green),#4da888);color:white;border-radius:14px;text-decoration:none;font-weight:600;font-size:14px"><i data-lucide="ambulance" class="app-icon-inline"></i> Ambulance — 108</a></div>`;
     renderIcons();
-  },()=>{r.innerHTML=`<a href="https://www.google.com/maps/search/hospital+near+me" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,var(--color-danger),#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600"><i data-lucide="search" class="app-icon-inline"></i> Search Hospital →</a>`;renderIcons();});
+  },()=>{r.innerHTML=`<a href="https://www.google.com/maps/search/hospital+near+me" target="_blank" style="display:block;padding:13px 20px;background:linear-gradient(135deg,#e05c5c,#c94040);color:white;border-radius:14px;text-decoration:none;font-weight:600"><i data-lucide="search" class="app-icon-inline"></i> Search Hospital →</a>`;renderIcons();});
 }
 
 async function addEC(){
@@ -1232,7 +1216,7 @@ async function delEC(i){myContacts.splice(i,1);if(user && supa)await supa.from('
 
 function renderContacts(){
   const el=$('customContacts');if(!el)return;
-  el.innerHTML=myContacts.length?myContacts.map((c,i)=>`<div class="sos-contact"><div><div class="sname"><i data-lucide="user" class="app-icon-inline"></i> ${c.name} <span style="font-size:11px;color:var(--color-text-muted)">(${c.relation})</span></div><div class="snum">${c.phone}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${c.phone}" style="padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,var(--color-success),#4da888);color:white;text-decoration:none;font-size:12px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i></a><button onclick="MC.delEC(${i})" style="background:none;border:none;color:var(--color-text-muted);cursor:pointer;font-size:20px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:12.5px;color:var(--color-text-muted);text-align:center;padding:8px">Koi personal contact nahi.</p>';
+  el.innerHTML=myContacts.length?myContacts.map((c,i)=>`<div class="sos-contact"><div><div class="sname"><i data-lucide="user" class="app-icon-inline"></i> ${c.name} <span style="font-size:11px;color:var(--muted)">(${c.relation})</span></div><div class="snum">${c.phone}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${c.phone}" style="padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i></a><button onclick="MC.delEC(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:12.5px;color:var(--muted);text-align:center;padding:8px">Koi personal contact nahi.</p>';
   renderIcons();
 }
 
@@ -1247,7 +1231,7 @@ async function renderDashboard(){
   const now=new Date();let week=0,daysLeft=0,pct=0,tri=0;
   if(due&&!isNaN(due)){const el=Math.max(0,Math.floor((now-new Date(due.getTime()-280*86400000))/86400000));week=Math.min(40,Math.floor(el/7)+1);daysLeft=Math.max(0,Math.round((due-now)/86400000));pct=Math.min(100,Math.round(el/280*100));tri=week<=13?1:week<=27?2:3;}
   const hero=$('dbHero');
-  if(hero){const tn=[T.t1,T.t2,T.t3][tri-1]||'';hero.innerHTML=due?`<div style="font-size:44px;margin-bottom:10px; color:var(--color-primary)"><i data-lucide="${tri===1?'sprout':tri===2?'flower-2':'star'}" style="width:44px;height:44px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div><p style="font-size:13px;color:var(--color-text-muted)"><i data-lucide="calendar" class="app-icon-inline"></i> ${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p><div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--color-primary),var(--color-secondary));border-radius:50px;transition:width 1s"></div></div><div style="font-size:11px;color:var(--color-text-muted);margin-top:4px">${pct}% ${T.done}</div>`:`<div style="font-size:44px;margin-bottom:8px; color:var(--color-primary)"><i data-lucide="flower-2" style="width:44px;height:44px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare mein Aapka Swagat!</div><p style="font-size:13px;color:var(--color-text-muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent); text-decoration:none;"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Due date add karein →</a></p>`;}
+  if(hero){const tn=[T.t1,T.t2,T.t3][tri-1]||'';hero.innerHTML=due?`<div style="font-size:44px;margin-bottom:10px; color:var(--rose)"><i data-lucide="${tri===1?'sprout':tri===2?'flower-2':'star'}" style="width:44px;height:44px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div><p style="font-size:13px;color:var(--muted)"><i data-lucide="calendar" class="app-icon-inline"></i> ${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p><div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),var(--peach));border-radius:50px;transition:width 1s"></div></div><div style="font-size:11px;color:var(--muted);margin-top:4px">${pct}% ${T.done}</div>`:`<div style="font-size:44px;margin-bottom:8px; color:var(--rose)"><i data-lucide="flower-2" style="width:44px;height:44px;"></i></div><div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare mein Aapka Swagat!</div><p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent); text-decoration:none;"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Due date add karein →</a></p>`;}
 
   // Stats
   const [slRes,wtRes,medRes]=await Promise.all([supa.from('sleep_logs').select('duration_hrs').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('weight_logs').select('weight_kg').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('medicines').select('id').eq('user_id',user.id).eq('is_active',true)]);
@@ -1258,16 +1242,16 @@ async function renderDashboard(){
   $('dbStats').innerHTML=`<div class="stat"><div class="stat-v">${slHrs}h</div><div class="stat-l">Last Sleep</div></div><div class="stat"><div class="stat-v">${wtKg}</div><div class="stat-l">Weight kg</div></div><div class="stat"><div class="stat-v">${wc}/10</div><div class="stat-l">Water</div></div><div class="stat"><div class="stat-v">${mt}/${medTotal}</div><div class="stat-l">Meds</div></div>`;
 
   // Quick actions
-  $('dbQuickActions').innerHTML=[{icon:'<i data-lucide="apple"></i>',l:'Log Food',p:'nutrition'},{icon:'<i data-lucide="pill"></i>',l:'Meds',p:'medicine'},{icon:'<i data-lucide="moon"></i>',l:'Sleep',p:'sleep'},{icon:'<i data-lucide="book-heart"></i>',l:'Journal',p:'journal'}].map(a=>`<div onclick="MC.goTo('${a.p}')" style="background:white;border-radius:16px;padding:16px;text-align:center;cursor:pointer;border:1.5px solid var(--color-border);transition:.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"><div style="color:var(--color-primary); margin-bottom:5px">${a.icon}</div><div style="font-size:12.5px;font-weight:500">${a.l}</div></div>`).join('');
+  $('dbQuickActions').innerHTML=[{icon:'<i data-lucide="apple"></i>',l:'Log Food',p:'nutrition'},{icon:'<i data-lucide="pill"></i>',l:'Meds',p:'medicine'},{icon:'<i data-lucide="moon"></i>',l:'Sleep',p:'sleep'},{icon:'<i data-lucide="book-heart"></i>',l:'Journal',p:'journal'}].map(a=>`<div onclick="MC.goTo('${a.p}')" style="background:white;border-radius:16px;padding:16px;text-align:center;cursor:pointer;border:1.5px solid var(--blush);transition:.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"><div style="color:var(--rose); margin-bottom:5px">${a.icon}</div><div style="font-size:12.5px;font-weight:500">${a.l}</div></div>`).join('');
 
   // Today summary
   const {data:todayFoods}=await supa.from('food_logs').select('calories').eq('user_id',user.id).eq('food_date',todayStr());
   const cal=todayFoods?.reduce((a,f)=>a+(f.calories||0),0)||0;
-  $('dbToday').innerHTML=[['<i data-lucide="flame" class="app-icon-inline"></i> Calories',`${cal} kcal`],['<i data-lucide="droplet" class="app-icon-inline"></i> Water',`${wc}/10 glasses`],['<i data-lucide="pill" class="app-icon-inline"></i> Medicines',`${mt}/${medTotal} done`],['<i data-lucide="moon" class="app-icon-inline"></i> Last sleep',`${slHrs} hours`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><span>${l}</span><strong>${v}</strong></div>`).join('');
+  $('dbToday').innerHTML=[['<i data-lucide="flame" class="app-icon-inline" style="color:#e07040"></i> Calories',`${cal} kcal`],['<i data-lucide="droplet" class="app-icon-inline" style="color:#4a98c4"></i> Water',`${wc}/10 glasses`],['<i data-lucide="pill" class="app-icon-inline" style="color:var(--rose)"></i> Medicines',`${mt}/${medTotal} done`],['<i data-lucide="moon" class="app-icon-inline" style="color:var(--lavender)"></i> Last sleep',`${slHrs} hours`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><span>${l}</span><strong>${v}</strong></div>`).join('');
 
   // Milestones
   const upcoming=MILESTONES.filter(m=>m.w>=week).slice(0,4);
-  $('dbMilestones').innerHTML=upcoming.length?upcoming.map(m=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">W${m.w}</div><div>${m.t}</div></div>`).join(''):'<p style="font-size:13px;color:var(--color-text-muted)">Due date add karein milestones ke liye.</p>';
+  $('dbMilestones').innerHTML=upcoming.length?upcoming.map(m=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--peach));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0">W${m.w}</div><div>${m.t}</div></div>`).join(''):'<p style="font-size:13px;color:var(--muted)">Due date add karein milestones ke liye.</p>';
   renderIcons();
 }
 

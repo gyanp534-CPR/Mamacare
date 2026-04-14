@@ -137,3 +137,32 @@ label { font-size: 12px; font-weight: 600; color: var(--color-text-muted); displ
 @media(min-width: 768px) {
   #bottomNav, #moreMenu { display: none !important; }
 }
+
+
+/* ==========================================================================
+   SVG ICON SIZING (Lucide Integration)
+   ========================================================================== */
+
+/* For icons sitting next to text inside buttons or tabs */
+.app-icon-inline {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+  stroke-width: 2px;
+}
+
+/* For the mobile bottom nav */
+.bn-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2px;
+}
+
+/* For the mobile "More" menu grid */
+.mi-icon svg {
+  width: 26px;
+  height: 26px;
+  stroke-width: 1.5px;
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}

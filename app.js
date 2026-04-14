@@ -1221,7 +1221,7 @@ function renderContacts(){
 }
 
 // ══════════════════════════════════════
-// DASHBOARD
+// DASHBOARD (FAILSAFE VERSION)
 // ══════════════════════════════════════
 const MILESTONES = [{w:4,t:'Test positive! Journey shuru 🌱'},{w:8,t:'Pehla heartbeat scan 💗'},{w:12,t:'1st trimester complete ✓'},{w:16,t:'Gender scan possible 👶'},{w:20,t:'Anatomy scan — halfway 🎉'},{w:24,t:'Viability milestone ⭐'},{w:28,t:'3rd trimester shuru 🌟'},{w:32,t:'Hospital bag pack karo 🏥'},{w:36,t:'Full term approaching 🌸'},{w:40,t:'Due date! 🎊'}];
 
@@ -1241,7 +1241,7 @@ async function renderDashboard() {
     tri = week <= 13 ? 1 : week <= 27 ? 2 : 3;
   }
 
-  // 1. Hero Section Fix
+  // 1. Hero Section
   const hero = $('dbHero');
   if (hero) {
     const tn = [T.t1, T.t2, T.t3][tri - 1] || '';
@@ -1258,23 +1258,31 @@ async function renderDashboard() {
       <p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent); text-decoration:none;"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Due date set karein →</a></p>
     `;
   }
-  // Stats
+
+  // 2. Stats (Failsafe added)
   const [slRes,wtRes,medRes]=await Promise.all([supa.from('sleep_logs').select('duration_hrs').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('weight_logs').select('weight_kg').eq('user_id',user.id).order('logged_at',{ascending:false}).limit(1),supa.from('medicines').select('id').eq('user_id',user.id).eq('is_active',true)]);
   const slHrs=slRes.data?.[0]?.duration_hrs||'—',wtKg=wtRes.data?.[0]?.weight_kg||'—',medTotal=medRes.data?.length||0;
   const {data:takenToday}=await supa.from('medicine_logs').select('id').eq('user_id',user.id).eq('taken_date',todayStr());
   const {data:waterToday}=await supa.from('water_logs').select('glasses_count').eq('user_id',user.id).eq('log_date',todayStr()).maybeSingle();
   const wc=waterToday?.glasses_count||0,mt=takenToday?.length||0;
-  $('dbStats').innerHTML=`<div class="stat"><div class="stat-v">${slHrs}h</div><div class="stat-l">Last Sleep</div></div><div class="stat"><div class="stat-v">${wtKg}</div><div class="stat-l">Weight kg</div></div><div class="stat"><div class="stat-v">${wc}/10</div><div class="stat-l">Water</div></div><div class="stat"><div class="stat-v">${mt}/${medTotal}</div><div class="stat-l">Meds</div></div>`;
+  
+  if ($('dbStats')) {
+    $('dbStats').innerHTML=`<div class="stat"><div class="stat-v">${slHrs}h</div><div class="stat-l">Last Sleep</div></div><div class="stat"><div class="stat-v">${wtKg}</div><div class="stat-l">Weight kg</div></div><div class="stat"><div class="stat-v">${wc}/10</div><div class="stat-l">Water</div></div><div class="stat"><div class="stat-v">${mt}/${medTotal}</div><div class="stat-l">Meds</div></div>`;
+  }
 
-  // Quick actions
-  $('dbQuickActions').innerHTML=[{icon:'<i data-lucide="apple"></i>',l:'Log Food',p:'nutrition'},{icon:'<i data-lucide="pill"></i>',l:'Meds',p:'medicine'},{icon:'<i data-lucide="moon"></i>',l:'Sleep',p:'sleep'},{icon:'<i data-lucide="book-heart"></i>',l:'Journal',p:'journal'}].map(a=>`<div onclick="MC.goTo('${a.p}')" style="background:white;border-radius:16px;padding:16px;text-align:center;cursor:pointer;border:1.5px solid var(--blush);transition:.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"><div style="color:var(--rose); margin-bottom:5px">${a.icon}</div><div style="font-size:12.5px;font-weight:500">${a.l}</div></div>`).join('');
+  // 3. Quick actions (Failsafe added)
+  if ($('dbQuickActions')) {
+    $('dbQuickActions').innerHTML=[{icon:'<i data-lucide="apple"></i>',l:'Log Food',p:'nutrition'},{icon:'<i data-lucide="pill"></i>',l:'Meds',p:'medicine'},{icon:'<i data-lucide="moon"></i>',l:'Sleep',p:'sleep'},{icon:'<i data-lucide="book-heart"></i>',l:'Journal',p:'journal'}].map(a=>`<div onclick="MC.goTo('${a.p}')" style="background:white;border-radius:16px;padding:16px;text-align:center;cursor:pointer;border:1.5px solid var(--blush);transition:.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'"><div style="color:var(--rose); margin-bottom:5px">${a.icon}</div><div style="font-size:12.5px;font-weight:500">${a.l}</div></div>`).join('');
+  }
 
-  // Today summary
+  // 4. Today summary (Failsafe added)
   const {data:todayFoods}=await supa.from('food_logs').select('calories').eq('user_id',user.id).eq('food_date',todayStr());
   const cal=todayFoods?.reduce((a,f)=>a+(f.calories||0),0)||0;
-  $('dbToday').innerHTML=[['<i data-lucide="flame" class="app-icon-inline" style="color:#e07040"></i> Calories',`${cal} kcal`],['<i data-lucide="droplet" class="app-icon-inline" style="color:#4a98c4"></i> Water',`${wc}/10 glasses`],['<i data-lucide="pill" class="app-icon-inline" style="color:var(--rose)"></i> Medicines',`${mt}/${medTotal} done`],['<i data-lucide="moon" class="app-icon-inline" style="color:var(--lavender)"></i> Last sleep',`${slHrs} hours`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><span>${l}</span><strong>${v}</strong></div>`).join('');
+  if ($('dbToday')) {
+    $('dbToday').innerHTML=[['<i data-lucide="flame" class="app-icon-inline" style="color:#e07040"></i> Calories',`${cal} kcal`],['<i data-lucide="droplet" class="app-icon-inline" style="color:#4a98c4"></i> Water',`${wc}/10 glasses`],['<i data-lucide="pill" class="app-icon-inline" style="color:var(--rose)"></i> Medicines',`${mt}/${medTotal} done`],['<i data-lucide="moon" class="app-icon-inline" style="color:var(--lavender)"></i> Last sleep',`${slHrs} hours`]].map(([l,v])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px"><span>${l}</span><strong>${v}</strong></div>`).join('');
+  }
 
- // 2. Milestones Fix
+  // 5. Milestones
   const msContainer = $('dbMilestones');
   if (msContainer) {
     const upcoming = MILESTONES.filter(m => m.w >= week).slice(0, 3);
@@ -1289,7 +1297,6 @@ async function renderDashboard() {
   // Final Call to ensure Lucide icons are drawn in the new elements
   renderIcons();
 }
-
 // ══════════════════════════════════════
 // PUBLIC MC OBJECT
 // ══════════════════════════════════════

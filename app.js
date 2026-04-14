@@ -1,3 +1,4 @@
+console.log("Hello from app.js! The file is successfully loading.");
 /**
  * MamaCare v6.5 — app.js (COMPLETE)
  * Supabase Auth + Failsafe + Lucide Icon Integration

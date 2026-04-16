@@ -266,6 +266,8 @@ function applyLang(l) {
 
   const M = {
     moodHeroText:       {html: T.moodHero},
+    moodStepLabel:      {text: T.moodStep},   // FIX 1: was never populated
+    moodSelectTitle:    {text: T.moodStep},   // FIX 1: was never populated
     breathTitle:        {text: T.breathTitle},
     breathBtn:          {html: `<i data-lucide="wind" class="app-icon-inline"></i> ${T.breathStart}`},
     affirmTitle:        {text: T.affirmTitle},
@@ -365,8 +367,9 @@ function otpInput(el, idx) {
 async function onLogin(u) {
   user=u; window.user=u;
   if ($('authScreen')) $('authScreen').style.display='none';
-  if ($('langBar')) $('langBar').style.display='flex';
-  if ($('topBar')) $('topBar').style.display='block';
+  if ($('langBar'))    $('langBar').style.display='flex';
+  if ($('topBar'))     $('topBar').style.display='block';
+  if ($('bottomNav'))  $('bottomNav').style.display='block'; // FIX 2: show nav after login
   const em=u.email||''; setText('topUserEmail', em.length>22?em.slice(0,19)+'...':em);
   
   if(supa) {
@@ -402,11 +405,18 @@ async function onLogin(u) {
 
 async function logout(){
   if(!confirm(T.logoutQ)) return;
-  if(supa) await supa.auth.signOut(); 
+  if(supa) await supa.auth.signOut();
   user=null; window.user=null;
+
+  // FIX 8: Reset all in-memory state so next login starts clean
+  chatHist=[]; waterCount=0;
+  foodLogs=[]; medicines=[]; medTaken={};
+  bagItems=[]; savedNames=[]; journalList=[]; apptList=[];
+
   if ($('authScreen')) $('authScreen').style.display='flex';
-  if ($('langBar')) $('langBar').style.display='none';
-  if ($('topBar')) $('topBar').style.display='none';
+  if ($('langBar'))    $('langBar').style.display='none';
+  if ($('topBar'))     $('topBar').style.display='none';
+  if ($('bottomNav'))  $('bottomNav').style.display='none'; // FIX 2: hide nav on logout
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if ($('page-mood')) $('page-mood').classList.add('active');
 }
@@ -580,7 +590,16 @@ function addUserMsg(txt){
 async function sendChat(){
   const inp=$('chatInput'); const txt=inp.value.trim(); if(!txt) return;
   if(window.PREMIUM && !(await window.PREMIUM.checkChatGate())) return;
+
+  // FIX 5: Disable send button to prevent duplicate requests
+  const sendBtn=$('chatSendBtn');
+  if(sendBtn) sendBtn.disabled=true;
+
   inp.value=''; addUserMsg(txt); chatHist.push({role:'user',content:txt});
+
+  // FIX 6: Keep chatHist to last 20 messages to avoid growing context window costs
+  if(chatHist.length>20) chatHist=chatHist.slice(-20);
+
   const typing=document.createElement('div');typing.className='msg bot';typing.style.cssText='font-style:italic;color:var(--muted)';typing.textContent='...💭';
   $('chatBox').appendChild(typing);$('chatBox').scrollTop=9999;
   try{
@@ -595,6 +614,10 @@ async function sendChat(){
     if(error) throw error;
     const reply=data?.content?.[0]?.text||'Network Error';addBotMsg(reply);chatHist.push({role:'assistant',content:reply});
   }catch(e){typing.remove();addBotMsg('Network issue. Try again later.');console.error('Chat error:',e);}
+  finally{
+    // FIX 5: Re-enable button regardless of success or failure
+    if(sendBtn) sendBtn.disabled=false;
+  }
 }
 
 // ══════════════════════════════════════
@@ -622,18 +645,24 @@ function getSizeEmoji(w){return w<=4?'🌱 Sesame seed':w<=6?'🍋 Lemon seed':w
 function getMoodTipW(w){return w<=6?'Test positive! Excitement + anxiety dono normal hain.':w<=13?'First trimester anxiety peak — emotions ko safe space do.':w<=27?'Golden period — energy wapas, kicks soon. Enjoy!':w<=36?'Delivery anxiety normal — birth classes bahut help karte hain.':'Excited + scared + exhausted + ready — sab ek saath. Almost there!';}
 
 function calcDue(){
-  const lmp=new Date($('lmpDate').value); if(isNaN(lmp.getTime())) return;
+  // FIX 7: Guard against missing DOM elements (called from onLogin before page renders)
+  const lmpEl=$('lmpDate'); const dueEl=$('directDue');
+  if(!lmpEl||!dueEl) return;
+  const lmp=new Date(lmpEl.value); if(isNaN(lmp.getTime())) return;
   const due=new Date(lmp.getTime()+280*86400000);
-  $('directDue').value=due.toISOString().split('T')[0];
-  if(user && supa) supa.from('user_profile').upsert({id:user.id,email:user.email,lmp_date:$('lmpDate').value,due_date:$('directDue').value}).then(()=>{});
+  dueEl.value=due.toISOString().split('T')[0];
+  if(user && supa) supa.from('user_profile').upsert({id:user.id,email:user.email,lmp_date:lmpEl.value,due_date:dueEl.value}).then(()=>{});
   flash('due-save',T.synced); showTimeline(due);
 }
 
 function calcFromDue(){
-  const due=new Date($('directDue').value); if(isNaN(due.getTime())) return;
+  // FIX 7: Guard against missing DOM elements (called from onLogin before page renders)
+  const dueEl=$('directDue'); const lmpEl=$('lmpDate');
+  if(!dueEl) return;
+  const due=new Date(dueEl.value); if(isNaN(due.getTime())) return;
   const lmp=new Date(due.getTime()-280*86400000);
-  $('lmpDate').value=lmp.toISOString().split('T')[0];
-  if(user && supa) supa.from('user_profile').upsert({id:user.id,email:user.email,lmp_date:$('lmpDate').value,due_date:$('directDue').value}).then(()=>{});
+  if(lmpEl) lmpEl.value=lmp.toISOString().split('T')[0];
+  if(user && supa) supa.from('user_profile').upsert({id:user.id,email:user.email,lmp_date:lmp.toISOString().split('T')[0],due_date:dueEl.value}).then(()=>{});
   flash('due-save',T.synced); showTimeline(due);
 }
 
@@ -1305,6 +1334,8 @@ window.MC = {
   sendOTP, showStep, verifyOTP, otpInput, logout,
   // Nav
   goTo,
+  // Language — FIX 3: exposed so app-onboard.js and other modules can call it
+  applyLang,
   // Mood
   showMoodTips,
   // Breathing + Affirmations

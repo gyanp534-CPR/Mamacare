@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" id="htmlRoot">
 <head>
@@ -88,7 +89,7 @@
   </div>
 </div>
 
-<nav id="bottomNav">
+<nav id="bottomNav" style="display:none">
   <div class="bn-inner">
     <button class="bn-item active" data-page="mood"><div class="bn-icon"><i data-lucide="smile"></i></div><div class="bn-label">Mood</div></button>
     <button class="bn-item" data-page="dashboard"><div class="bn-icon"><i data-lucide="layout-dashboard"></i></div><div class="bn-label">Dashboard</div></button>
@@ -251,9 +252,19 @@
 <script src="app-baby.js?v=5"></script>
 <script src="app-india.js?v=5"></script>
 <script src="app-smart.js?v=5"></script>
+<script src="app-extra.js?v=5"></script>
 
 <script>
   lucide.createIcons();
+
+  // IMPROVEMENT: Register service worker for PWA offline support
+  // sw.js was present but never registered — this activates it
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .catch(err => console.warn('SW registration failed:', err));
+    });
+  }
 </script>
 </body>
 </html>

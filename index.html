@@ -1,270 +1,676 @@
-
 <!DOCTYPE html>
 <html lang="en" id="htmlRoot">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
-<meta name="theme-color" content="#e8a0a8"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="MamaCare"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<title>MamaCare — Pregnancy Companion</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/lucide@latest"></script>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta name="theme-color" content="#d98c95" />
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  />
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="MamaCare"
+  />
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  />
+
+  <title>MamaCare</title>
+
+  <!-- Fonts -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Styles -->
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
+
 </head>
+
 <body>
-<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
-<div id="authScreen">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <h2 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-        Mama<span>Care</span> <i data-lucide="flower-2" style="color: var(--rose);"></i>
-      </h2>
-      <p>Complete Pregnancy Companion</p>
+  <div class="app-shell">
+
+    <!-- LANGUAGE BAR -->
+    <div id="langBar">
+
+      <button class="lang-btn active">
+        English
+      </button>
+
+      <button class="lang-btn">
+        हिंदी
+      </button>
+
+      <button class="lang-btn">
+        বাংলা
+      </button>
+
+      <button class="lang-btn">
+        தமிழ்
+      </button>
+
     </div>
-    <div class="auth-step" id="authStep1">
-      <h3>Login / Sign Up</h3>
-      <p>Apna email daalo — hum ek magic link bhejenge. Password yaad karne ki zarurat nahi! <i data-lucide="sparkles" class="app-icon-inline" style="color:var(--gold); width:14px;"></i></p>
-      <input class="auth-input" type="email" id="authEmail" placeholder="aapka@email.com" onkeydown="if(event.key==='Enter')MC.sendOTP()"/>
-      <button class="auth-btn auth-btn-primary" id="authSendBtn" onclick="MC.sendOTP()">Magic Link Bhejo <i data-lucide="wand-2" class="app-icon-inline"></i></button>
-      <p class="auth-msg" id="authMsg"></p>
-    </div>
-    <div class="auth-step" id="authStep2" style="display:none">
-      <h3>OTP Daalo <i data-lucide="lock" class="app-icon-inline"></i></h3>
-      <p id="authOTPMsg">Aapke email pe 6-digit code bheja gaya hai. Check karein!</p>
-      <div class="otp-inputs">
-        <input class="otp-input" type="text" maxlength="1" id="otp0" oninput="MC.otpInput(this,0)"/>
-        <input class="otp-input" type="text" maxlength="1" id="otp1" oninput="MC.otpInput(this,1)"/>
-        <input class="otp-input" type="text" maxlength="1" id="otp2" oninput="MC.otpInput(this,2)"/>
-        <input class="otp-input" type="text" maxlength="1" id="otp3" oninput="MC.otpInput(this,3)"/>
-        <input class="otp-input" type="text" maxlength="1" id="otp4" oninput="MC.otpInput(this,4)"/>
-        <input class="otp-input" type="text" maxlength="1" id="otp5" oninput="MC.otpInput(this,5)"/>
+
+    <!-- TOP BAR -->
+    <header id="topBar">
+
+      <div class="top-inner">
+
+        <a
+          href="#"
+          class="top-logo"
+        >
+          MamaCare
+        </a>
+
+        <div class="top-tabs">
+
+          <button
+            class="top-tab active"
+            data-page="dashboard"
+          >
+            Dashboard
+          </button>
+
+          <button
+            class="top-tab"
+            data-page="mood"
+          >
+            Mood
+          </button>
+
+          <button
+            class="top-tab"
+            data-page="due"
+          >
+            Due Date
+          </button>
+
+          <button
+            class="top-tab"
+            data-page="yoga"
+          >
+            Yoga
+          </button>
+
+          <button
+            class="top-tab"
+            data-page="chat"
+          >
+            AI Chat
+          </button>
+
+        </div>
+
+        <div class="top-user">
+
+          <span id="topUserEmail">
+            Welcome ❤️
+          </span>
+
+        </div>
+
       </div>
-      <button class="auth-btn auth-btn-primary" id="authVerifyBtn" onclick="MC.verifyOTP()">Verify & Login</button>
-      <p class="auth-msg"><a onclick="MC.showStep(1)">← Wapas jaao</a> &nbsp;|&nbsp; <a onclick="MC.sendOTP()">Code dobara bhejo</a></p>
-    </div>
-  </div>
-</div>
 
-<div id="langBar" style="display:none">
-  <span style="font-size:12px;color:var(--muted);flex-shrink:0"><i data-lucide="globe" style="width:16px;height:16px;"></i></span>
-  <button class="lang-btn active" data-lang="hinglish">Hinglish</button>
-  <button class="lang-btn" data-lang="hi">हिंदी</button>
-  <button class="lang-btn" data-lang="en">English</button>
-  <button class="lang-btn" data-lang="ta">தமிழ்</button>
-  <button class="lang-btn" data-lang="bn">বাংলা</button>
-  <button class="lang-btn" data-lang="mr">मराठी</button>
-  <button class="lang-btn" data-lang="te">తెలుగు</button>
-</div>
+    </header>
 
-<div id="topBar" style="display:none">
-  <div class="top-inner">
-    <a class="top-logo" href="#" style="display: flex; align-items: center; gap: 4px;">
-      Mama<span>Care</span> <i data-lucide="flower-2" style="width: 18px; color: var(--rose);"></i>
-    </a>
-    <div class="top-tabs" id="topTabs">
-      <button class="top-tab active" data-page="mood"><i data-lucide="smile" class="app-icon-inline"></i> Mood</button>
-      <button class="top-tab" data-page="dashboard"><i data-lucide="layout-dashboard" class="app-icon-inline"></i> Dashboard</button>
-      <button class="top-tab" data-page="due"><i data-lucide="calendar-heart" class="app-icon-inline"></i> Due Date</button>
-      <button class="top-tab" data-page="weight"><i data-lucide="scale" class="app-icon-inline"></i> Weight</button>
-      <button class="top-tab" data-page="yoga"><i data-lucide="activity" class="app-icon-inline"></i> Yoga</button>
-      <button class="top-tab" data-page="sleep"><i data-lucide="moon" class="app-icon-inline"></i> Sleep</button>
-      <button class="top-tab" data-page="nutrition"><i data-lucide="apple" class="app-icon-inline"></i> Nutrition</button>
-      <button class="top-tab" data-page="medicine"><i data-lucide="pill" class="app-icon-inline"></i> Meds</button>
-      <button class="top-tab" data-page="bag"><i data-lucide="briefcase-medical" class="app-icon-inline"></i> Bag</button>
-      <button class="top-tab" data-page="names"><i data-lucide="baby" class="app-icon-inline"></i> Names</button>
-      <button class="top-tab" data-page="journal"><i data-lucide="book-heart" class="app-icon-inline"></i> Journal</button>
-      <button class="top-tab" data-page="appointments"><i data-lucide="stethoscope" class="app-icon-inline"></i> Appts</button>
-      <button class="top-tab" data-page="birth"><i data-lucide="clipboard-list" class="app-icon-inline"></i> Birth Plan</button>
-      <button class="top-tab" data-page="postpartum"><i data-lucide="heart-pulse" class="app-icon-inline"></i> Postpartum</button>
-      <button class="top-tab" data-page="symptoms"><i data-lucide="thermometer" class="app-icon-inline"></i> Symptoms</button>
-      <button class="top-tab" data-page="sos" style="color:#e05c5c;"><i data-lucide="alert-triangle" class="app-icon-inline"></i> SOS</button>
-    </div>
-    <div class="top-user">
-      <span id="topUserEmail"></span>
-      <button onclick="MC.logout()"><i data-lucide="log-out" class="app-icon-inline"></i></button>
-    </div>
-  </div>
-</div>
+    <!-- DASHBOARD -->
+    <main
+      class="page active"
+      id="page-dashboard"
+    >
 
-<nav id="bottomNav" style="display:none">
-  <div class="bn-inner">
-    <button class="bn-item active" data-page="mood"><div class="bn-icon"><i data-lucide="smile"></i></div><div class="bn-label">Mood</div></button>
-    <button class="bn-item" data-page="dashboard"><div class="bn-icon"><i data-lucide="layout-dashboard"></i></div><div class="bn-label">Dashboard</div></button>
-    <button class="bn-item" data-page="due"><div class="bn-icon"><i data-lucide="calendar-heart"></i></div><div class="bn-label">Due Date</div></button>
-    <button class="bn-item" data-page="yoga"><div class="bn-icon"><i data-lucide="activity"></i></div><div class="bn-label">Yoga</div></button>
-    <button class="bn-item" id="moreBtn"><div class="bn-icon"><i data-lucide="grid-2x2"></i></div><div class="bn-label">More</div></button>
-  </div>
-</nav>
+      <div class="card">
 
-<div id="moreMenu">
-  <div class="more-grid">
-    <div class="more-item" data-page="weight"><div class="mi-icon"><i data-lucide="scale"></i></div><div class="mi-label">Weight</div></div>
-    <div class="more-item" data-page="sleep"><div class="mi-icon"><i data-lucide="moon"></i></div><div class="mi-label">Sleep</div></div>
-    <div class="more-item" data-page="nutrition"><div class="mi-icon"><i data-lucide="apple"></i></div><div class="mi-label">Nutrition</div></div>
-    <div class="more-item" data-page="medicine"><div class="mi-icon"><i data-lucide="pill"></i></div><div class="mi-label">Meds</div></div>
-    <div class="more-item" data-page="bag"><div class="mi-icon"><i data-lucide="briefcase-medical"></i></div><div class="mi-label">Bag</div></div>
-    <div class="more-item" data-page="names"><div class="mi-icon"><i data-lucide="baby"></i></div><div class="mi-label">Names</div></div>
-    <div class="more-item" data-page="journal"><div class="mi-icon"><i data-lucide="book-heart"></i></div><div class="mi-label">Journal</div></div>
-    <div class="more-item" data-page="appointments"><div class="mi-icon"><i data-lucide="stethoscope"></i></div><div class="mi-label">Appts</div></div>
-    <div class="more-item" data-page="birth"><div class="mi-icon"><i data-lucide="clipboard-list"></i></div><div class="mi-label">Birth Plan</div></div>
-    <div class="more-item" data-page="postpartum"><div class="mi-icon"><i data-lucide="heart-pulse"></i></div><div class="mi-label">Postpartum</div></div>
-    <div class="more-item" data-page="symptoms"><div class="mi-icon"><i data-lucide="thermometer"></i></div><div class="mi-label">Symptoms</div></div>
-    <div class="more-item" data-page="sos"><div class="mi-icon" style="color:#e05c5c;"><i data-lucide="alert-triangle"></i></div><div class="mi-label">SOS</div></div>
-  </div>
-</div>
+        <div class="sec-label">
+          Dashboard
+        </div>
 
-<div class="page active" id="page-mood">
-  <div style="text-align:center;padding:28px 0 20px">
-    <div style="display:inline-flex;align-items:center;gap:7px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:6px 16px;margin-bottom:16px;font-size:12px;color:var(--muted)"><i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i> MamaCare</div>
-    <h1 id="moodHeroText" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:300;line-height:1.2"></h1>
-  </div>
-  <div class="card">
-    <div class="sec-label" id="moodStepLabel"></div>
-    <div class="sec-title" id="moodSelectTitle"></div>
-    <div class="mood-grid" id="moodGrid"></div>
-  </div>
-  <div class="card" id="moodTipsCard" style="display:none"><div id="moodTipsContent"></div></div>
-  <div class="card">
-    <div class="sec-label">4-4-4 Box Breathing</div>
-    <div class="sec-title" id="breathTitle"></div>
-    <div style="text-align:center;padding:8px 0 18px">
-      <div id="breathRing" style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,var(--blush) 0%,var(--rose) 65%,transparent 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 0 10px rgba(232,160,168,.14),0 0 0 20px rgba(232,160,168,.06);transition:transform .3s;">
-        <span style="font-size:22px; color:white;"><i data-lucide="wind"></i></span>
-        <span id="breathLabel" style="font-size:11px;font-weight:600;color:var(--warm);margin-top:2px">Start</span>
+        <div class="sec-title">
+          MamaCare Home
+        </div>
+
+        <div class="feature-grid">
+
+          <div
+            class="feature-item"
+            data-page="mood"
+          >
+            <i data-lucide="smile"></i>
+
+            <span>Mood</span>
+          </div>
+
+          <div
+            class="feature-item"
+            data-page="due"
+          >
+            <i data-lucide="calendar-heart"></i>
+
+            <span>Due Date</span>
+          </div>
+
+          <div
+            class="feature-item"
+            data-page="yoga"
+          >
+            <i data-lucide="activity"></i>
+
+            <span>Yoga</span>
+          </div>
+
+          <div
+            class="feature-item"
+            data-page="chat"
+          >
+            <i data-lucide="bot"></i>
+
+            <span>AI Chat</span>
+          </div>
+
+          <div class="feature-item">
+            <i data-lucide="apple"></i>
+
+            <span>Nutrition</span>
+          </div>
+
+          <div class="feature-item">
+            <i data-lucide="moon"></i>
+
+            <span>Sleep</span>
+          </div>
+
+        </div>
+
       </div>
-      <div id="breathStatus" style="font-size:13px;color:var(--muted);height:20px"></div>
-      <div id="breathCount" style="font-size:12px;color:var(--green);height:18px;margin-top:3px"></div>
-      <button class="btn btn-p" style="margin-top:14px" id="breathBtn" onclick="MC.startBreathing()"><i data-lucide="wind" class="app-icon-inline"></i> Shuru Karein</button>
+
+      <div class="g2">
+
+        <div class="stat">
+
+          <div class="stat-v">
+            24
+          </div>
+
+          <div class="stat-l">
+            Weeks
+          </div>
+
+        </div>
+
+        <div class="stat">
+
+          <div class="stat-v">
+            112
+          </div>
+
+          <div class="stat-l">
+            Days Left
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- MOOD PAGE -->
+    <main
+      class="page"
+      id="page-mood"
+    >
+
+      <div class="card">
+
+        <div class="sec-label">
+          Mood Tracker
+        </div>
+
+        <div class="sec-title">
+          How are you feeling today?
+        </div>
+
+        <div class="mood-grid">
+
+          <button class="mood-btn">
+            😊 Happy
+          </button>
+
+          <button class="mood-btn">
+            😴 Tired
+          </button>
+
+          <button class="mood-btn">
+            😭 Emotional
+          </button>
+
+          <button class="mood-btn">
+            😌 Calm
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <div class="sec-label">
+          AI Companion
+        </div>
+
+        <div class="sec-title">
+          MamaCare Chat
+        </div>
+
+        <div class="chat-box">
+
+          <div class="msg bot">
+            Hello Mama ❤️ How are you feeling today?
+          </div>
+
+          <div class="msg user">
+            I feel tired today.
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- DUE DATE PAGE -->
+    <main
+      class="page"
+      id="page-due"
+    >
+
+      <div class="card">
+
+        <div class="sec-label">
+          Pregnancy Tracker
+        </div>
+
+        <div class="sec-title">
+          Due Date Calculator
+        </div>
+
+        <label>
+          Expected Delivery Date
+        </label>
+
+        <input type="date" />
+
+        <button
+          class="btn btn-primary"
+          style="margin-top:14px"
+        >
+          Save
+        </button>
+
+      </div>
+
+    </main>
+
+    <!-- YOGA PAGE -->
+    <main
+      class="page"
+      id="page-yoga"
+    >
+
+      <div class="card">
+
+        <div class="sec-label">
+          Wellness
+        </div>
+
+        <div class="sec-title">
+          Pregnancy Yoga
+        </div>
+
+        <div class="yoga-grid">
+
+          <div class="yoga-card">
+
+            <h3>
+              Butterfly Pose
+            </h3>
+
+            <p>
+              Helps relax hips and improve flexibility.
+            </p>
+
+          </div>
+
+          <div class="yoga-card">
+
+            <h3>
+              Cat Stretch
+            </h3>
+
+            <p>
+              Helps posture and back pain.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- CHAT PAGE -->
+    <main
+      class="page"
+      id="page-chat"
+    >
+
+      <div class="card">
+
+        <div class="sec-label">
+          AI Assistant
+        </div>
+
+        <div class="sec-title">
+          MamaCare AI
+        </div>
+
+        <div class="chat-box">
+
+          <div class="msg bot">
+            Hello Mama ❤️ Ask me anything.
+          </div>
+
+        </div>
+
+        <div class="g2">
+
+          <input
+            type="text"
+            placeholder="Type your message..."
+          />
+
+          <button class="btn btn-primary">
+            Send
+          </button>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- MORE MENU -->
+    <div
+      id="moreMenu"
+      class="card"
+    >
+
+      <div class="more-grid">
+
+        <div class="more-item">
+          <i data-lucide="apple"></i>
+
+          <span>
+            Nutrition
+          </span>
+        </div>
+
+        <div class="more-item">
+          <i data-lucide="moon"></i>
+
+          <span>
+            Sleep
+          </span>
+        </div>
+
+        <div class="more-item">
+          <i data-lucide="heart-pulse"></i>
+
+          <span>
+            Health
+          </span>
+        </div>
+
+        <div class="more-item">
+          <i data-lucide="book-heart"></i>
+
+          <span>
+            Journal
+          </span>
+        </div>
+
+      </div>
+
     </div>
+
+    <!-- BOTTOM NAV -->
+    <nav id="bottomNav">
+
+      <div class="bn-inner">
+
+        <button
+          class="bn-item active"
+          data-page="dashboard"
+        >
+
+          <i data-lucide="house"></i>
+
+          <div class="bn-label">
+            Home
+          </div>
+
+        </button>
+
+        <button
+          class="bn-item"
+          data-page="mood"
+        >
+
+          <i data-lucide="smile"></i>
+
+          <div class="bn-label">
+            Mood
+          </div>
+
+        </button>
+
+        <button
+          class="bn-item"
+          data-page="due"
+        >
+
+          <i data-lucide="calendar-heart"></i>
+
+          <div class="bn-label">
+            Due
+          </div>
+
+        </button>
+
+        <button
+          class="bn-item"
+          data-page="yoga"
+        >
+
+          <i data-lucide="activity"></i>
+
+          <div class="bn-label">
+            Yoga
+          </div>
+
+        </button>
+
+        <button
+          class="bn-item"
+          id="moreBtn"
+        >
+
+          <i data-lucide="grid-2x2"></i>
+
+          <div class="bn-label">
+            More
+          </div>
+
+        </button>
+
+      </div>
+
+    </nav>
+
+    <!-- FOOTER -->
+    <footer class="card">
+
+      <strong>
+        MamaCare
+      </strong>
+
+      <br />
+
+      Your pregnancy companion ❤️
+
+    </footer>
+
   </div>
-  <div class="card">
-    <div class="sec-label" id="affirmLabel"></div>
-    <div class="sec-title" id="affirmTitle"></div>
-    <div style="text-align:center;padding:18px;background:linear-gradient(135deg,#fef0f5,#fdf5ee);border-radius:14px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-8px;left:6px;font-family:'Cormorant Garamond',serif;font-size:90px;color:rgba(232,160,168,.15);line-height:1">"</div>
-      <p id="affirmText" style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;color:var(--warm);line-height:1.7;position:relative;z-index:1;transition:opacity .3s"></p>
-      <button class="btn btn-g btn-sm" style="margin-top:12px" onclick="MC.newAffirmation()" id="affirmBtn"></button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="sec-label">AI Companion</div>
-    <div class="sec-title" id="chatTitle"></div>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="chat-row">
-      <input id="chatInput" type="text" onkeydown="if(event.key==='Enter')MC.sendChat()"/>
-      <button class="btn btn-p btn-sm" onclick="MC.sendChat()" id="chatSendBtn"></button>
-    </div>
-  </div>
-</div>
 
-<div class="page" id="page-dashboard">
-  <div class="dashboard-section">
-    <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:24px"></div>
-  </div>
+  <!-- APP SCRIPT -->
+  <script>
 
-  <div class="dashboard-section">
-    <div class="section-header">
-      <div class="sec-label">Rozana Tracking</div>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-item" onclick="MC.goTo('weight')">
-        <div class="mi-icon"><i data-lucide="scale"></i></div>
-        <div class="mi-label">Weight</div>
-      </div>
-      <div class="feature-item" onclick="MC.goTo('sleep')">
-        <div class="mi-icon"><i data-lucide="moon"></i></div>
-        <div class="mi-label">Sleep</div>
-      </div>
-      <div class="feature-item" onclick="MC.goTo('nutrition')">
-        <div class="mi-icon"><i data-lucide="apple"></i></div>
-        <div class="mi-label">Nutrition</div>
-      </div>
-      <div class="feature-item" onclick="MC.goTo('medicine')">
-        <div class="mi-icon"><i data-lucide="pill"></i></div>
-        <div class="mi-label">Meds</div>
-      </div>
-      <div class="feature-item" onclick="MC.goTo('journal')">
-        <div class="mi-icon"><i data-lucide="book-heart"></i></div>
-        <div class="mi-label">Diary</div>
-      </div>
-      <div class="feature-item" onclick="MC.goTo('appointments')">
-        <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
-        <div class="mi-label">Appts</div>
-      </div>
-    </div>
-  </div>
+    lucide.createIcons();
 
-  <div class="dashboard-section">
-    <div class="section-header">
-      <div class="sec-label">Smart AI Tools</div>
-    </div>
-    <div class="feature-grid" style="grid-template-columns: 1fr 1fr;"> <div class="feature-item" style="background: #f3e5f5;" onclick="MC.goTo('mood')">
-        <div class="mi-icon"><i data-lucide="bot"></i></div>
-        <div class="mi-label">AI Coach</div>
-      </div>
-      <div class="feature-item" style="background: #e3f2fd;" onclick="MC.goTo('symptoms')">
-        <div class="mi-icon"><i data-lucide="search"></i></div>
-        <div class="mi-label">Symptom AI</div>
-      </div>
-    </div>
-  </div>
+    document.addEventListener("DOMContentLoaded", () => {
 
-  <div class="dashboard-section">
-    <div class="section-header">
-      <div class="sec-label">Safety & Planning</div>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-item" onclick="MC.goTo('bag')">
-        <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
-        <div class="mi-label">Hosp Bag</div>
-      </div>
-      <div class="feature-item" onclick="MC.goTo('birth')">
-        <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
-        <div class="mi-label">Birth Plan</div>
-      </div>
-      <div class="feature-item emergency-item" onclick="MC.goTo('sos')">
-        <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
-        <div class="mi-label" style="color:var(--danger)">SOS</div>
-      </div>
-    </div>
-  </div>
+      const pages =
+        document.querySelectorAll(".page");
 
-  <div class="card">
-    <div class="sec-label" id="dbMilestonesLabel">Upcoming</div>
-    <div id="dbMilestones"></div>
-  </div>
-</div>
+      const buttons =
+        document.querySelectorAll("[data-page]");
 
-<footer><strong style="color:var(--accent)">MamaCare <i data-lucide="flower-2" class="app-icon-inline"></i></strong> v7.6 | <i data-lucide="cloud" class="app-icon-inline"></i> Cloud sync enabled | <i data-lucide="lock" class="app-icon-inline"></i> Your data is private<br/><span style="font-size:11px">Yeh app medical advice replace nahi karta</span></footer>
+      const moreBtn =
+        document.getElementById("moreBtn");
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+      const moreMenu =
+        document.getElementById("moreMenu");
 
-<script src="app.js?v=5"></script>
-<script src="app-features.js?v=5"></script>
-<script src="app-coach.js?v=5"></script>
-<script src="app-tracker.js?v=5"></script>
-<script src="app-onboard.js?v=5"></script>
-<script src="app-monetize.js?v=5"></script>
-<script src="app-baby.js?v=5"></script>
-<script src="app-india.js?v=5"></script>
-<script src="app-smart.js?v=5"></script>
-<script src="app-extra.js?v=5"></script>
+      function openPage(pageName){
 
-<script>
-  lucide.createIcons();
+        pages.forEach((page)=>{
+          page.classList.remove("active");
+        });
 
-  // IMPROVEMENT: Register service worker for PWA offline support
-  // sw.js was present but never registered — this activates it
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .catch(err => console.warn('SW registration failed:', err));
+        buttons.forEach((btn)=>{
+          btn.classList.remove("active");
+        });
+
+        const target =
+          document.getElementById(
+            `page-${pageName}`
+          );
+
+        if(target){
+          target.classList.add("active");
+        }
+
+        buttons.forEach((btn)=>{
+
+          if(
+            btn.dataset.page === pageName
+          ){
+            btn.classList.add("active");
+          }
+
+        });
+
+        if(moreMenu){
+          moreMenu.style.display = "none";
+        }
+
+        window.scrollTo({
+          top:0,
+          behavior:"smooth"
+        });
+
+      }
+
+      buttons.forEach((btn)=>{
+
+        btn.addEventListener("click",()=>{
+
+          const page =
+            btn.dataset.page;
+
+          if(page){
+            openPage(page);
+          }
+
+        });
+
+      });
+
+      if(moreBtn && moreMenu){
+
+        moreBtn.addEventListener("click",(e)=>{
+
+          e.stopPropagation();
+
+          if(
+            moreMenu.style.display === "block"
+          ){
+            moreMenu.style.display = "none";
+          } else {
+            moreMenu.style.display = "block";
+          }
+
+        });
+
+      }
+
+      document.addEventListener("click",(e)=>{
+
+        if(
+          moreMenu &&
+          !moreMenu.contains(e.target) &&
+          e.target !== moreBtn
+        ){
+          moreMenu.style.display = "none";
+        }
+
+      });
+
     });
-  }
-</script>
+
+  </script>
+
 </body>
+
 </html>

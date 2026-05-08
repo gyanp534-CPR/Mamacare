@@ -620,3 +620,42 @@ footer{
     display:block !important;
   }
 }
+
+
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block !important;
+}
+
+#moreMenu.show {
+  display: block !important;
+}
+
+.top-tabs,
+.bn-inner,
+.more-grid {
+  pointer-events: auto;
+}
+
+.card,
+.feature-item,
+.bn-item,
+.top-tab,
+.more-item,
+button {
+  position: relative;
+  z-index: 2;
+}
+
+body,
+.app-shell {
+  overflow-x: hidden;
+}
+
+#bottomNav {
+  isolation: isolate;
+}

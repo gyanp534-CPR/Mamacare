@@ -1371,3 +1371,78 @@ window.MC = {
   // Dashboard
   renderDashboard,
 };
+
+window.MC = window.MC || {};
+
+MC.goTo = function(page){
+
+  try{
+
+    const pages =
+      document.querySelectorAll('.page');
+
+    pages.forEach(p=>{
+      p.classList.remove('active');
+    });
+
+    const target =
+      document.getElementById(`page-${page}`);
+
+    if(target){
+      target.classList.add('active');
+    }
+
+    // top tabs
+    document.querySelectorAll('.top-tab')
+      .forEach(t=>{
+
+        t.classList.remove('active');
+
+        if(t.dataset.page === page){
+          t.classList.add('active');
+        }
+
+      });
+
+    // bottom nav
+    document.querySelectorAll('.bn-item')
+      .forEach(t=>{
+
+        t.classList.remove('active');
+
+        if(t.dataset.page === page){
+          t.classList.add('active');
+        }
+
+      });
+
+    // close more menu
+    const more =
+      document.getElementById('moreMenu');
+
+    if(more){
+      more.classList.remove('show');
+    }
+
+    window.scrollTo({
+      top:0,
+      behavior:'smooth'
+    });
+
+    if(window.lucide){
+      lucide.createIcons();
+    }
+
+  }catch(err){
+
+    console.error(
+      'Navigation Error:',
+      err
+    );
+
+  }
+
+};
+
+// backwards compatibility
+MC.navTo = MC.goTo;

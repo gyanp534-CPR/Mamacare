@@ -48,6 +48,12 @@
   <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
   <!-- Styles -->
   <link
     rel="stylesheet"
@@ -63,20 +69,32 @@
     <!-- LANGUAGE BAR -->
     <div id="langBar">
 
-      <button class="lang-btn active">
+      <button class="lang-btn active" data-lang="hinglish">
         English
       </button>
 
-      <button class="lang-btn">
+      <button class="lang-btn" data-lang="hi">
         हिंदी
       </button>
 
-      <button class="lang-btn">
+      <button class="lang-btn" data-lang="en">
+        English
+      </button>
+
+      <button class="lang-btn" data-lang="ta">
+        தமிழ்
+      </button>
+
+      <button class="lang-btn" data-lang="bn">
         বাংলা
       </button>
 
-      <button class="lang-btn">
-        தமிழ்
+      <button class="lang-btn" data-lang="mr">
+        मराठी
+      </button>
+
+      <button class="lang-btn" data-lang="te">
+        తెలుగు
       </button>
 
     </div>
@@ -563,114 +581,17 @@
 
   </div>
 
-  <!-- APP SCRIPT -->
-  <script>
-
-    lucide.createIcons();
-
-    document.addEventListener("DOMContentLoaded", () => {
-
-      const pages =
-        document.querySelectorAll(".page");
-
-      const buttons =
-        document.querySelectorAll("[data-page]");
-
-      const moreBtn =
-        document.getElementById("moreBtn");
-
-      const moreMenu =
-        document.getElementById("moreMenu");
-
-      function openPage(pageName){
-
-        pages.forEach((page)=>{
-          page.classList.remove("active");
-        });
-
-        buttons.forEach((btn)=>{
-          btn.classList.remove("active");
-        });
-
-        const target =
-          document.getElementById(
-            `page-${pageName}`
-          );
-
-        if(target){
-          target.classList.add("active");
-        }
-
-        buttons.forEach((btn)=>{
-
-          if(
-            btn.dataset.page === pageName
-          ){
-            btn.classList.add("active");
-          }
-
-        });
-
-        if(moreMenu){
-          moreMenu.style.display = "none";
-        }
-
-        window.scrollTo({
-          top:0,
-          behavior:"smooth"
-        });
-
-      }
-
-      buttons.forEach((btn)=>{
-
-        btn.addEventListener("click",()=>{
-
-          const page =
-            btn.dataset.page;
-
-          if(page){
-            openPage(page);
-          }
-
-        });
-
-      });
-
-      if(moreBtn && moreMenu){
-
-        moreBtn.addEventListener("click",(e)=>{
-
-          e.stopPropagation();
-
-          if(
-            moreMenu.style.display === "block"
-          ){
-            moreMenu.style.display = "none";
-          } else {
-            moreMenu.style.display = "block";
-          }
-
-        });
-
-      }
-
-      document.addEventListener("click",(e)=>{
-
-        if(
-          moreMenu &&
-          !moreMenu.contains(e.target) &&
-          e.target !== moreBtn
-        ){
-          moreMenu.style.display = "none";
-        }
-
-      });
-
-    });
-
-  </script>
+  <!-- APP SCRIPTS -->
+  <script src="app.js"></script>
+  <script src="app-baby.js"></script>
+  <script src="app-coach.js"></script>
+  <script src="app-extra.js"></script>
+  <script src="app-features.js"></script>
+  <script src="app-india.js"></script>
+  <script src="app-monetize.js"></script>
+  <script src="app-onboard.js"></script>
+  <script src="app-smart.js"></script>
+  <script src="app-tracker.js"></script>
 
 </body>
-
 </html>

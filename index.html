@@ -1,587 +1,641 @@
 <!DOCTYPE html>
 <html lang="en" id="htmlRoot">
-
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#E2858E" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Mama Gyan" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Mama Gyan — Pregnancy Companion</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <meta name="theme-color" content="#d98c95" />
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  />
-
-  <meta
-    name="apple-mobile-web-app-title"
-    content="MamaCare"
-  />
-
-  <meta
-    name="mobile-web-app-capable"
-    content="yes"
-  />
-
-  <title>MamaCare</title>
-
-  <!-- Fonts -->
-  <link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
-  />
-
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  />
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
-
-  <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
-  <!-- Styles -->
-  <link
-    rel="stylesheet"
-    href="style.css"
-  />
-
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div id="authScreen">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h2 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+          Mama<span>Gyan</span> <i data-lucide="flower-2" style="color: var(--rose);"></i>
+        </h2>
+        <p>Complete Pregnancy Companion</p>
+      </div>
+      <div class="auth-step" id="authStep1">
+        <h3>Login / Sign Up</h3>
+        <p>Apna email daalo — hum ek magic link bhejenge. Password yaad karne ki zarurat nahi! <i data-lucide="sparkles" class="app-icon-inline" style="color:var(--gold); width:14px;"></i></p>
+        <input class="auth-input" type="email" id="authEmail" placeholder="aapka@email.com" onkeydown="if(event.key==='Enter')MC.sendOTP()"/>
+        <button class="auth-btn auth-btn-primary btn-p" style="width:100%" id="authSendBtn" onclick="MC.sendOTP()">Magic Link Bhejo <i data-lucide="wand-2" class="app-icon-inline"></i></button>
+        <p class="auth-msg" id="authMsg" style="margin-top:12px; font-size:13px; text-align:center;"></p>
+      </div>
+      <div class="auth-step" id="authStep2" style="display:none">
+        <h3>OTP Daalo <i data-lucide="lock" class="app-icon-inline"></i></h3>
+        <p id="authOTPMsg">Aapke email pe 6-digit code bheja gaya hai. Check karein!</p>
+        <div class="otp-inputs">
+          <input class="otp-input" type="text" maxlength="1" id="otp0" oninput="MC.otpInput(this,0)"/>
+          <input class="otp-input" type="text" maxlength="1" id="otp1" oninput="MC.otpInput(this,1)"/>
+          <input class="otp-input" type="text" maxlength="1" id="otp2" oninput="MC.otpInput(this,2)"/>
+          <input class="otp-input" type="text" maxlength="1" id="otp3" oninput="MC.otpInput(this,3)"/>
+          <input class="otp-input" type="text" maxlength="1" id="otp4" oninput="MC.otpInput(this,4)"/>
+          <input class="otp-input" type="text" maxlength="1" id="otp5" oninput="MC.otpInput(this,5)"/>
+        </div>
+        <button class="auth-btn auth-btn-primary btn-p" style="width:100%" id="authVerifyBtn" onclick="MC.verifyOTP()">Verify & Login</button>
+        <p class="auth-msg" style="margin-top:16px; text-align:center; font-size:13px;"><a href="#" style="color:var(--accent)" onclick="MC.showStep(1)">← Wapas jaao</a> &nbsp;|&nbsp; <a href="#" style="color:var(--accent)" onclick="MC.sendOTP()">Code dobara bhejo</a></p>
+      </div>
+    </div>
+  </div>
 
   <div class="app-shell">
 
-    <!-- LANGUAGE BAR -->
-    <div id="langBar">
-
-      <button class="lang-btn active" data-lang="hinglish">
-        English
-      </button>
-
-      <button class="lang-btn" data-lang="hi">
-        हिंदी
-      </button>
-
-      <button class="lang-btn" data-lang="en">
-        English
-      </button>
-
-      <button class="lang-btn" data-lang="ta">
-        தமிழ்
-      </button>
-
-      <button class="lang-btn" data-lang="bn">
-        বাংলা
-      </button>
-
-      <button class="lang-btn" data-lang="mr">
-        मराठी
-      </button>
-
-      <button class="lang-btn" data-lang="te">
-        తెలుగు
-      </button>
-
+    <div id="langBar" style="display:none;">
+      <span style="font-size:12px;color:var(--muted);flex-shrink:0"><i data-lucide="globe" style="width:16px;height:16px;"></i></span>
+      <button class="lang-btn active" data-lang="hinglish">Hinglish</button>
+      <button class="lang-btn" data-lang="hi">हिंदी</button>
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="ta">தமிழ்</button>
+      <button class="lang-btn" data-lang="bn">বাংলা</button>
+      <button class="lang-btn" data-lang="mr">मराठी</button>
+      <button class="lang-btn" data-lang="te">తెలుగు</button>
     </div>
 
-    <!-- TOP BAR -->
-    <header id="topBar">
-
+    <header id="topBar" style="display:none;">
       <div class="top-inner">
-
-        <a
-          href="#"
-          class="top-logo"
-        >
-          MamaCare
+        <a href="#" class="top-logo" style="display: flex; align-items: center; gap: 4px;">
+          Mama<span>Gyan</span> <i data-lucide="flower-2" style="width: 18px; color: var(--rose);"></i>
         </a>
-
-        <div class="top-tabs">
-
-          <button
-            class="top-tab active"
-            data-page="dashboard"
-          >
-            Dashboard
-          </button>
-
-          <button
-            class="top-tab"
-            data-page="mood"
-          >
-            Mood
-          </button>
-
-          <button
-            class="top-tab"
-            data-page="due"
-          >
-            Due Date
-          </button>
-
-          <button
-            class="top-tab"
-            data-page="yoga"
-          >
-            Yoga
-          </button>
-
-          <button
-            class="top-tab"
-            data-page="chat"
-          >
-            AI Chat
-          </button>
-
+        <div class="top-tabs" id="topTabs">
+          <button class="top-tab active" data-page="mood"><i data-lucide="smile" class="app-icon-inline"></i> Mood</button>
+          <button class="top-tab" data-page="dashboard"><i data-lucide="layout-dashboard" class="app-icon-inline"></i> Dashboard</button>
+          <button class="top-tab" data-page="due"><i data-lucide="calendar-heart" class="app-icon-inline"></i> Due Date</button>
+          <button class="top-tab" data-page="weight"><i data-lucide="scale" class="app-icon-inline"></i> Weight</button>
+          <button class="top-tab" data-page="yoga"><i data-lucide="activity" class="app-icon-inline"></i> Yoga</button>
+          <button class="top-tab" data-page="sleep"><i data-lucide="moon" class="app-icon-inline"></i> Sleep</button>
+          <button class="top-tab" data-page="nutrition"><i data-lucide="apple" class="app-icon-inline"></i> Nutrition</button>
+          <button class="top-tab" data-page="medicine"><i data-lucide="pill" class="app-icon-inline"></i> Meds</button>
+          <button class="top-tab" data-page="bag"><i data-lucide="briefcase-medical" class="app-icon-inline"></i> Bag</button>
+          <button class="top-tab" data-page="names"><i data-lucide="baby" class="app-icon-inline"></i> Names</button>
+          <button class="top-tab" data-page="journal"><i data-lucide="book-heart" class="app-icon-inline"></i> Journal</button>
+          <button class="top-tab" data-page="appointments"><i data-lucide="stethoscope" class="app-icon-inline"></i> Appts</button>
+          <button class="top-tab" data-page="birth"><i data-lucide="clipboard-list" class="app-icon-inline"></i> Birth Plan</button>
+          <button class="top-tab" data-page="postpartum"><i data-lucide="heart-pulse" class="app-icon-inline"></i> Postpartum</button>
+          <button class="top-tab" data-page="symptoms"><i data-lucide="thermometer" class="app-icon-inline"></i> Symptoms</button>
+          <button class="top-tab" data-page="sos" style="color:#e05c5c;"><i data-lucide="alert-triangle" class="app-icon-inline"></i> SOS</button>
         </div>
-
         <div class="top-user">
-
-          <span id="topUserEmail">
-            Welcome ❤️
-          </span>
-
+          <span id="topUserEmail"></span>
+          <button onclick="MC.logout()" style="background:none; border:none; cursor:pointer; color:var(--muted);"><i data-lucide="log-out" class="app-icon-inline"></i></button>
         </div>
-
       </div>
-
     </header>
 
-    <!-- DASHBOARD -->
-    <main
-      class="page active"
-      id="page-dashboard"
-    >
-
+    <main class="page active" id="page-mood">
+      <div style="text-align:center;padding:28px 0 20px">
+        <div style="display:inline-flex;align-items:center;gap:7px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:6px 16px;margin-bottom:16px;font-size:12px;color:var(--muted)"><i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i> Mama Gyan</div>
+        <h1 id="moodHeroText" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:400;line-height:1.2"></h1>
+      </div>
       <div class="card">
-
-        <div class="sec-label">
-          Dashboard
+        <div class="sec-label" id="moodStepLabel"></div>
+        <div class="sec-title" id="moodSelectTitle"></div>
+        <div class="mood-grid" id="moodGrid"></div>
+      </div>
+      <div class="card" id="moodTipsCard" style="display:none"><div id="moodTipsContent"></div></div>
+      <div class="card">
+        <div class="sec-label">4-4-4 Box Breathing</div>
+        <div class="sec-title" id="breathTitle"></div>
+        <div style="text-align:center;padding:8px 0 18px">
+          <div id="breathRing" style="width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,var(--blush) 0%,var(--rose) 65%,transparent 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 0 10px rgba(232,160,168,.14),0 0 0 20px rgba(232,160,168,.06);transition:transform .3s;">
+            <span style="font-size:22px; color:white;"><i data-lucide="wind"></i></span>
+            <span id="breathLabel" style="font-size:11px;font-weight:600;color:var(--warm);margin-top:2px">Start</span>
+          </div>
+          <div id="breathStatus" style="font-size:13px;color:var(--muted);height:20px"></div>
+          <div id="breathCount" style="font-size:12px;color:var(--green);height:18px;margin-top:3px"></div>
+          <button class="btn btn-p" style="margin-top:14px" id="breathBtn" onclick="MC.startBreathing()"><i data-lucide="wind" class="app-icon-inline"></i> Shuru Karein</button>
         </div>
-
-        <div class="sec-title">
-          MamaCare Home
+      </div>
+      <div class="card">
+        <div class="sec-label" id="affirmLabel"></div>
+        <div class="sec-title" id="affirmTitle"></div>
+        <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#FFFCFA,#fdf5ee);border-radius:18px;position:relative;overflow:hidden; border:1px solid var(--blush);">
+          <div style="position:absolute;top:-8px;left:6px;font-family:'Cormorant Garamond',serif;font-size:90px;color:rgba(232,160,168,.15);line-height:1">"</div>
+          <p id="affirmText" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-style:italic;color:var(--warm);line-height:1.7;position:relative;z-index:1;transition:opacity .3s"></p>
+          <button class="btn btn-g btn-sm" style="margin-top:16px" onclick="MC.newAffirmation()" id="affirmBtn"></button>
         </div>
+      </div>
+      <div class="card">
+        <div class="sec-label">AI Companion</div>
+        <div class="sec-title" id="chatTitle"></div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-row">
+          <input id="chatInput" type="text" placeholder="Type your message..." onkeydown="if(event.key==='Enter')MC.sendChat()"/>
+          <button class="btn btn-p btn-sm" onclick="MC.sendChat()" id="chatSendBtn">Send</button>
+        </div>
+      </div>
+    </main>
 
+    <main class="page" id="page-dashboard">
+      <div class="dashboard-section">
+        <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:32px 24px; border:none;"></div>
+      </div>
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="sec-label">Rozana Tracking</div>
+        </div>
         <div class="feature-grid">
-
-          <div
-            class="feature-item"
-            data-page="mood"
-          >
-            <i data-lucide="smile"></i>
-
-            <span>Mood</span>
+          <div class="feature-item" onclick="MC.goTo('weight')">
+            <div class="mi-icon"><i data-lucide="scale"></i></div>
+            <div class="mi-label">Weight</div>
           </div>
-
-          <div
-            class="feature-item"
-            data-page="due"
-          >
-            <i data-lucide="calendar-heart"></i>
-
-            <span>Due Date</span>
+          <div class="feature-item" onclick="MC.goTo('sleep')">
+            <div class="mi-icon"><i data-lucide="moon"></i></div>
+            <div class="mi-label">Sleep</div>
           </div>
-
-          <div
-            class="feature-item"
-            data-page="yoga"
-          >
-            <i data-lucide="activity"></i>
-
-            <span>Yoga</span>
+          <div class="feature-item" onclick="MC.goTo('nutrition')">
+            <div class="mi-icon"><i data-lucide="apple"></i></div>
+            <div class="mi-label">Nutrition</div>
           </div>
-
-          <div
-            class="feature-item"
-            data-page="chat"
-          >
-            <i data-lucide="bot"></i>
-
-            <span>AI Chat</span>
+          <div class="feature-item" onclick="MC.goTo('medicine')">
+            <div class="mi-icon"><i data-lucide="pill"></i></div>
+            <div class="mi-label">Meds</div>
           </div>
-
-          <div class="feature-item">
-            <i data-lucide="apple"></i>
-
-            <span>Nutrition</span>
+          <div class="feature-item" onclick="MC.goTo('journal')">
+            <div class="mi-icon"><i data-lucide="book-heart"></i></div>
+            <div class="mi-label">Diary</div>
           </div>
-
-          <div class="feature-item">
-            <i data-lucide="moon"></i>
-
-            <span>Sleep</span>
+          <div class="feature-item" onclick="MC.goTo('appointments')">
+            <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
+            <div class="mi-label">Appts</div>
           </div>
-
         </div>
-
       </div>
-
-      <div class="g2">
-
-        <div class="stat">
-
-          <div class="stat-v">
-            24
-          </div>
-
-          <div class="stat-l">
-            Weeks
-          </div>
-
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="sec-label">Smart AI Tools</div>
         </div>
-
-        <div class="stat">
-
-          <div class="stat-v">
-            112
+        <div class="feature-grid" style="grid-template-columns: 1fr 1fr;"> 
+          <div class="feature-item" style="background: #f3e5f5; border-color: #e1bee7;" onclick="MC.goTo('mood')">
+            <div class="mi-icon"><i data-lucide="bot" style="color: #8e24aa;"></i></div>
+            <div class="mi-label">AI Coach</div>
           </div>
-
-          <div class="stat-l">
-            Days Left
+          <div class="feature-item" style="background: #e3f2fd; border-color: #bbdefb;" onclick="MC.goTo('symptoms')">
+            <div class="mi-icon"><i data-lucide="search" style="color: #1e88e5;"></i></div>
+            <div class="mi-label">Symptom AI</div>
           </div>
-
         </div>
-
       </div>
-
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="sec-label">Safety & Planning</div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-item" onclick="MC.goTo('bag')">
+            <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
+            <div class="mi-label">Hosp Bag</div>
+          </div>
+          <div class="feature-item" onclick="MC.goTo('birth')">
+            <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
+            <div class="mi-label">Birth Plan</div>
+          </div>
+          <div class="feature-item emergency-item" onclick="MC.goTo('sos')">
+            <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
+            <div class="mi-label" style="color:var(--danger)">SOS</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-label" id="dbMilestonesLabel">Upcoming Milestones</div>
+        <div id="dbMilestones"></div>
+      </div>
     </main>
 
-    <!-- MOOD PAGE -->
-    <main
-      class="page"
-      id="page-mood"
-    >
-
+    <main class="page" id="page-due">
       <div class="card">
-
-        <div class="sec-label">
-          Mood Tracker
-        </div>
-
-        <div class="sec-title">
-          How are you feeling today?
-        </div>
-
-        <div class="mood-grid">
-
-          <button class="mood-btn">
-            😊 Happy
-          </button>
-
-          <button class="mood-btn">
-            😴 Tired
-          </button>
-
-          <button class="mood-btn">
-            😭 Emotional
-          </button>
-
-          <button class="mood-btn">
-            😌 Calm
-          </button>
-
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <div class="sec-label">
-          AI Companion
-        </div>
-
-        <div class="sec-title">
-          MamaCare Chat
-        </div>
-
-        <div class="chat-box">
-
-          <div class="msg bot">
-            Hello Mama ❤️ How are you feeling today?
-          </div>
-
-          <div class="msg user">
-            I feel tired today.
-          </div>
-
-        </div>
-
-      </div>
-
-    </main>
-
-    <!-- DUE DATE PAGE -->
-    <main
-      class="page"
-      id="page-due"
-    >
-
-      <div class="card">
-
-        <div class="sec-label">
-          Pregnancy Tracker
-        </div>
-
-        <div class="sec-title">
-          Due Date Calculator
-        </div>
-
-        <label>
-          Expected Delivery Date
-        </label>
-
-        <input type="date" />
-
-        <button
-          class="btn btn-primary"
-          style="margin-top:14px"
-        >
-          Save
-        </button>
-
-      </div>
-
-    </main>
-
-    <!-- YOGA PAGE -->
-    <main
-      class="page"
-      id="page-yoga"
-    >
-
-      <div class="card">
-
-        <div class="sec-label">
-          Wellness
-        </div>
-
-        <div class="sec-title">
-          Pregnancy Yoga
-        </div>
-
-        <div class="yoga-grid">
-
-          <div class="yoga-card">
-
-            <h3>
-              Butterfly Pose
-            </h3>
-
-            <p>
-              Helps relax hips and improve flexibility.
-            </p>
-
-          </div>
-
-          <div class="yoga-card">
-
-            <h3>
-              Cat Stretch
-            </h3>
-
-            <p>
-              Helps posture and back pain.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </main>
-
-    <!-- CHAT PAGE -->
-    <main
-      class="page"
-      id="page-chat"
-    >
-
-      <div class="card">
-
-        <div class="sec-label">
-          AI Assistant
-        </div>
-
-        <div class="sec-title">
-          MamaCare AI
-        </div>
-
-        <div class="chat-box">
-
-          <div class="msg bot">
-            Hello Mama ❤️ Ask me anything.
-          </div>
-
-        </div>
-
+        <div class="sec-label">Calculate Timeline</div>
+        <div class="sec-title">Due Date Calculator</div>
         <div class="g2">
-
-          <input
-            type="text"
-            placeholder="Type your message..."
-          />
-
-          <button class="btn btn-primary">
-            Send
-          </button>
-
+          <div>
+            <label>Last Menstrual Period (LMP)</label>
+            <input type="date" id="lmpDate" onchange="MC.calcDue()">
+          </div>
+          <div>
+            <label>Or enter Known Due Date</label>
+            <input type="date" id="directDue" onchange="MC.calcFromDue()">
+          </div>
         </div>
-
       </div>
-
+      <div class="card" id="timelineCard" style="display:none">
+        <div class="sec-label">Your Progress</div>
+        <div id="dueResult"></div>
+        <div class="timeline-bar"><div class="timeline-fill" id="timelineFill" style="width:0%"></div></div>
+        <div style="text-align:right; font-size:12.5px; font-weight:700; color:var(--accent)" id="pctText">0%</div>
+        <div class="tri-cards" id="triCards"></div>
+      </div>
+      <div class="card" id="weekDetailCard" style="display:none">
+        <div class="sec-label" id="weekDetailTitle"></div>
+        <div id="weekDetailGrid"></div>
+        <div id="weekMoodTip" style="margin-top:16px; padding:16px; background:var(--blush); border-radius:16px; font-size:13.5px;"></div>
+      </div>
     </main>
 
-    <!-- MORE MENU -->
-    <div
-      id="moreMenu"
-      class="card"
-    >
-
-      <div class="more-grid">
-
-        <div class="more-item">
-          <i data-lucide="apple"></i>
-
-          <span>
-            Nutrition
-          </span>
+    <main class="page" id="page-weight">
+      <div class="card">
+        <div class="sec-title">Weight Tracker</div>
+        <div class="g2" style="margin-bottom:20px;">
+          <div>
+            <label>Pre-pregnancy Weight (kg)</label>
+            <input type="number" id="preWeight" placeholder="e.g. 60" onchange="MC.savePreWeight()">
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-end;">
+            <div style="flex:1;">
+              <label>Weight (kg)</label>
+              <input type="number" id="wtInput" placeholder="Current weight">
+            </div>
+            <div style="flex:1;">
+              <label>Week</label>
+              <input type="number" id="wtWeek" placeholder="e.g. 14">
+            </div>
+            <button class="btn btn-p" onclick="MC.addWeight()">Log</button>
+          </div>
         </div>
-
-        <div class="more-item">
-          <i data-lucide="moon"></i>
-
-          <span>
-            Sleep
-          </span>
-        </div>
-
-        <div class="more-item">
-          <i data-lucide="heart-pulse"></i>
-
-          <span>
-            Health
-          </span>
-        </div>
-
-        <div class="more-item">
-          <i data-lucide="book-heart"></i>
-
-          <span>
-            Journal
-          </span>
-        </div>
-
+        <div class="g3" id="wtStats" style="margin-bottom:20px;"></div>
+        <canvas id="weightChart" height="180"></canvas>
       </div>
+      <div class="card">
+        <div class="sec-label">History</div>
+        <div id="weightLog"></div>
+      </div>
+    </main>
 
+    <main class="page" id="page-sleep">
+      <div class="card">
+        <div class="sec-title">Sleep Tracker</div>
+        <div class="g2" style="margin-bottom:20px;">
+          <div>
+            <label>Bedtime</label>
+            <input type="time" id="sleepStart">
+          </div>
+          <div>
+            <label>Wake time</label>
+            <input type="time" id="sleepEnd">
+          </div>
+          <div>
+            <label>Quality</label>
+            <select id="sleepQuality">
+              <option value="3">😊 Great</option>
+              <option value="2">😐 Okay</option>
+              <option value="1">😞 Poor</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-end;">
+            <div style="flex:1;">
+              <label>Issue (optional)</label>
+              <input type="text" id="sleepIssue" placeholder="e.g. Cramps">
+            </div>
+            <button class="btn btn-p" onclick="MC.logSleep()">Log</button>
+          </div>
+        </div>
+        <div class="g3" id="sleepStats" style="margin-bottom:20px;"></div>
+        <canvas id="sleepChart" height="180"></canvas>
+      </div>
+      <div class="card">
+        <div class="sec-label">Expert Tips</div>
+        <div id="sleepTipsGrid" class="g2"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">History</div>
+        <div id="sleepLog"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-nutrition">
+      <div class="card">
+        <div class="sec-title">Daily Hydration</div>
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:16px;" id="waterTrack"></div>
+        <div id="waterMsg" style="text-align:center; font-size:13.5px; font-weight:600; color:var(--blue);"></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Food Log</div>
+        <div id="nutriBars" style="margin-bottom:20px;"></div>
+        <div class="tab-row" id="mealTimeBtns">
+          <button class="tab-btn active" data-meal="all">All</button>
+          <button class="tab-btn" data-meal="breakfast">Breakfast</button>
+          <button class="tab-btn" data-meal="lunch">Lunch</button>
+          <button class="tab-btn" data-meal="dinner">Dinner</button>
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+          <input type="text" id="foodInput" placeholder="What did you eat?" style="flex:2;">
+          <select id="foodCalSel" style="flex:1;">
+            <option value="100">Light (100)</option>
+            <option value="300" selected>Medium (300)</option>
+            <option value="500">Heavy (500)</option>
+          </select>
+          <button class="btn btn-p" onclick="MC.addFood()">Add</button>
+        </div>
+        <div id="foodList"></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Expert Meal Plan</div>
+        <div class="tab-row" id="triMealTabs">
+          <button class="tab-btn active" data-tri="1">1st Trimester</button>
+          <button class="tab-btn" data-tri="2">2nd Trimester</button>
+          <button class="tab-btn" data-tri="3">3rd Trimester</button>
+        </div>
+        <div id="mealPlanContent"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-medicine">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div class="sec-title" style="margin:0;">Medicines</div>
+          <button class="btn btn-g btn-sm" onclick="MC.toggleAddMedForm()">+ Add Med</button>
+        </div>
+        <div id="addMedForm" style="display:none; padding:20px; background:var(--blush); border-radius:18px; margin-bottom:20px;">
+          <div class="g2" style="margin-bottom:16px;">
+            <input type="text" id="medName" placeholder="Medicine Name">
+            <input type="text" id="medDose" placeholder="Dosage (e.g. 1 tab)">
+            <input type="time" id="medTime">
+            <select id="medIcon">
+              <option value="💊">💊 Pill</option>
+              <option value="💉">💉 Injection</option>
+              <option value="🩸">🩸 Drops</option>
+            </select>
+            <input type="text" id="medNotes" placeholder="Notes (e.g. after food)" style="grid-column:1/-1;">
+          </div>
+          <button class="btn btn-p" style="width:100%" onclick="MC.addMedicine()">Save Medicine</button>
+        </div>
+        <div class="g3" id="medStats" style="margin-bottom:16px;"></div>
+        <div class="timeline-bar"><div class="timeline-fill" id="medProgressBar" style="width:0%"></div></div>
+        <div id="medList" style="margin-top:20px;"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Supplement Guide</div>
+        <div id="suppGuide"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-bag">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div class="sec-title" style="margin:0;">Hospital Bag</div>
+          <button class="btn btn-g btn-sm" onclick="MC.resetBag()">Reset</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+          <div class="timeline-bar" style="flex:1; margin:0;"><div class="timeline-fill" id="bagBar" style="width:0%"></div></div>
+          <strong style="color:var(--accent)" id="bagPct">0%</strong>
+          <span style="font-size:12.5px; color:var(--muted); font-weight:600;" id="bagCount">0/0</span>
+        </div>
+        <div class="tab-row" id="bagCatTabs"></div>
+        <div id="bagContainer"></div>
+        <div style="display:flex; gap:10px; margin-top:20px; padding-top:20px; border-top:1px solid var(--blush);">
+          <input type="text" id="customBagItem" placeholder="Add custom item..." style="flex:2;">
+          <select id="customBagCatSel" style="flex:1;"></select>
+          <button class="btn btn-p" onclick="MC.addCustomBagItem()">Add</button>
+        </div>
+      </div>
+    </main>
+
+    <main class="page" id="page-names">
+      <div class="card" id="savedNamesCard" style="display:none;">
+        <div class="sec-label">Saved Favorites</div>
+        <div id="savedNamesList" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Name Explorer</div>
+        <input type="text" id="nameSearch" placeholder="Search names or meanings..." onkeyup="MC.renderNames()" style="margin-bottom:20px;">
+        <div class="tab-row" id="nameFilterBtns"></div>
+        <div class="g2" id="nameGrid"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-journal">
+      <div class="card">
+        <div class="sec-title">New Entry</div>
+        <div class="g2" style="margin-bottom:16px;">
+          <input type="date" id="jDate">
+          <input type="number" id="jWeek" placeholder="Pregnancy Week (optional)">
+        </div>
+        <div style="display:flex; gap:12px; margin-bottom:16px; justify-content:center;">
+          <button class="jmood mood-btn" data-jm="😊" style="padding:12px; font-size:26px;">😊</button>
+          <button class="jmood mood-btn" data-jm="😢" style="padding:12px; font-size:26px;">😢</button>
+          <button class="jmood mood-btn" data-jm="😠" style="padding:12px; font-size:26px;">😠</button>
+          <button class="jmood mood-btn" data-jm="😴" style="padding:12px; font-size:26px;">😴</button>
+          <button class="jmood mood-btn" data-jm="😍" style="padding:12px; font-size:26px;">😍</button>
+        </div>
+        <textarea id="jText" rows="4" placeholder="How are you feeling? Write down your memories..."></textarea>
+        <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+          <input type="file" id="photoUpload" accept="image/*" style="display:none;" onchange="MC.handlePhoto(this)">
+          <button class="btn btn-g" onclick="document.getElementById('photoUpload').click()"><i data-lucide="camera" class="app-icon-inline"></i> Add Photo</button>
+          <button class="btn btn-p" onclick="MC.saveJournalEntry()"><i data-lucide="check" class="app-icon-inline"></i> Save Entry</button>
+        </div>
+        <img id="photoPreview" style="display:none; width:100%; border-radius:16px; margin-top:16px; max-height:300px; object-fit:cover;">
+      </div>
+      <div id="journalEntries"></div>
+    </main>
+
+    <main class="page" id="page-appointments">
+      <div class="card">
+        <div class="sec-title">New Appointment</div>
+        <div class="g2" style="margin-bottom:16px;">
+          <input type="text" id="apptTitle" placeholder="e.g. Anatomy Scan" style="grid-column:1/-1;">
+          <input type="date" id="apptDate">
+          <input type="time" id="apptTime">
+          <input type="text" id="apptDoctor" placeholder="Doctor Name">
+          <input type="text" id="apptHospital" placeholder="Hospital/Clinic">
+          <input type="text" id="apptNotes" placeholder="Notes or Questions to ask..." style="grid-column:1/-1;">
+        </div>
+        <button class="btn btn-p" style="width:100%" onclick="MC.addAppointment()">Save Appointment</button>
+      </div>
+      <div class="card">
+        <div class="sec-label">Upcoming & Past</div>
+        <div id="apptList"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Standard Checkups</div>
+        <div id="apptChecklist"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-birth">
+      <div class="card">
+        <div class="sec-title">My Birth Plan</div>
+        <p style="font-size:13.5px; color:var(--muted); margin-bottom:20px;">This is a guide for your medical team to understand your preferences. Medical emergencies may override these choices.</p>
+        <div id="birthPlanForm"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-postpartum">
+      <div class="card">
+        <div class="sec-title">Postpartum Recovery</div>
+        <div class="tab-row" id="ppWeekTabs">
+          <button class="tab-btn active" data-ppw="1">Week 1-2</button>
+          <button class="tab-btn" data-ppw="2">Week 3-6</button>
+          <button class="tab-btn" data-ppw="3">Week 6-12</button>
+          <button class="tab-btn" data-ppw="4">Month 3-6</button>
+        </div>
+        <div id="ppWeekContent"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Red Flag Warnings 🚨</div>
+        <div id="ppWarnings"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Mental Health</div>
+        <div id="ppMentalHealth"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Breastfeeding Basics</div>
+        <div id="ppBreastfeeding"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-symptoms">
+      <div class="card">
+        <div class="sec-title">Symptom Checker</div>
+        <input type="text" id="symptomSearch" placeholder="Search a symptom..." onkeyup="MC.filterSymptoms()" style="margin-bottom:20px;">
+        <div class="tab-row" id="symptomCatBtns"></div>
+        <div id="symptomsContainer"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-sos">
+      <button class="sos-btn" onclick="MC.findHospital()">
+        <i data-lucide="siren" style="width:44px; height:44px;"></i>
+        <span style="font-size:17px; margin-top:8px;">Find Hospital</span>
+      </button>
+      <div id="sosResult" style="margin:28px 0;"></div>
+      <div class="card">
+        <div class="sec-label">Emergency Dials</div>
+        <div id="sosFastDial"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">My Contacts</div>
+        <div class="g2" style="margin-bottom:20px;">
+          <input type="text" id="ecName" placeholder="Name">
+          <input type="text" id="ecRelation" placeholder="Relation">
+          <input type="tel" id="ecPhone" placeholder="Phone Number" style="grid-column:1/-1;">
+          <button class="btn btn-g" style="grid-column:1/-1;" onclick="MC.addEC()">Add Contact</button>
+        </div>
+        <div id="customContacts"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Seek Immediate Help If:</div>
+        <div id="warningSigns"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-yoga">
+      <div class="card">
+        <div class="sec-title">Prenatal Yoga & Exercise</div>
+        <div class="tab-row" id="yogaFilterRow"></div>
+        <div id="yogaGrid" class="yoga-grid"></div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Exercises to Avoid 🚨</div>
+        <div id="avoidList" class="g2"></div>
+      </div>
+    </main>
+
+    <div id="moreMenu">
+      <div class="more-grid">
+        <div class="more-item" data-page="weight">
+          <div class="mi-icon"><i data-lucide="scale"></i></div>
+          <div class="mi-label">Weight</div>
+        </div>
+        <div class="more-item" data-page="sleep">
+          <div class="mi-icon"><i data-lucide="moon"></i></div>
+          <div class="mi-label">Sleep</div>
+        </div>
+        <div class="more-item" data-page="nutrition">
+          <div class="mi-icon"><i data-lucide="apple"></i></div>
+          <div class="mi-label">Nutrition</div>
+        </div>
+        <div class="more-item" data-page="medicine">
+          <div class="mi-icon"><i data-lucide="pill"></i></div>
+          <div class="mi-label">Meds</div>
+        </div>
+        <div class="more-item" data-page="bag">
+          <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
+          <div class="mi-label">Bag</div>
+        </div>
+        <div class="more-item" data-page="names">
+          <div class="mi-icon"><i data-lucide="baby"></i></div>
+          <div class="mi-label">Names</div>
+        </div>
+        <div class="more-item" data-page="journal">
+          <div class="mi-icon"><i data-lucide="book-heart"></i></div>
+          <div class="mi-label">Journal</div>
+        </div>
+        <div class="more-item" data-page="appointments">
+          <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
+          <div class="mi-label">Appts</div>
+        </div>
+        <div class="more-item" data-page="birth">
+          <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
+          <div class="mi-label">Birth Plan</div>
+        </div>
+        <div class="more-item" data-page="postpartum">
+          <div class="mi-icon"><i data-lucide="heart-pulse"></i></div>
+          <div class="mi-label">Postpartum</div>
+        </div>
+        <div class="more-item" data-page="symptoms">
+          <div class="mi-icon"><i data-lucide="thermometer"></i></div>
+          <div class="mi-label">Symptoms</div>
+        </div>
+        <div class="more-item" data-page="sos">
+          <div class="mi-icon" style="color:var(--danger);"><i data-lucide="alert-triangle"></i></div>
+          <div class="mi-label">SOS</div>
+        </div>
+      </div>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <nav id="bottomNav">
-
+    <nav id="bottomNav" style="display:none;">
       <div class="bn-inner">
-
-        <button
-          class="bn-item active"
-          data-page="dashboard"
-        >
-
-          <i data-lucide="house"></i>
-
-          <div class="bn-label">
-            Home
-          </div>
-
+        <button class="bn-item active" data-page="dashboard">
+          <div class="bn-icon"><i data-lucide="layout-dashboard"></i></div>
+          <div class="bn-label">Home</div>
         </button>
-
-        <button
-          class="bn-item"
-          data-page="mood"
-        >
-
-          <i data-lucide="smile"></i>
-
-          <div class="bn-label">
-            Mood
-          </div>
-
+        <button class="bn-item" data-page="mood">
+          <div class="bn-icon"><i data-lucide="smile"></i></div>
+          <div class="bn-label">Mood</div>
         </button>
-
-        <button
-          class="bn-item"
-          data-page="due"
-        >
-
-          <i data-lucide="calendar-heart"></i>
-
-          <div class="bn-label">
-            Due
-          </div>
-
+        <button class="bn-item" data-page="due">
+          <div class="bn-icon"><i data-lucide="calendar-heart"></i></div>
+          <div class="bn-label">Due Date</div>
         </button>
-
-        <button
-          class="bn-item"
-          data-page="yoga"
-        >
-
-          <i data-lucide="activity"></i>
-
-          <div class="bn-label">
-            Yoga
-          </div>
-
+        <button class="bn-item" data-page="yoga">
+          <div class="bn-icon"><i data-lucide="activity"></i></div>
+          <div class="bn-label">Yoga</div>
         </button>
-
-        <button
-          class="bn-item"
-          id="moreBtn"
-        >
-
-          <i data-lucide="grid-2x2"></i>
-
-          <div class="bn-label">
-            More
-          </div>
-
+        <button class="bn-item" id="moreBtn">
+          <div class="bn-icon"><i data-lucide="grid-2x2"></i></div>
+          <div class="bn-label">More</div>
         </button>
-
       </div>
-
     </nav>
 
-    <!-- FOOTER -->
-    <footer class="card">
-
-      <strong>
-        MamaCare
-      </strong>
-
-      <br />
-
-      Your pregnancy companion ❤️
-
+    <footer>
+      <strong style="color:var(--accent)">Mama Gyan <i data-lucide="flower-2" class="app-icon-inline"></i></strong> v7.6<br/>
+      <span style="font-size:12px"><i data-lucide="cloud" class="app-icon-inline"></i> Cloud sync enabled | <i data-lucide="lock" class="app-icon-inline"></i> Your data is private</span><br/>
+      <span style="font-size:11.5px; opacity: 0.8;">Yeh app medical advice replace nahi karta</span>
     </footer>
 
   </div>
 
-  <!-- APP SCRIPTS -->
   <script src="app.js"></script>
   <script src="app-baby.js"></script>
   <script src="app-coach.js"></script>
@@ -593,5 +647,15 @@
   <script src="app-smart.js"></script>
   <script src="app-tracker.js"></script>
 
+  <script>
+    lucide.createIcons();
+    
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>

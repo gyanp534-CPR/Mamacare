@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#E2858E" />
+  <meta name="theme-color" content="#D88C9A" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Mama Gyan" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <title>Mama Gyan — Pregnancy Companion</title>
+  <title>Mama Gyan | Calm Pregnancy Companion</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -22,10 +22,9 @@
 </head>
 <body>
 
-  <div class="bg-orbs">
+  <div class="bg-ambient">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
   </div>
 
   <div id="authScreen">
@@ -39,23 +38,26 @@
       <div class="auth-step" id="authStep1">
         <h3>Login / Sign Up</h3>
         <p>Apna email daalo — hum ek magic link bhejenge. Password yaad karne ki zarurat nahi! <i data-lucide="sparkles" class="app-icon-inline" style="color:var(--gold); width:14px;"></i></p>
-        <input class="auth-input" type="email" id="authEmail" placeholder="aapka@email.com" onkeydown="if(event.key==='Enter')MC.sendOTP()"/>
-        <button class="auth-btn auth-btn-primary btn-p" style="width:100%" id="authSendBtn" onclick="MC.sendOTP()">Magic Link Bhejo <i data-lucide="wand-2" class="app-icon-inline"></i></button>
+        <input class="auth-input" type="email" id="authEmail" placeholder="aapka@email.com" />
+        <button class="auth-btn auth-btn-primary btn-p" style="width:100%" id="authSendBtn">Magic Link Bhejo <i data-lucide="wand-2" class="app-icon-inline"></i></button>
         <p class="auth-msg" id="authMsg" style="margin-top:12px; font-size:13px; text-align:center;"></p>
       </div>
       <div class="auth-step" id="authStep2" style="display:none">
         <h3>OTP Daalo <i data-lucide="lock" class="app-icon-inline"></i></h3>
         <p id="authOTPMsg">Aapke email pe 6-digit code bheja gaya hai. Check karein!</p>
         <div class="otp-inputs">
-          <input class="otp-input" type="text" maxlength="1" id="otp0" oninput="MC.otpInput(this,0)"/>
-          <input class="otp-input" type="text" maxlength="1" id="otp1" oninput="MC.otpInput(this,1)"/>
-          <input class="otp-input" type="text" maxlength="1" id="otp2" oninput="MC.otpInput(this,2)"/>
-          <input class="otp-input" type="text" maxlength="1" id="otp3" oninput="MC.otpInput(this,3)"/>
-          <input class="otp-input" type="text" maxlength="1" id="otp4" oninput="MC.otpInput(this,4)"/>
-          <input class="otp-input" type="text" maxlength="1" id="otp5" oninput="MC.otpInput(this,5)"/>
+          <input class="otp-input" type="text" maxlength="1" id="otp0" />
+          <input class="otp-input" type="text" maxlength="1" id="otp1" />
+          <input class="otp-input" type="text" maxlength="1" id="otp2" />
+          <input class="otp-input" type="text" maxlength="1" id="otp3" />
+          <input class="otp-input" type="text" maxlength="1" id="otp4" />
+          <input class="otp-input" type="text" maxlength="1" id="otp5" />
         </div>
-        <button class="auth-btn auth-btn-primary btn-p" style="width:100%" id="authVerifyBtn" onclick="MC.verifyOTP()">Verify & Login</button>
-        <p class="auth-msg" style="margin-top:16px; text-align:center; font-size:13px;"><a href="#" style="color:var(--accent)" onclick="MC.showStep(1)">← Wapas jaao</a> &nbsp;|&nbsp; <a href="#" style="color:var(--accent)" onclick="MC.sendOTP()">Code dobara bhejo</a></p>
+        <button class="auth-btn auth-btn-primary btn-p" style="width:100%" id="authVerifyBtn">Verify & Login</button>
+        <p class="auth-msg" style="margin-top:16px; text-align:center; font-size:13px;">
+          <a href="#" id="authBackBtn" style="color:var(--accent)">← Wapas jaao</a> &nbsp;|&nbsp; 
+          <a href="#" id="authResendBtn" style="color:var(--accent)">Code dobara bhejo</a>
+        </p>
       </div>
     </div>
   </div>
@@ -98,12 +100,87 @@
         </div>
         <div class="top-user">
           <span id="topUserEmail"></span>
-          <button onclick="MC.logout()" style="background:none; border:none; cursor:pointer; color:var(--muted);"><i data-lucide="log-out" class="app-icon-inline"></i></button>
+          <button id="logoutBtn" style="background:none; border:none; cursor:pointer; color:var(--muted);"><i data-lucide="log-out" class="app-icon-inline"></i></button>
         </div>
       </div>
     </header>
 
-    <main class="page active" id="page-mood">
+    <main class="page active" id="page-dashboard">
+      <div class="dashboard-section">
+        <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:32px 24px; border:none;"></div>
+      </div>
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="sec-label">Rozana Tracking</div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-item" data-page="weight">
+            <div class="mi-icon"><i data-lucide="scale"></i></div>
+            <div class="mi-label">Weight</div>
+          </div>
+          <div class="feature-item" data-page="sleep">
+            <div class="mi-icon"><i data-lucide="moon"></i></div>
+            <div class="mi-label">Sleep</div>
+          </div>
+          <div class="feature-item" data-page="nutrition">
+            <div class="mi-icon"><i data-lucide="apple"></i></div>
+            <div class="mi-label">Nutrition</div>
+          </div>
+          <div class="feature-item" data-page="medicine">
+            <div class="mi-icon"><i data-lucide="pill"></i></div>
+            <div class="mi-label">Meds</div>
+          </div>
+          <div class="feature-item" data-page="journal">
+            <div class="mi-icon"><i data-lucide="book-heart"></i></div>
+            <div class="mi-label">Diary</div>
+          </div>
+          <div class="feature-item" data-page="appointments">
+            <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
+            <div class="mi-label">Appts</div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="sec-label">Smart AI Tools</div>
+        </div>
+        <div class="feature-grid" style="grid-template-columns: 1fr 1fr;"> 
+          <div class="feature-item" data-page="mood" style="background: #f3e5f5; border-color: #e1bee7;">
+            <div class="mi-icon"><i data-lucide="bot" style="color: #8e24aa;"></i></div>
+            <div class="mi-label">AI Coach</div>
+          </div>
+          <div class="feature-item" data-page="symptoms" style="background: #e3f2fd; border-color: #bbdefb;">
+            <div class="mi-icon"><i data-lucide="search" style="color: #1e88e5;"></i></div>
+            <div class="mi-label">Symptom AI</div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="sec-label">Safety & Planning</div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-item" data-page="bag">
+            <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
+            <div class="mi-label">Hosp Bag</div>
+          </div>
+          <div class="feature-item" data-page="birth">
+            <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
+            <div class="mi-label">Birth Plan</div>
+          </div>
+          <div class="feature-item emergency-item" data-page="sos">
+            <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
+            <div class="mi-label" style="color:var(--danger)">SOS</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-label" id="dbMilestonesLabel">Upcoming Milestones</div>
+        <div id="dbMilestones"></div>
+      </div>
+    </main>
+
+    <main class="page" id="page-mood">
       <div style="text-align:center;padding:28px 0 20px">
         <div style="display:inline-flex;align-items:center;gap:7px;background:white;border:1.5px solid var(--blush);border-radius:50px;padding:6px 16px;margin-bottom:16px;font-size:12px;color:var(--muted)"><i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i> Mama Gyan</div>
         <h1 id="moodHeroText" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:400;line-height:1.2"></h1>
@@ -124,7 +201,7 @@
           </div>
           <div id="breathStatus" style="font-size:13px;color:var(--muted);height:20px"></div>
           <div id="breathCount" style="font-size:12px;color:var(--green);height:18px;margin-top:3px"></div>
-          <button class="btn btn-p" style="margin-top:14px" id="breathBtn" onclick="MC.startBreathing()"><i data-lucide="wind" class="app-icon-inline"></i> Shuru Karein</button>
+          <button class="btn btn-p" style="margin-top:14px" id="breathBtn"><i data-lucide="wind" class="app-icon-inline"></i> Shuru Karein</button>
         </div>
       </div>
       <div class="card">
@@ -133,7 +210,7 @@
         <div style="text-align:center;padding:24px;background:linear-gradient(135deg,#FFFCFA,#fdf5ee);border-radius:18px;position:relative;overflow:hidden; border:1px solid var(--blush);">
           <div style="position:absolute;top:-8px;left:6px;font-family:'Cormorant Garamond',serif;font-size:90px;color:rgba(232,160,168,.15);line-height:1">"</div>
           <p id="affirmText" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-style:italic;color:var(--warm);line-height:1.7;position:relative;z-index:1;transition:opacity .3s"></p>
-          <button class="btn btn-g btn-sm" style="margin-top:16px" onclick="MC.newAffirmation()" id="affirmBtn"></button>
+          <button class="btn btn-g btn-sm" style="margin-top:16px" id="affirmBtn"></button>
         </div>
       </div>
       <div class="card">
@@ -141,84 +218,9 @@
         <div class="sec-title" id="chatTitle"></div>
         <div class="chat-box" id="chatBox"></div>
         <div class="chat-row">
-          <input id="chatInput" type="text" placeholder="Type your message..." onkeydown="if(event.key==='Enter')MC.sendChat()"/>
-          <button class="btn btn-p btn-sm" onclick="MC.sendChat()" id="chatSendBtn">Send</button>
+          <input id="chatInput" type="text" placeholder="Type your message..." />
+          <button class="btn btn-p btn-sm" id="chatSendBtn">Send</button>
         </div>
-      </div>
-    </main>
-
-    <main class="page" id="page-dashboard">
-      <div class="dashboard-section">
-        <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:32px 24px; border:none;"></div>
-      </div>
-      <div class="dashboard-section">
-        <div class="section-header">
-          <div class="sec-label">Rozana Tracking</div>
-        </div>
-        <div class="feature-grid">
-          <div class="feature-item" onclick="MC.goTo('weight')">
-            <div class="mi-icon"><i data-lucide="scale"></i></div>
-            <div class="mi-label">Weight</div>
-          </div>
-          <div class="feature-item" onclick="MC.goTo('sleep')">
-            <div class="mi-icon"><i data-lucide="moon"></i></div>
-            <div class="mi-label">Sleep</div>
-          </div>
-          <div class="feature-item" onclick="MC.goTo('nutrition')">
-            <div class="mi-icon"><i data-lucide="apple"></i></div>
-            <div class="mi-label">Nutrition</div>
-          </div>
-          <div class="feature-item" onclick="MC.goTo('medicine')">
-            <div class="mi-icon"><i data-lucide="pill"></i></div>
-            <div class="mi-label">Meds</div>
-          </div>
-          <div class="feature-item" onclick="MC.goTo('journal')">
-            <div class="mi-icon"><i data-lucide="book-heart"></i></div>
-            <div class="mi-label">Diary</div>
-          </div>
-          <div class="feature-item" onclick="MC.goTo('appointments')">
-            <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
-            <div class="mi-label">Appts</div>
-          </div>
-        </div>
-      </div>
-      <div class="dashboard-section">
-        <div class="section-header">
-          <div class="sec-label">Smart AI Tools</div>
-        </div>
-        <div class="feature-grid" style="grid-template-columns: 1fr 1fr;"> 
-          <div class="feature-item" style="background: #f3e5f5; border-color: #e1bee7;" onclick="MC.goTo('mood')">
-            <div class="mi-icon"><i data-lucide="bot" style="color: #8e24aa;"></i></div>
-            <div class="mi-label">AI Coach</div>
-          </div>
-          <div class="feature-item" style="background: #e3f2fd; border-color: #bbdefb;" onclick="MC.goTo('symptoms')">
-            <div class="mi-icon"><i data-lucide="search" style="color: #1e88e5;"></i></div>
-            <div class="mi-label">Symptom AI</div>
-          </div>
-        </div>
-      </div>
-      <div class="dashboard-section">
-        <div class="section-header">
-          <div class="sec-label">Safety & Planning</div>
-        </div>
-        <div class="feature-grid">
-          <div class="feature-item" onclick="MC.goTo('bag')">
-            <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
-            <div class="mi-label">Hosp Bag</div>
-          </div>
-          <div class="feature-item" onclick="MC.goTo('birth')">
-            <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
-            <div class="mi-label">Birth Plan</div>
-          </div>
-          <div class="feature-item emergency-item" onclick="MC.goTo('sos')">
-            <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
-            <div class="mi-label" style="color:var(--danger)">SOS</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="sec-label" id="dbMilestonesLabel">Upcoming Milestones</div>
-        <div id="dbMilestones"></div>
       </div>
     </main>
 
@@ -229,11 +231,11 @@
         <div class="g2">
           <div>
             <label>Last Menstrual Period (LMP)</label>
-            <input type="date" id="lmpDate" onchange="MC.calcDue()">
+            <input type="date" id="lmpDate">
           </div>
           <div>
             <label>Or enter Known Due Date</label>
-            <input type="date" id="directDue" onchange="MC.calcFromDue()">
+            <input type="date" id="directDue">
           </div>
         </div>
       </div>
@@ -257,7 +259,7 @@
         <div class="g2" style="margin-bottom:20px;">
           <div>
             <label>Pre-pregnancy Weight (kg)</label>
-            <input type="number" id="preWeight" placeholder="e.g. 60" onchange="MC.savePreWeight()">
+            <input type="number" id="preWeight" placeholder="e.g. 60">
           </div>
           <div style="display:flex; gap:10px; align-items:flex-end;">
             <div style="flex:1;">
@@ -268,7 +270,7 @@
               <label>Week</label>
               <input type="number" id="wtWeek" placeholder="e.g. 14">
             </div>
-            <button class="btn btn-p" onclick="MC.addWeight()">Log</button>
+            <button class="btn btn-p" id="logWeightBtn">Log</button>
           </div>
         </div>
         <div class="g3" id="wtStats" style="margin-bottom:20px;"></div>
@@ -305,7 +307,7 @@
               <label>Issue (optional)</label>
               <input type="text" id="sleepIssue" placeholder="e.g. Cramps">
             </div>
-            <button class="btn btn-p" onclick="MC.logSleep()">Log</button>
+            <button class="btn btn-p" id="logSleepBtn">Log</button>
           </div>
         </div>
         <div class="g3" id="sleepStats" style="margin-bottom:20px;"></div>
@@ -343,7 +345,7 @@
             <option value="300" selected>Medium (300)</option>
             <option value="500">Heavy (500)</option>
           </select>
-          <button class="btn btn-p" onclick="MC.addFood()">Add</button>
+          <button class="btn btn-p" id="addFoodBtn">Add</button>
         </div>
         <div id="foodList"></div>
       </div>
@@ -362,7 +364,7 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
           <div class="sec-title" style="margin:0;">Medicines</div>
-          <button class="btn btn-g btn-sm" onclick="MC.toggleAddMedForm()">+ Add Med</button>
+          <button class="btn btn-g btn-sm" id="toggleMedFormBtn">+ Add Med</button>
         </div>
         <div id="addMedForm" style="display:none; padding:20px; background:var(--blush); border-radius:18px; margin-bottom:20px;">
           <div class="g2" style="margin-bottom:16px;">
@@ -376,7 +378,7 @@
             </select>
             <input type="text" id="medNotes" placeholder="Notes (e.g. after food)" style="grid-column:1/-1;">
           </div>
-          <button class="btn btn-p" style="width:100%" onclick="MC.addMedicine()">Save Medicine</button>
+          <button class="btn btn-p" style="width:100%" id="saveMedBtn">Save Medicine</button>
         </div>
         <div class="g3" id="medStats" style="margin-bottom:16px;"></div>
         <div class="timeline-bar"><div class="timeline-fill" id="medProgressBar" style="width:0%"></div></div>
@@ -392,7 +394,7 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
           <div class="sec-title" style="margin:0;">Hospital Bag</div>
-          <button class="btn btn-g btn-sm" onclick="MC.resetBag()">Reset</button>
+          <button class="btn btn-g btn-sm" id="resetBagBtn">Reset</button>
         </div>
         <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
           <div class="timeline-bar" style="flex:1; margin:0;"><div class="timeline-fill" id="bagBar" style="width:0%"></div></div>
@@ -404,7 +406,7 @@
         <div style="display:flex; gap:10px; margin-top:20px; padding-top:20px; border-top:1px solid var(--blush);">
           <input type="text" id="customBagItem" placeholder="Add custom item..." style="flex:2;">
           <select id="customBagCatSel" style="flex:1;"></select>
-          <button class="btn btn-p" onclick="MC.addCustomBagItem()">Add</button>
+          <button class="btn btn-p" id="addCustomBagBtn">Add</button>
         </div>
       </div>
     </main>
@@ -416,7 +418,7 @@
       </div>
       <div class="card">
         <div class="sec-title">Name Explorer</div>
-        <input type="text" id="nameSearch" placeholder="Search names or meanings..." onkeyup="MC.renderNames()" style="margin-bottom:20px;">
+        <input type="text" id="nameSearch" placeholder="Search names or meanings..." style="margin-bottom:20px;">
         <div class="tab-row" id="nameFilterBtns"></div>
         <div class="g2" id="nameGrid"></div>
       </div>
@@ -438,9 +440,9 @@
         </div>
         <textarea id="jText" rows="4" placeholder="How are you feeling? Write down your memories..."></textarea>
         <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
-          <input type="file" id="photoUpload" accept="image/*" style="display:none;" onchange="MC.handlePhoto(this)">
-          <button class="btn btn-g" onclick="document.getElementById('photoUpload').click()"><i data-lucide="camera" class="app-icon-inline"></i> Add Photo</button>
-          <button class="btn btn-p" onclick="MC.saveJournalEntry()"><i data-lucide="check" class="app-icon-inline"></i> Save Entry</button>
+          <input type="file" id="photoUpload" accept="image/*" style="display:none;">
+          <button class="btn btn-g" id="triggerPhotoBtn"><i data-lucide="camera" class="app-icon-inline"></i> Add Photo</button>
+          <button class="btn btn-p" id="saveJournalBtn"><i data-lucide="check" class="app-icon-inline"></i> Save Entry</button>
         </div>
         <img id="photoPreview" style="display:none; width:100%; border-radius:16px; margin-top:16px; max-height:300px; object-fit:cover;">
       </div>
@@ -458,7 +460,7 @@
           <input type="text" id="apptHospital" placeholder="Hospital/Clinic">
           <input type="text" id="apptNotes" placeholder="Notes or Questions to ask..." style="grid-column:1/-1;">
         </div>
-        <button class="btn btn-p" style="width:100%" onclick="MC.addAppointment()">Save Appointment</button>
+        <button class="btn btn-p" style="width:100%" id="saveApptBtn">Save Appointment</button>
       </div>
       <div class="card">
         <div class="sec-label">Upcoming & Past</div>
@@ -506,14 +508,14 @@
     <main class="page" id="page-symptoms">
       <div class="card">
         <div class="sec-title">Symptom Checker</div>
-        <input type="text" id="symptomSearch" placeholder="Search a symptom..." onkeyup="MC.filterSymptoms()" style="margin-bottom:20px;">
+        <input type="text" id="symptomSearch" placeholder="Search a symptom..." style="margin-bottom:20px;">
         <div class="tab-row" id="symptomCatBtns"></div>
         <div id="symptomsContainer"></div>
       </div>
     </main>
 
     <main class="page" id="page-sos">
-      <button class="sos-btn" onclick="MC.findHospital()">
+      <button class="sos-btn" id="findHospBtn">
         <i data-lucide="siren" style="width:44px; height:44px;"></i>
         <span style="font-size:17px; margin-top:8px;">Find Hospital</span>
       </button>
@@ -528,7 +530,7 @@
           <input type="text" id="ecName" placeholder="Name">
           <input type="text" id="ecRelation" placeholder="Relation">
           <input type="tel" id="ecPhone" placeholder="Phone Number" style="grid-column:1/-1;">
-          <button class="btn btn-g" style="grid-column:1/-1;" onclick="MC.addEC()">Add Contact</button>
+          <button class="btn btn-g" style="grid-column:1/-1;" id="addContactBtn">Add Contact</button>
         </div>
         <div id="customContacts"></div>
       </div>

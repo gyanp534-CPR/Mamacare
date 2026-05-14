@@ -1256,34 +1256,54 @@ async function renderDashboard() {
     tri = week <= 13 ? 1 : week <= 27 ? 2 : 3;
   }
 
-  // 1. Hero Section
+  // 1. Enhanced Hero Section with animations
   const hero = $('dbHero');
   if (hero) {
     const tn = [T.t1, T.t2, T.t3][tri - 1] || '';
+    const triEmoji = tri === 1 ? '🌱' : tri === 2 ? '🌸' : '🌺';
+    const triIcon = tri === 1 ? 'sprout' : tri === 2 ? 'flower-2' : 'star';
     hero.innerHTML = due ? `
-      <div style="font-size:44px;margin-bottom:10px; color:var(--rose)"><i data-lucide="${tri === 1 ? 'sprout' : tri === 2 ? 'flower-2' : 'star'}"></i></div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;margin-bottom:7px">${T.wk} ${week} — ${tn} ${T.tri}</div>
-      <p style="font-size:13px;color:var(--muted)"><i data-lucide="calendar" class="app-icon-inline"></i> ${fmtDate(dueStr)} | ${daysLeft} ${T.days}</p>
-      <div style="background:rgba(255,255,255,.3);border-radius:50px;height:8px;overflow:hidden;margin-top:14px;max-width:300px;margin-inline:auto">
-        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),var(--peach));border-radius:50px;transition:width 1s"></div>
+      <div style="font-size:52px;margin-bottom:12px;animation:iconBounce 2s ease-in-out infinite">${triEmoji}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;margin-bottom:10px;font-weight:500;background:linear-gradient(135deg,var(--text-main),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+        Week ${week} — ${tn} ${T.tri}
       </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin:16px 0;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-size:2.2rem;font-weight:700;color:var(--rose);line-height:1">${week}</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px">Weeks</div>
+        </div>
+        <div style="width:1px;height:40px;background:rgba(216,140,154,0.2)"></div>
+        <div style="text-align:center">
+          <div style="font-size:2.2rem;font-weight:700;color:var(--peach);line-height:1">${daysLeft}</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px">Days Left</div>
+        </div>
+      </div>
+      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px"><i data-lucide="calendar" class="app-icon-inline"></i> Due: ${fmtDate(dueStr)}</p>
+      <div style="background:rgba(216,140,154,0.15);border-radius:100px;height:12px;overflow:hidden;margin-top:16px;max-width:320px;margin-inline:auto;box-shadow:inset 0 2px 4px rgba(0,0,0,0.05)">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),#E59FA9,#F3A8B4);background-size:200% 100%;border-radius:100px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);animation:shimmer 2s ease-in-out infinite;box-shadow:0 2px 8px rgba(216,140,154,0.4)"></div>
+      </div>
+      <div style="text-align:center;margin-top:8px;font-size:13px;font-weight:700;color:var(--rose)">${pct}% Complete</div>
     ` : `
-      <div style="font-size:44px;margin-bottom:8px; color:var(--rose)"><i data-lucide="flower-2"></i></div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem">MamaCare Swagat Hai!</div>
-      <p style="font-size:13px;color:var(--muted);margin-top:6px"><a href="#" onclick="MC.goTo('due')" style="color:var(--accent); text-decoration:none;"><i data-lucide="calendar-plus" class="app-icon-inline"></i> Due date set karein →</a></p>
+      <div style="font-size:52px;margin-bottom:12px;animation:iconBounce 2s ease-in-out infinite">🌸</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:500;margin-bottom:8px">Welcome to MamaCare!</div>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.6">Your complete pregnancy companion is ready. Let's start by setting your due date.</p>
+      <button onclick="MC.goTo('due')" style="background:linear-gradient(135deg,var(--rose),#E59FA9);color:white;border:none;padding:14px 28px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 8px 24px rgba(216,140,154,0.35);transition:all 0.3s ease;display:inline-flex;align-items:center;gap:8px" onmouseover="this.style.transform='translateY(-2px) scale(1.02)';this.style.boxShadow='0 12px 32px rgba(216,140,154,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 24px rgba(216,140,154,0.35)'">
+        <i data-lucide="calendar-plus" style="width:18px;height:18px"></i> Set Due Date
+      </button>
     `;
   }
 
-  // 2. Milestones
+  // 2. Enhanced Milestones with better styling
   const msContainer = $('dbMilestones');
   if (msContainer) {
     const upcoming = MILESTONES.filter(m => m.w >= week).slice(0, 3);
-    msContainer.innerHTML = upcoming.length ? upcoming.map(m => `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:white;border-radius:12px;margin-bottom:7px;font-size:13px">
-        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--peach));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">W${m.w}</div>
-        <div>${m.t}</div>
+    msContainer.innerHTML = upcoming.length ? upcoming.map((m, i) => `
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(255,255,255,0.85));border:1.5px solid rgba(216,140,154,0.15);border-radius:16px;margin-bottom:10px;font-size:13.5px;transition:all 0.3s ease;cursor:pointer;animation:fadeInUp 0.5s ease-out ${i * 0.1}s backwards" onmouseover="this.style.transform='translateX(8px)';this.style.borderColor='var(--rose)';this.style.boxShadow='0 8px 24px rgba(216,140,154,0.15)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(216,140,154,0.15)';this.style.boxShadow=''">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--rose),#E59FA9);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0;box-shadow:0 4px 12px rgba(216,140,154,0.3)">W${m.w}</div>
+        <div style="flex:1;line-height:1.5;color:var(--text-main);font-weight:500">${m.t}</div>
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:var(--rose);opacity:0.5"></i>
       </div>
-    `).join('') : '<p style="font-size:12px;color:var(--muted)">Sare milestones poore huye! 🎉</p>';
+    `).join('') : '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px">All milestones completed! 🎉</p>';
   }
 
   renderIcons();

@@ -100,7 +100,7 @@ let T = LANG[lang] || LANG.hinglish;
 let chatHist = [];
 let breathTimer = null, breathOn = false, breathRounds = 0;
 let affIdx = 0;
-let jMood = '😊'; 
+let jMood = 'smile'; // Lucide icon name 
 let photoFile = null;
 let mealTab = 'breakfast';
 let yogaFilterKey = 'all';
@@ -624,7 +624,7 @@ const WD={
   40:{b:'Due date! 3.4kg average.',body:'4% only on exact date. OK until W42.',tip:'Induction/membrane sweep discuss karo.'},
 };
 function getWD(w){const ks=Object.keys(WD).map(Number).sort((a,b)=>a-b);return WD[ks.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a)];}
-function getSizeEmoji(w){return w<=4?'🌱 Sesame seed':w<=6?'🍋 Lemon seed':w<=8?'🍓 Raspberry':w<=10?'🍓 Strawberry':w<=12?'🍊 Lime':w<=16?'🥑 Avocado':w<=20?'🍌 Banana':w<=24?'🌽 Corn':w<=28?'🍆 Eggplant':w<=32?'🍍 Pineapple':w<=36?'🥥 Coconut':'🍉 Watermelon';}
+function getSizeEmoji(w){return w<=4?'<i data-lucide="sprout" class="app-icon-inline"></i> Sesame seed':w<=6?'<i data-lucide="citrus" class="app-icon-inline"></i> Lemon seed':w<=8?'<i data-lucide="cherry" class="app-icon-inline"></i> Raspberry':w<=10?'<i data-lucide="cherry" class="app-icon-inline"></i> Strawberry':w<=12?'<i data-lucide="citrus" class="app-icon-inline"></i> Lime':w<=16?'<i data-lucide="egg" class="app-icon-inline"></i> Avocado':w<=20?'<i data-lucide="banana" class="app-icon-inline"></i> Banana':w<=24?'<i data-lucide="wheat" class="app-icon-inline"></i> Corn':w<=28?'<i data-lucide="carrot" class="app-icon-inline"></i> Eggplant':w<=32?'<i data-lucide="apple" class="app-icon-inline"></i> Pineapple':w<=36?'<i data-lucide="circle" class="app-icon-inline"></i> Coconut':'<i data-lucide="circle" class="app-icon-inline"></i> Watermelon';}
 function getMoodTipW(w){return w<=6?'Test positive! Excitement + anxiety dono normal hain.':w<=13?'First trimester anxiety peak — emotions ko safe space do.':w<=27?'Golden period — energy wapas, kicks soon. Enjoy!':w<=36?'Delivery anxiety normal — birth classes bahut help karte hain.':'Excited + scared + exhausted + ready — sab ek saath. Almost there!';}
 
 function calcDue(){
@@ -787,7 +787,7 @@ const MEAL_PLANS={
   1:{focus:'Folic Acid, B6 (nausea), Iron, Zinc. Small frequent meals.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Dalia + fruits (fiber)','Banana + wheat toast (B6)','Ginger lemon water (nausea)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Walnuts + 2 dates (iron)','Coconut water (electrolytes)']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Dal + rice + palak (iron+folate)','Curd (calcium+probiotics)','Salad + nimbu (Vit C = iron 3x)']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Khichdi / idli (easy digest)','Vegetable soup','Warm haldi milk (calcium)']}],avoid:['Raw papaya/pineapple','Unpasteurized dairy','High mercury fish','Raw sprouts']},
   2:{focus:'Calcium, Vit D, Omega-3, Protein. Baby bones + brain developing.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['2 eggs + wheat toast (choline)','OJ/mosambi (Vit C)','Mixed nuts']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Greek yogurt + berries','Ragi ladoo (iron+calcium)']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Fish/tofu curry (omega-3)','Rajma/chhole (protein+iron)','Brown rice + salad']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Paneer/chicken (protein)','Methi saag (iron+folate)','Sweet potato (beta-carotene)']}],avoid:['Junk/processed foods','Excess sweets (GD risk)','Caffeine >200mg/day','Smoked meats']},
   3:{focus:'Vit K, Iron, Calcium, Fiber (constipation). Very small meals — stomach cramped.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Oats + flaxseeds (omega-3+fiber)','2-3 dates (iron + labor prep)','Warm milk (calcium)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Dry fruits mix','Tender coconut water']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Palak paneer (iron+calcium)','Dal makhani (protein)','Small rice/roti portion']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Light khichdi / soup','Boiled vegetables','Avoid heavy — heartburn worse!']}],avoid:['Gas foods (beans, broccoli)','Spicy food (heartburn)','Large meals','Lying down after eating']},
-  4:{focus:'🤱 Postpartum Recovery + Breastfeeding: Protein, Iron, Calcium, Omega-3, Hydration.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Methi paratha + ghee (milk supply)','2 boiled eggs (protein)','Warm turmeric milk (healing)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Dry fruits ladoo (energy)','Coconut water (hydration)','Almonds + dates']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Dal + rice + ghee (strength)','Chicken/fish curry (protein+omega-3)','Spinach sabzi (iron)','Curd (probiotics)']},{t:'<i data-lucide="coffee" class="app-icon-inline"></i> Evening',i:['Ajwain water (digestion)','Ragi porridge (calcium+iron)','Gond ladoo (healing)']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Moong dal khichdi + ghee','Paneer bhurji (protein+calcium)','Warm soup (hydration)']}],avoid:['Spicy/oily foods (baby colic)','Caffeine (passes to milk)','Alcohol','Gas-forming foods (cabbage)','Cold foods (traditional)']},
+  4:{focus:'<i data-lucide="baby" class="app-icon-inline"></i> Postpartum Recovery + Breastfeeding: Protein, Iron, Calcium, Omega-3, Hydration.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Methi paratha + ghee (milk supply)','2 boiled eggs (protein)','Warm turmeric milk (healing)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Dry fruits ladoo (energy)','Coconut water (hydration)','Almonds + dates']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Dal + rice + ghee (strength)','Chicken/fish curry (protein+omega-3)','Spinach sabzi (iron)','Curd (probiotics)']},{t:'<i data-lucide="coffee" class="app-icon-inline"></i> Evening',i:['Ajwain water (digestion)','Ragi porridge (calcium+iron)','Gond ladoo (healing)']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Moong dal khichdi + ghee','Paneer bhurji (protein+calcium)','Warm soup (hydration)']}],avoid:['Spicy/oily foods (baby colic)','Caffeine (passes to milk)','Alcohol','Gas-forming foods (cabbage)','Cold foods (traditional)']},
 };
 
 function initNutrition(){
@@ -799,7 +799,7 @@ function initNutrition(){
 function renderMealPlan(tri){
   const plan = window.MEAL_PLANS_INDIAN ? window.MEAL_PLANS_INDIAN[tri] : MEAL_PLANS[tri];
   const el=$('mealPlanContent');if(!el||!plan) return;
-  const triEmoji = tri === 1 ? '🌱' : tri === 2 ? '🌸' : tri === 3 ? '🌺' : '🤱';
+  const triEmoji = tri === 1 ? '<i data-lucide="sprout" class="app-icon-inline"></i>' : tri === 2 ? '<i data-lucide="flower-2" class="app-icon-inline"></i>' : tri === 3 ? '<i data-lucide="flower" class="app-icon-inline"></i>' : '<i data-lucide="baby" class="app-icon-inline"></i>';
   el.innerHTML=`
     <div style="background:linear-gradient(135deg,rgba(216,140,154,0.12),rgba(246,200,181,0.08));border-radius:16px;padding:18px;margin-bottom:20px;border-left:4px solid var(--rose)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -822,7 +822,7 @@ function renderMealPlan(tri){
         <strong style="font-size:14px;color:var(--danger)">Avoid This ${tri===4?'Period':'Trimester'}</strong>
       </div>
       <ul style="list-style:none;padding:0;margin:0">
-        ${plan.avoid.map(a=>`<li style="padding:8px 0 8px 28px;position:relative;font-size:13.5px;color:var(--text-main);line-height:1.6"><span style="position:absolute;left:0;font-size:16px">⚠️</span>${a}</li>`).join('')}
+        ${plan.avoid.map(a=>`<li style="padding:8px 0 8px 28px;position:relative;font-size:13.5px;color:var(--text-main);line-height:1.6"><span style="position:absolute;left:0;"><i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--danger)"></i></span>${a}</li>`).join('')}
       </ul>
     </div>
   `;
@@ -1062,7 +1062,10 @@ async function deleteJournalEntry(id){if(!confirm('Delete karein?'))return;if(su
 function renderJournal(){
   const el=$('journalEntries');if(!el)return;
   if(!journalList.length){el.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13.5px;padding:22px">Koi entry nahi. Upar se pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>'; renderIcons(); return;}
-  el.innerHTML=journalList.map(e=>`<div style="background:white;border-radius:18px;padding:16px;margin-bottom:11px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'10px':'0'}"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px">${e.mood||'😊'}</span><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13.5px;line-height:1.75;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`).join('');
+  el.innerHTML=journalList.map(e=>{
+    const moodIcon = e.mood || 'smile';
+    return `<div style="background:white;border-radius:18px;padding:16px;margin-bottom:11px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'10px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:22px;height:22px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13.5px;line-height:1.75;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`;
+  }).join('');
   renderIcons();
 }
 
@@ -1283,7 +1286,7 @@ function renderContacts(){
 // ══════════════════════════════════════
 // DASHBOARD (FAILSAFE VERSION)
 // ══════════════════════════════════════
-const MILESTONES = [{w:4,t:'Test positive! Journey shuru 🌱'},{w:8,t:'Pehla heartbeat scan 💗'},{w:12,t:'1st trimester complete ✓'},{w:16,t:'Gender scan possible 👶'},{w:20,t:'Anatomy scan — halfway 🎉'},{w:24,t:'Viability milestone ⭐'},{w:28,t:'3rd trimester shuru 🌟'},{w:32,t:'Hospital bag pack karo 🏥'},{w:36,t:'Full term approaching 🌸'},{w:40,t:'Due date! 🎊'}];
+const MILESTONES = [{w:4,t:'Test positive! Journey shuru <i data-lucide="sprout" class="app-icon-inline"></i>'},{w:8,t:'Pehla heartbeat scan <i data-lucide="heart-pulse" class="app-icon-inline"></i>'},{w:12,t:'1st trimester complete <i data-lucide="check-circle" class="app-icon-inline"></i>'},{w:16,t:'Gender scan possible <i data-lucide="baby" class="app-icon-inline"></i>'},{w:20,t:'Anatomy scan — halfway <i data-lucide="sparkles" class="app-icon-inline"></i>'},{w:24,t:'Viability milestone <i data-lucide="star" class="app-icon-inline"></i>'},{w:28,t:'3rd trimester shuru <i data-lucide="sparkles" class="app-icon-inline"></i>'},{w:32,t:'Hospital bag pack karo <i data-lucide="briefcase-medical" class="app-icon-inline"></i>'},{w:36,t:'Full term approaching <i data-lucide="flower-2" class="app-icon-inline"></i>'},{w:40,t:'Due date! <i data-lucide="party-popper" class="app-icon-inline"></i>'}];
 
 async function renderDashboard() {
   if (!user || !supa) return;
@@ -1301,14 +1304,15 @@ async function renderDashboard() {
     tri = week <= 13 ? 1 : week <= 27 ? 2 : 3;
   }
 
-  // 1. Enhanced Hero Section with animations
+  // 1. Enhanced Hero Section with icons instead of emojis
   const hero = $('dbHero');
   if (hero) {
     const tn = [T.t1, T.t2, T.t3][tri - 1] || '';
-    const triEmoji = tri === 1 ? '🌱' : tri === 2 ? '🌸' : '🌺';
     const triIcon = tri === 1 ? 'sprout' : tri === 2 ? 'flower-2' : 'star';
     hero.innerHTML = due ? `
-      <div style="font-size:52px;margin-bottom:12px;animation:iconBounce 2s ease-in-out infinite">${triEmoji}</div>
+      <div class="hero-icon">
+        <i data-lucide="${triIcon}"></i>
+      </div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;margin-bottom:10px;font-weight:500;background:linear-gradient(135deg,var(--text-main),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
         Week ${week} — ${tn} ${T.tri}
       </div>
@@ -1323,13 +1327,17 @@ async function renderDashboard() {
           <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px">Days Left</div>
         </div>
       </div>
-      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px"><i data-lucide="calendar" class="app-icon-inline"></i> Due: ${fmtDate(dueStr)}</p>
+      <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:6px">
+        <i data-lucide="calendar" style="width:16px;height:16px"></i> Due: ${fmtDate(dueStr)}
+      </p>
       <div style="background:rgba(216,140,154,0.15);border-radius:100px;height:12px;overflow:hidden;margin-top:16px;max-width:320px;margin-inline:auto;box-shadow:inset 0 2px 4px rgba(0,0,0,0.05)">
         <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--rose),#E59FA9,#F3A8B4);background-size:200% 100%;border-radius:100px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);animation:shimmer 2s ease-in-out infinite;box-shadow:0 2px 8px rgba(216,140,154,0.4)"></div>
       </div>
       <div style="text-align:center;margin-top:8px;font-size:13px;font-weight:700;color:var(--rose)">${pct}% Complete</div>
     ` : `
-      <div style="font-size:52px;margin-bottom:12px;animation:iconBounce 2s ease-in-out infinite">🌸</div>
+      <div class="hero-icon">
+        <i data-lucide="flower-2"></i>
+      </div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:500;margin-bottom:8px">Welcome to MamaCare!</div>
       <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.6">Your complete pregnancy companion is ready. Let's start by setting your due date.</p>
       <button onclick="MC.goTo('due')" style="background:linear-gradient(135deg,var(--rose),#E59FA9);color:white;border:none;padding:14px 28px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 8px 24px rgba(216,140,154,0.35);transition:all 0.3s ease;display:inline-flex;align-items:center;gap:8px" onmouseover="this.style.transform='translateY(-2px) scale(1.02)';this.style.boxShadow='0 12px 32px rgba(216,140,154,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 24px rgba(216,140,154,0.35)'">
@@ -1338,17 +1346,22 @@ async function renderDashboard() {
     `;
   }
 
-  // 2. Enhanced Milestones with better styling
+  // 2. Enhanced Milestones with icons
   const msContainer = $('dbMilestones');
   if (msContainer) {
     const upcoming = MILESTONES.filter(m => m.w >= week).slice(0, 3);
     msContainer.innerHTML = upcoming.length ? upcoming.map((m, i) => `
       <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(255,255,255,0.85));border:1.5px solid rgba(216,140,154,0.15);border-radius:16px;margin-bottom:10px;font-size:13.5px;transition:all 0.3s ease;cursor:pointer;animation:fadeInUp 0.5s ease-out ${i * 0.1}s backwards" onmouseover="this.style.transform='translateX(8px)';this.style.borderColor='var(--rose)';this.style.boxShadow='0 8px 24px rgba(216,140,154,0.15)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(216,140,154,0.15)';this.style.boxShadow=''">
-        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--rose),#E59FA9);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0;box-shadow:0 4px 12px rgba(216,140,154,0.3)">W${m.w}</div>
-        <div style="flex:1;line-height:1.5;color:var(--text-main);font-weight:500">${m.t}</div>
+        <div class="milestone-icon">
+          <i data-lucide="star" style="width:20px;height:20px"></i>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:700;color:var(--rose);margin-bottom:4px">WEEK ${m.w}</div>
+          <div style="line-height:1.5;color:var(--text-main);font-weight:500">${m.t}</div>
+        </div>
         <i data-lucide="chevron-right" style="width:18px;height:18px;color:var(--rose);opacity:0.5"></i>
       </div>
-    `).join('') : '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px">All milestones completed! 🎉</p>';
+    `).join('') : '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px">All milestones completed! <i data-lucide="party-popper" style="width:16px;height:16px;display:inline-block"></i></p>';
   }
 
   renderIcons();

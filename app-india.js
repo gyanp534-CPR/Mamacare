@@ -15,7 +15,6 @@
 const GOV_SCHEMES = [
   {
     name: 'PMMVY — Pradhan Mantri Matru Vandana Yojana',
-    icon: '🏛️',
     benefit: '₹5,000 cash benefit in 3 installments for first live birth',
     eligibility: 'All pregnant & lactating women (first live birth) registered at AWC/ANM',
     howto: [
@@ -32,7 +31,6 @@ const GOV_SCHEMES = [
   },
   {
     name: 'JSY — Janani Suraksha Yojana',
-    icon: '🏥',
     benefit: 'Cash incentive for institutional delivery + free delivery services',
     eligibility: 'BPL, SC/ST women in rural areas; all women in LPS states (UP, Bihar, MP, Raj, Jharkhand, Odisha, J&K, UK, Chhattisgarh)',
     howto: [
@@ -49,7 +47,6 @@ const GOV_SCHEMES = [
   },
   {
     name: 'PM-JAY — Ayushman Bharat',
-    icon: '💊',
     benefit: '₹5 lakh/year health insurance per family for secondary & tertiary care',
     eligibility: 'SECC 2011 database mein listed BPL families',
     howto: [
@@ -65,7 +62,6 @@ const GOV_SCHEMES = [
   },
   {
     name: 'JSSK — Janani Shishu Suraksha Karyakram',
-    icon: '🌸',
     benefit: 'FREE delivery, C-section, medicines, diagnostics, blood, diet & transport at govt hospitals',
     eligibility: 'All pregnant women delivering at government hospitals',
     howto: [
@@ -83,7 +79,6 @@ const GOV_SCHEMES = [
   },
   {
     name: 'PMGKAY — Free Ration',
-    icon: '🌾',
     benefit: '5 kg free grain per person per month for Antyodaya/PHH card holders',
     eligibility: 'Ration card holders',
     howto: [
@@ -98,7 +93,6 @@ const GOV_SCHEMES = [
   },
   {
     name: 'Iron & Folic Acid Supplementation',
-    icon: '💊',
     benefit: 'FREE Iron-Folic Acid tablets throughout pregnancy via Anganwadi/ANM',
     eligibility: 'All pregnant women',
     howto: [
@@ -121,11 +115,11 @@ const AYURVEDIC_TIPS = {
   1: {
     title: 'Pehli Trimester (Week 1–13)',
     safe: [
-      { name: 'Adrak (Ginger)', use: 'Nausea ke liye — 1 inch fresh ginger chai mein ya paani mein ubal ke. Clinical evidence confirmed.', icon: '🫚' },
-      { name: 'Saunf (Fennel)', use: 'Digestive — 1 tsp seeds paani mein ubal ke peo. Bloating + gas relief.', icon: '🌿' },
-      { name: 'Nimbu (Lemon)', use: 'Nausea — lemon smell ya nimbu paani. Safe and effective.', icon: '🍋' },
-      { name: 'Coconut Water', use: 'Electrolytes + hydration — khaali pet peo. Natural ORS.', icon: '🥥' },
-      { name: 'Mishri + Saunf', use: 'Morning nausea — khali pet 1 tsp mishri + saunf chaba ke khaao.', icon: '🫚' },
+      { name: 'Adrak (Ginger)', use: 'Nausea ke liye — 1 inch fresh ginger chai mein ya paani mein ubal ke. Clinical evidence confirmed.', icon: 'leaf' },
+      { name: 'Saunf (Fennel)', use: 'Digestive — 1 tsp seeds paani mein ubal ke peo. Bloating + gas relief.', icon: 'sprout' },
+      { name: 'Nimbu (Lemon)', use: 'Nausea — lemon smell ya nimbu paani. Safe and effective.', icon: 'citrus' },
+      { name: 'Coconut Water', use: 'Electrolytes + hydration — khaali pet peo. Natural ORS.', icon: 'droplet' },
+      { name: 'Mishri + Saunf', use: 'Morning nausea — khali pet 1 tsp mishri + saunf chaba ke khaao.', icon: 'candy' },
     ],
     avoid: [
       { name: 'Papaya (raw/semi-ripe)', reason: 'Latex content — uterine contractions trigger kar sakta hai' },
@@ -137,11 +131,11 @@ const AYURVEDIC_TIPS = {
   2: {
     title: 'Doosri Trimester (Week 14–27)',
     safe: [
-      { name: 'Kesar (Saffron)', use: '1-2 strands warm milk mein roz — complexion, mood, immunity. Traditional belief + mild antidepressant properties.', icon: '🌸' },
-      { name: 'Haldi (Turmeric)', use: '½ tsp warm milk mein — anti-inflammatory, immunity. Avoid high doses.', icon: '🟡' },
-      { name: 'Ajwain (Carom)', use: 'Digestive, gas, heartburn. ½ tsp roasted seeds chew karo.', icon: '🌿' },
-      { name: 'Dates (Khajoor)', use: '2-3 roz — natural iron + labor preparation. Week 36+ mein cervical ripening evidence.', icon: '🌴' },
-      { name: 'Amla (Indian Gooseberry)', use: 'Vit C — immunity + iron absorption + constipation. Fresh ya murabba.', icon: '🟢' },
+      { name: 'Kesar (Saffron)', use: '1-2 strands warm milk mein roz — complexion, mood, immunity. Traditional belief + mild antidepressant properties.', icon: 'flower-2' },
+      { name: 'Haldi (Turmeric)', use: '½ tsp warm milk mein — anti-inflammatory, immunity. Avoid high doses.', icon: 'circle' },
+      { name: 'Ajwain (Carom)', use: 'Digestive, gas, heartburn. ½ tsp roasted seeds chew karo.', icon: 'sprout' },
+      { name: 'Dates (Khajoor)', use: '2-3 roz — natural iron + labor preparation. Week 36+ mein cervical ripening evidence.', icon: 'palmtree' },
+      { name: 'Amla (Indian Gooseberry)', use: 'Vit C — immunity + iron absorption + constipation. Fresh ya murabba.', icon: 'circle' },
     ],
     avoid: [
       { name: 'Aloe Vera (internal)', reason: 'Anthraquinone glycosides — purgative effect, miscarriage risk' },
@@ -153,11 +147,11 @@ const AYURVEDIC_TIPS = {
   3: {
     title: 'Teesri Trimester (Week 28–40)',
     safe: [
-      { name: 'Dates (Week 36+)', use: '6 dates roz — cervical ripening studies: shorter labor, less augmentation needed', icon: '🌴' },
-      { name: 'Raspberry Leaf Tea', use: 'Week 32+ — uterine toning. 1 cup/day only. Do not use earlier.', icon: '🍃' },
-      { name: 'Sesame Seeds (Til)', use: 'Iron + calcium — til ke laddoo. Traditional winter pregnancy food.', icon: '⚫' },
-      { name: 'Gondh Laddoo', use: 'Post-delivery — energy, milk production, back strength. Traditional postpartum food.', icon: '🟤' },
-      { name: 'Ghee (Moderate)', use: 'Joint lubrication, baby brain development. 1-2 tsp daily ok. Excess avoid (calories).', icon: '🧈' },
+      { name: 'Dates (Week 36+)', use: '6 dates roz — cervical ripening studies: shorter labor, less augmentation needed', icon: 'palmtree' },
+      { name: 'Raspberry Leaf Tea', use: 'Week 32+ — uterine toning. 1 cup/day only. Do not use earlier.', icon: 'leaf' },
+      { name: 'Sesame Seeds (Til)', use: 'Iron + calcium — til ke laddoo. Traditional winter pregnancy food.', icon: 'circle' },
+      { name: 'Gondh Laddoo', use: 'Post-delivery — energy, milk production, back strength. Traditional postpartum food.', icon: 'cookie' },
+      { name: 'Ghee (Moderate)', use: 'Joint lubrication, baby brain development. 1-2 tsp daily ok. Excess avoid (calories).', icon: 'droplet' },
     ],
     avoid: [
       { name: 'Castor Oil (internal)', reason: 'Can cause severe contractions and fetal distress — dangerous' },
@@ -168,11 +162,11 @@ const AYURVEDIC_TIPS = {
   postpartum: {
     title: 'Postpartum Recovery',
     safe: [
-      { name: 'Panjiri', use: 'Traditional postpartum food — atta, ghee, gondh, dry fruits. Energy + galactagogue.', icon: '🍪' },
-      { name: 'Ajwain + Gur Water', use: 'Uterine healing + digestive. 1 tsp ajwain + gur in warm water, 2-3 days postpartum.', icon: '🫚' },
-      { name: 'Methi (Fenugreek)', use: 'Milk supply booster — methi laddoo or methi ki sabzi. Evidence-backed galactagogue.', icon: '🌿' },
-      { name: 'Satavari (Shatavari)', use: 'Ayurvedic galactagogue — powder in warm milk. Safe for breastfeeding.', icon: '🌿' },
-      { name: 'Mustard Oil Massage', use: 'Traditional baby massage — warming, bone development (traditional belief). Use gentle pressure.', icon: '🫙' },
+      { name: 'Panjiri', use: 'Traditional postpartum food — atta, ghee, gondh, dry fruits. Energy + galactagogue.', icon: 'cookie' },
+      { name: 'Ajwain + Gur Water', use: 'Uterine healing + digestive. 1 tsp ajwain + gur in warm water, 2-3 days postpartum.', icon: 'droplet' },
+      { name: 'Methi (Fenugreek)', use: 'Milk supply booster — methi laddoo or methi ki sabzi. Evidence-backed galactagogue.', icon: 'sprout' },
+      { name: 'Satavari (Shatavari)', use: 'Ayurvedic galactagogue — powder in warm milk. Safe for breastfeeding.', icon: 'leaf' },
+      { name: 'Mustard Oil Massage', use: 'Traditional baby massage — warming, bone development (traditional belief). Use gentle pressure.', icon: 'droplet' },
     ],
     avoid: [
       { name: 'Papaya (breastfeeding)', reason: 'Some concern about latex compounds in breast milk — avoid raw papaya' },
@@ -355,23 +349,58 @@ function renderGovSchemes() {
   const el = document.getElementById('govSchemesGrid');
   if (!el) return;
   el.innerHTML = GOV_SCHEMES.map(s => `
-    <div class="card" style="border-left:3px solid ${s.color}">
-      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px">
-        <span style="font-size:30px">${s.icon}</span>
-        <div style="flex:1">
-          <div style="font-weight:600;font-size:14px;color:var(--warm);margin-bottom:3px">${s.name}</div>
-          <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:50px;background:${s.color};color:white">${s.badge}</span>
+    <div class="scheme-card" style="border-left:4px solid ${s.color}">
+      <div class="scheme-header">
+        <div class="scheme-icon" style="background:${s.color}20">
+          <i data-lucide="${getSchemeIcon(s.name)}" style="color:${s.color}"></i>
+        </div>
+        <div class="scheme-title-section">
+          <h3 class="scheme-title">${s.name}</h3>
+          <div class="scheme-badge" style="background:${s.color};color:white">${s.badge}</div>
         </div>
       </div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:10px"><strong>Benefit:</strong> ${s.benefit}</p>
-      <p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:10px"><strong>Eligibility:</strong> ${s.eligibility}</p>
-      <div style="background:var(--cream);border-radius:10px;padding:11px 13px;margin-bottom:10px">
-        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:${s.color};margin-bottom:5px">How to Apply</div>
-        ${s.howto.map((step,i) => `<div style="font-size:12.5px;color:var(--muted);padding:3px 0;line-height:1.55">${i+1}. ${step}</div>`).join('')}
+      <p class="scheme-benefit">${s.benefit}</p>
+      <div class="scheme-section">
+        <div class="scheme-section-title">
+          <i data-lucide="check-circle" style="width:16px;height:16px"></i>
+          Eligibility
+        </div>
+        <p class="scheme-text">${s.eligibility}</p>
       </div>
-      <div style="font-size:12px;color:var(--muted)"><strong>Documents:</strong> ${s.docs.join(' · ')}</div>
-      ${s.link ? `<a href="${s.link}" target="_blank" style="display:block;margin-top:10px;font-size:12px;color:var(--blue);text-decoration:none">🔗 Official Website →</a>` : ''}
+      <div class="scheme-section">
+        <div class="scheme-section-title">
+          <i data-lucide="list" style="width:16px;height:16px"></i>
+          How to Apply
+        </div>
+        <ol class="scheme-steps">
+          ${s.howto.map(step => `<li>${step}</li>`).join('')}
+        </ol>
+      </div>
+      <div class="scheme-section">
+        <div class="scheme-section-title">
+          <i data-lucide="file-text" style="width:16px;height:16px"></i>
+          Documents Required
+        </div>
+        <div class="scheme-docs">
+          ${s.docs.map(doc => `<span class="doc-tag">${doc}</span>`).join('')}
+        </div>
+      </div>
+      ${s.link ? `<a href="${s.link}" target="_blank" class="scheme-link">
+        <i data-lucide="external-link" style="width:16px;height:16px"></i>
+        Official Website
+      </a>` : ''}
     </div>`).join('');
+  if (window.lucide) lucide.createIcons();
+}
+
+function getSchemeIcon(name) {
+  if (name.includes('PMMVY')) return 'landmark';
+  if (name.includes('JSY')) return 'hospital';
+  if (name.includes('Ayushman') || name.includes('JAY')) return 'shield-plus';
+  if (name.includes('JSSK')) return 'heart-pulse';
+  if (name.includes('Ration') || name.includes('PMGKAY')) return 'wheat';
+  if (name.includes('Iron') || name.includes('Folic')) return 'pill';
+  return 'info';
 }
 
 function renderAyurvedaTri(tri) {
@@ -383,13 +412,14 @@ function renderAyurvedaTri(tri) {
   el.innerHTML = `
     <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--warm);margin-bottom:14px">${data.title}</div>
     <div style="margin-bottom:16px">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:8px">✅ Safe & Beneficial</div>
-      ${data.safe.map(t => `<div style="background:white;border-radius:13px;padding:12px 14px;margin-bottom:7px;border-left:3px solid var(--green)"><div style="font-weight:600;font-size:13.5px;margin-bottom:3px">${t.icon} ${t.name}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.65">${t.use}</div></div>`).join('')}
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:8px"><i data-lucide="check-circle" style="width:14px;height:14px;display:inline"></i> Safe & Beneficial</div>
+      ${data.safe.map(t => `<div style="background:white;border-radius:13px;padding:12px 14px;margin-bottom:7px;border-left:3px solid var(--green)"><div style="font-weight:600;font-size:13.5px;margin-bottom:3px"><i data-lucide="${t.icon}" style="width:16px;height:16px;display:inline;color:var(--green)"></i> ${t.name}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.65">${t.use}</div></div>`).join('')}
     </div>
     <div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#e05c5c;margin-bottom:8px">⚠️ Avoid in Pregnancy</div>
-      ${data.avoid.map(t => `<div style="background:#fff5f5;border-radius:13px;padding:12px 14px;margin-bottom:7px;border-left:3px solid #e05c5c"><div style="font-weight:600;font-size:13.5px;margin-bottom:3px">❌ ${t.name}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.65">${t.reason}</div></div>`).join('')}
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#e05c5c;margin-bottom:8px"><i data-lucide="alert-triangle" style="width:14px;height:14px;display:inline"></i> Avoid in Pregnancy</div>
+      ${data.avoid.map(t => `<div style="background:#fff5f5;border-radius:13px;padding:12px 14px;margin-bottom:7px;border-left:3px solid #e05c5c"><div style="font-weight:600;font-size:13.5px;margin-bottom:3px"><i data-lucide="x-circle" style="width:16px;height:16px;display:inline;color:#e05c5c"></i> ${t.name}</div><div style="font-size:12.5px;color:var(--muted);line-height:1.65">${t.reason}</div></div>`).join('')}
     </div>`;
+  if (window.lucide) lucide.createIcons();
 }
 
 function flashIndia(id) {
@@ -431,15 +461,15 @@ function addIndiaTabs() {
   const moreGrid = document.querySelector('#moreMenu .more-grid');
   if (moreGrid) {
     [
-      { page:'india', icon:'🏛️', label:'Schemes' },
-      { page:'ayurveda', icon:'🌿', label:'Ayurveda' },
-      { page:'sympdiary', icon:'📝', label:'Diary' },
-      { page:'emergencycard', icon:'🆘', label:'Emergency Card' },
+      { page:'india', icon:'landmark', label:'Schemes' },
+      { page:'ayurveda', icon:'leaf', label:'Ayurveda' },
+      { page:'sympdiary', icon:'notebook-pen', label:'Diary' },
+      { page:'emergencycard', icon:'alert-circle', label:'Emergency Card' },
     ].forEach(t => {
       if (!document.querySelector(`#moreMenu [data-page="${t.page}"]`)) {
         const div = document.createElement('div');
         div.className='more-item'; div.dataset.page=t.page;
-        div.innerHTML=`<div class="mi-icon">${t.icon}</div><div class="mi-label">${t.label}</div>`;
+        div.innerHTML=`<div class="mi-icon"><i data-lucide="${t.icon}"></i></div><div class="mi-label">${t.label}</div>`;
         div.addEventListener('click',()=>{ document.getElementById('moreMenu').style.display='none'; if(window.MC?.goTo) window.MC.goTo(t.page); });
         moreGrid.appendChild(div);
       }

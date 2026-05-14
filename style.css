@@ -1331,3 +1331,222 @@ footer strong {
   margin-top: 12px;
   width: 100%;
 }
+
+/* ── ENHANCED GOVERNMENT SCHEMES SECTION ── */
+.scheme-card {
+  background: white;
+  border-radius: 24px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(216, 140, 154, 0.1);
+  transition: all 0.3s ease;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+}
+.scheme-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(216, 140, 154, 0.18);
+}
+.scheme-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.scheme-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.scheme-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.scheme-title-section {
+  flex: 1;
+}
+.scheme-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+.scheme-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.scheme-benefit {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-main);
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+.scheme-section {
+  margin-bottom: 20px;
+}
+.scheme-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rose);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.scheme-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-main);
+  margin: 0;
+}
+.scheme-steps {
+  list-style: none;
+  counter-reset: step-counter;
+  padding: 0;
+  margin: 0;
+}
+.scheme-steps li {
+  counter-increment: step-counter;
+  position: relative;
+  padding-left: 36px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+.scheme-steps li::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.scheme-docs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.doc-tag {
+  background: rgba(216, 140, 154, 0.1);
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  padding: 8px 14px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  transition: all 0.3s ease;
+}
+.doc-tag:hover {
+  background: rgba(216, 140, 154, 0.2);
+  border-color: var(--rose);
+}
+.scheme-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(216, 140, 154, 0.1), rgba(246, 200, 181, 0.08));
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 100px;
+  color: var(--rose);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-top: 16px;
+}
+.scheme-link:hover {
+  background: var(--rose);
+  color: white;
+  border-color: var(--rose);
+  transform: translateX(4px);
+}
+
+/* ── REMOVE EMOJI STYLING, USE ICONS ── */
+.app-icon-inline {
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  margin: 0 4px;
+}
+
+/* ── DASHBOARD HERO ICONS ── */
+#dbHero .hero-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, rgba(216, 140, 154, 0.15), rgba(246, 200, 181, 0.1));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+#dbHero .hero-icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--rose);
+}
+
+/* ── FEATURE GRID ICONS (No Emojis) ── */
+.feature-item .mi-icon svg,
+.more-item svg {
+  width: 36px;
+  height: 36px;
+}
+
+/* ── MILESTONE ICONS ── */
+.milestone-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(216, 140, 154, 0.3);
+}
+.milestone-icon svg {
+  width: 22px;
+  height: 22px;
+  color: white;
+}
+
+/* ── SECTION HEADERS WITH ICONS ── */
+.sec-label-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-label-icon svg {
+  width: 16px;
+  height: 16px;
+  color: var(--rose);
+}

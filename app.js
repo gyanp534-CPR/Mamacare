@@ -457,6 +457,7 @@ function goTo(id) {
       ayurveda: () => { if(window.INDIA) window.INDIA.renderAyurvedaTri(1); },
       sympdiary: () => { if(window.INDIA) window.INDIA.loadSymptomTrend(); },
       doctor: () => { if(window.SMART) window.SMART.loadDoctorPortal(); },
+      contractions: () => { if(window.renderContractionHistory) window.renderContractionHistory(); },
     };
     
     if(loads[id]) loads[id]();

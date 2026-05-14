@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- Run this file in a browser to generate PNG icons, then save them as icon-192.png, icon-512.png etc. -->
+<html><body>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<canvas id="cm192" width="192" height="192"></canvas>
+<canvas id="cm512" width="512" height="512"></canvas>
+<script>
+function drawIcon(canvas, size, maskable) {
+  const ctx = canvas.getContext('2d');
+  const pad = maskable ? size * 0.15 : 0;
+  const r = size / 2;
+
+  // Background
+  const grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, '#F3D9DD');
+  grad.addColorStop(1, '#F6C8B5');
+  ctx.fillStyle = grad;
+  if (maskable) {
+    ctx.fillRect(0, 0, size, size);
+  } else {
+    ctx.beginPath();
+    ctx.roundRect(0, 0, size, size, size * 0.22);
+    ctx.fill();
+  }
+
+  // Flower emoji approximation — draw "MG" text
+  ctx.fillStyle = '#D88C9A';
+  ctx.font = `bold ${size * 0.28}px 'Georgia', serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('MG', r, r - size * 0.06);
+
+  ctx.fillStyle = '#C67684';
+  ctx.font = `${size * 0.13}px 'Georgia', serif`;
+  ctx.fillText('Mama Gyan', r, r + size * 0.22);
+
+  // Small flower dot
+  ctx.fillStyle = '#D88C9A';
+  ctx.beginPath();
+  ctx.arc(r, r - size * 0.28, size * 0.04, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+['c192','c512','cm192','cm512'].forEach((id, i) => {
+  const canvas = document.getElementById(id);
+  drawIcon(canvas, canvas.width, i >= 2);
+  const link = document.createElement('a');
+  link.download = ['icon-192.png','icon-512.png','icon-maskable-192.png','icon-maskable-512.png'][i];
+  link.href = canvas.toDataURL('image/png');
+  link.textContent = 'Download ' + link.download;
+  link.style.display = 'block';
+  document.body.appendChild(link);
+});
+</script>
+</body></html>

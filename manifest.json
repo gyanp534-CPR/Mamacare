@@ -1,6 +1,6 @@
 {
-  "name": "MamaCare — Complete Pregnancy Companion",
-  "short_name": "MamaCare",
+  "name": "Mama Gyan — Complete Pregnancy Companion",
+  "short_name": "Mama Gyan",
   "description": "Your complete pregnancy companion with AI support, tracking, and expert guidance in 7 languages",
   "start_url": "/",
   "display": "standalone",
@@ -8,8 +8,10 @@
   "theme_color": "#D88C9A",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "https://via.placeholder.com/192x192/D88C9A/ffffff?text=MC",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "https://via.placeholder.com/512x512/D88C9A/ffffff?text=MC", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "categories": ["health", "medical", "lifestyle", "wellness"],
   "lang": "hi",
@@ -23,14 +25,14 @@
       "short_name": "Mood",
       "description": "Track your daily mood",
       "url": "/?page=mood",
-      "icons": [{ "src": "https://via.placeholder.com/96x96/D88C9A/ffffff?text=M", "sizes": "96x96" }]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Due Date Calculator",
       "short_name": "Due Date",
       "description": "Calculate your due date",
       "url": "/?page=due",
-      "icons": [{ "src": "https://via.placeholder.com/96x96/D88C9A/ffffff?text=D", "sizes": "96x96" }]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

@@ -98,6 +98,14 @@ function injectOnboardingHTML() {
           <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
         </select>
       </div>
+      <div style="margin-bottom:14px;padding:14px;background:rgba(216,140,154,0.06);border-radius:14px;border:1px solid rgba(216,140,154,0.2);">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--text-main);">
+          <input type="checkbox" id="ob-consent" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:var(--rose);">
+          <span>Main agree karta/karti hun ki Mama Gyan meri health data securely store karega. 
+          <a href="#" onclick="showPrivacyPolicy();return false;" style="color:var(--rose);">Privacy Policy</a> padh li hai. 
+          (DPDP Act 2023 ke anusaar)</span>
+        </label>
+      </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-g" style="flex:1" onclick="ONBOARD.back()">← Wapas</button>
         <button class="btn btn-p" style="flex:2;font-size:14px" onclick="ONBOARD.finish()">🌸 App Shuru Karein!</button>
@@ -192,6 +200,13 @@ function obBack() {
 }
 
 async function obFinish() {
+  // DPDP consent check
+  const consent = document.getElementById('ob-consent');
+  if (consent && !consent.checked) {
+    consent.parentElement.style.borderColor = 'var(--danger)';
+    alert('Privacy Policy se agree karna zaroori hai.');
+    return;
+  }
   if (!window.user || !window.supa) { hideOnboarding(); return; }
 
   const name     = document.getElementById('ob-name')?.value.trim()    || null;

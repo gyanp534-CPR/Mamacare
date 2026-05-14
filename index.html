@@ -195,6 +195,10 @@
             <div class="mi-icon"><i data-lucide="user-round"></i></div>
             <div class="mi-label">Doctor Portal</div>
           </div>
+          <div class="feature-item" data-page="contractions">
+            <div class="mi-icon"><i data-lucide="timer"></i></div>
+            <div class="mi-label">Contractions</div>
+          </div>
           <div class="feature-item emergency-item" data-page="sos">
             <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
             <div class="mi-label" style="color:var(--danger)">SOS</div>
@@ -400,7 +404,10 @@
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
             <div class="sec-title" style="margin:0;font-size:1.3rem;">Medicines</div>
-            <button class="btn btn-g btn-sm" id="toggleMedFormBtn">+ Add Med</button>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-g btn-sm" id="notifPermBtn" onclick="requestPushPermission().then(ok=>{ if(ok){this.style.display='none';} })" title="Enable reminders">🔔</button>
+              <button class="btn btn-g btn-sm" id="toggleMedFormBtn">+ Add Med</button>
+            </div>
           </div>
           <div id="addMedForm" style="display:none; padding:16px; background:var(--blush); border-radius:16px; margin-bottom:16px;">
             <div class="g2" style="margin-bottom:12px;">
@@ -713,6 +720,7 @@
 
   </div>
 
+  <script src="app-improvements.js"></script>
   <script src="app.js"></script>
   <script src="meal-plans-indian.js"></script>
   <script src="app-baby.js"></script>

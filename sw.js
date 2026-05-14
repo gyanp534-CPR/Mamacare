@@ -4,11 +4,12 @@
  * Version: v7.7
  */
 
-const CACHE_NAME = 'mamacare-v7.8';
+const CACHE_NAME = 'mamacare-v7.9';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/app.js',
+  '/meal-plans-indian.js',
   '/app-baby.js',
   '/app-coach.js',
   '/app-extra.js',

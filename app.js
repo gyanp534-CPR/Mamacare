@@ -797,7 +797,8 @@ function initNutrition(){
 }
 
 function renderMealPlan(tri){
-  const plan=MEAL_PLANS[tri];const el=$('mealPlanContent');if(!el||!plan) return;
+  const plan = window.MEAL_PLANS_INDIAN ? window.MEAL_PLANS_INDIAN[tri] : MEAL_PLANS[tri];
+  const el=$('mealPlanContent');if(!el||!plan) return;
   const triEmoji = tri === 1 ? '🌱' : tri === 2 ? '🌸' : tri === 3 ? '🌺' : '🤱';
   el.innerHTML=`
     <div style="background:linear-gradient(135deg,rgba(216,140,154,0.12),rgba(246,200,181,0.08));border-radius:16px;padding:18px;margin-bottom:20px;border-left:4px solid var(--rose)">

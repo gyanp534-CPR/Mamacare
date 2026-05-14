@@ -107,13 +107,13 @@
 
     <main class="page active" id="page-dashboard">
       <div class="dashboard-section">
-        <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:32px 24px; border:none;"></div>
+        <div class="card" id="dbHero" style="background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));text-align:center;padding:24px 20px; border:none;margin-bottom:0;"></div>
       </div>
+
+      <!-- Rozana Tracking: 4-col compact grid -->
       <div class="dashboard-section">
-        <div class="section-header">
-          <div class="sec-label">Rozana Tracking</div>
-        </div>
-        <div class="feature-grid">
+        <div class="section-header"><div class="sec-label">Rozana Tracking</div></div>
+        <div class="feature-grid db-grid-4">
           <div class="feature-item" data-page="weight">
             <div class="mi-icon"><i data-lucide="scale"></i></div>
             <div class="mi-label">Weight</div>
@@ -126,40 +126,63 @@
             <div class="mi-icon"><i data-lucide="apple"></i></div>
             <div class="mi-label">Nutrition</div>
           </div>
-          <div class="feature-item" data-page="medicine">
-            <div class="mi-icon"><i data-lucide="pill"></i></div>
-            <div class="mi-label">Meds</div>
-          </div>
-          <div class="feature-item" data-page="journal">
-            <div class="mi-icon"><i data-lucide="book-heart"></i></div>
-            <div class="mi-label">Diary</div>
-          </div>
           <div class="feature-item" data-page="appointments">
             <div class="mi-icon"><i data-lucide="stethoscope"></i></div>
             <div class="mi-label">Appts</div>
           </div>
         </div>
       </div>
+
+      <!-- Health & Wellness: merged Meds+Ayurveda, Diary+Journal -->
       <div class="dashboard-section">
-        <div class="section-header">
-          <div class="sec-label">Smart AI Tools</div>
-        </div>
-        <div class="feature-grid" style="grid-template-columns: 1fr 1fr;"> 
-          <div class="feature-item" data-page="mood" style="background: #f3e5f5; border-color: #e1bee7;">
-            <div class="mi-icon"><i data-lucide="bot" style="color: #8e24aa;"></i></div>
-            <div class="mi-label">AI Coach</div>
+        <div class="section-header"><div class="sec-label">Health & Wellness</div></div>
+        <div class="feature-grid db-grid-4">
+          <div class="feature-item" data-page="medicine">
+            <div class="mi-icon"><i data-lucide="pill"></i></div>
+            <div class="mi-label">Meds & Ayurveda</div>
           </div>
-          <div class="feature-item" data-page="symptoms" style="background: #e3f2fd; border-color: #bbdefb;">
-            <div class="mi-icon"><i data-lucide="search" style="color: #1e88e5;"></i></div>
-            <div class="mi-label">Symptom AI</div>
+          <div class="feature-item" data-page="journal">
+            <div class="mi-icon"><i data-lucide="book-heart"></i></div>
+            <div class="mi-label">Diary & Journal</div>
+          </div>
+          <div class="feature-item" data-page="postpartum">
+            <div class="mi-icon"><i data-lucide="heart-pulse"></i></div>
+            <div class="mi-label">Postpartum</div>
+          </div>
+          <div class="feature-item" data-page="yoga">
+            <div class="mi-icon"><i data-lucide="activity"></i></div>
+            <div class="mi-label">Yoga</div>
           </div>
         </div>
       </div>
+
+      <!-- Smart AI Tools -->
       <div class="dashboard-section">
-        <div class="section-header">
-          <div class="sec-label">Safety & Planning</div>
+        <div class="section-header"><div class="sec-label">Smart AI Tools</div></div>
+        <div class="feature-grid db-grid-4">
+          <div class="feature-item" data-page="mood" style="background:#f3e5f5;border-color:#e1bee7;">
+            <div class="mi-icon"><i data-lucide="bot" style="color:#8e24aa;"></i></div>
+            <div class="mi-label">AI Coach</div>
+          </div>
+          <div class="feature-item" data-page="symptoms" style="background:#e3f2fd;border-color:#bbdefb;">
+            <div class="mi-icon"><i data-lucide="search" style="color:#1e88e5;"></i></div>
+            <div class="mi-label">Symptom AI</div>
+          </div>
+          <div class="feature-item" data-page="names">
+            <div class="mi-icon"><i data-lucide="baby"></i></div>
+            <div class="mi-label">Baby Names</div>
+          </div>
+          <div class="feature-item" data-page="india">
+            <div class="mi-icon"><i data-lucide="landmark"></i></div>
+            <div class="mi-label">Schemes</div>
+          </div>
         </div>
-        <div class="feature-grid">
+      </div>
+
+      <!-- Safety & Planning -->
+      <div class="dashboard-section">
+        <div class="section-header"><div class="sec-label">Safety & Planning</div></div>
+        <div class="feature-grid db-grid-4">
           <div class="feature-item" data-page="bag">
             <div class="mi-icon"><i data-lucide="briefcase-medical"></i></div>
             <div class="mi-label">Hosp Bag</div>
@@ -168,13 +191,18 @@
             <div class="mi-icon"><i data-lucide="clipboard-list"></i></div>
             <div class="mi-label">Birth Plan</div>
           </div>
+          <div class="feature-item" data-page="doctor">
+            <div class="mi-icon"><i data-lucide="user-round"></i></div>
+            <div class="mi-label">Doctor Portal</div>
+          </div>
           <div class="feature-item emergency-item" data-page="sos">
             <div class="mi-icon" style="color:var(--danger)"><i data-lucide="alert-triangle"></i></div>
             <div class="mi-label" style="color:var(--danger)">SOS</div>
           </div>
         </div>
       </div>
-      <div class="card">
+
+      <div class="card" style="margin-bottom:0;">
         <div class="sec-label" id="dbMilestonesLabel">Upcoming Milestones</div>
         <div id="dbMilestones"></div>
       </div>
@@ -362,32 +390,56 @@
     </main>
 
     <main class="page" id="page-medicine">
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-          <div class="sec-title" style="margin:0;">Medicines</div>
-          <button class="btn btn-g btn-sm" id="toggleMedFormBtn">+ Add Med</button>
-        </div>
-        <div id="addMedForm" style="display:none; padding:20px; background:var(--blush); border-radius:18px; margin-bottom:20px;">
-          <div class="g2" style="margin-bottom:16px;">
-            <input type="text" id="medName" placeholder="Medicine Name">
-            <input type="text" id="medDose" placeholder="Dosage (e.g. 1 tab)">
-            <input type="time" id="medTime">
-            <select id="medIcon">
-              <option value="💊">💊 Pill</option>
-              <option value="💉">💉 Injection</option>
-              <option value="🩸">🩸 Drops</option>
-            </select>
-            <input type="text" id="medNotes" placeholder="Notes (e.g. after food)" style="grid-column:1/-1;">
-          </div>
-          <button class="btn btn-p" style="width:100%" id="saveMedBtn">Save Medicine</button>
-        </div>
-        <div class="g3" id="medStats" style="margin-bottom:16px;"></div>
-        <div class="timeline-bar"><div class="timeline-fill" id="medProgressBar" style="width:0%"></div></div>
-        <div id="medList" style="margin-top:20px;"></div>
+      <!-- Tab: Meds / Ayurveda -->
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchMedTab('meds')" id="medTabMeds">💊 Medicines</button>
+        <button class="tab-btn" onclick="switchMedTab('ayurveda')" id="medTabAyurveda">🌿 Ayurveda</button>
       </div>
-      <div class="card">
-        <div class="sec-label">Supplement Guide</div>
-        <div id="suppGuide"></div>
+
+      <div id="medPane">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div class="sec-title" style="margin:0;font-size:1.3rem;">Medicines</div>
+            <button class="btn btn-g btn-sm" id="toggleMedFormBtn">+ Add Med</button>
+          </div>
+          <div id="addMedForm" style="display:none; padding:16px; background:var(--blush); border-radius:16px; margin-bottom:16px;">
+            <div class="g2" style="margin-bottom:12px;">
+              <input type="text" id="medName" placeholder="Medicine Name">
+              <input type="text" id="medDose" placeholder="Dosage (e.g. 1 tab)">
+              <input type="time" id="medTime">
+              <select id="medIcon">
+                <option value="💊">💊 Pill</option>
+                <option value="💉">💉 Injection</option>
+                <option value="🩸">🩸 Drops</option>
+              </select>
+              <input type="text" id="medNotes" placeholder="Notes (e.g. after food)" style="grid-column:1/-1;">
+            </div>
+            <button class="btn btn-p" style="width:100%" id="saveMedBtn">Save Medicine</button>
+          </div>
+          <div class="g3" id="medStats" style="margin-bottom:12px;"></div>
+          <div class="timeline-bar"><div class="timeline-fill" id="medProgressBar" style="width:0%"></div></div>
+          <div id="medList" style="margin-top:16px;"></div>
+        </div>
+        <div class="card">
+          <div class="sec-label">Supplement Guide</div>
+          <div id="suppGuide"></div>
+        </div>
+      </div>
+
+      <div id="ayurvedaPane" style="display:none;">
+        <div style="padding:4px 0 10px"><div class="sec-label">Traditional Wisdom</div><div class="sec-title" style="font-size:1.3rem;">Ayurvedic Tips 🌿</div></div>
+        <div class="card" style="background:rgba(212,168,83,.06)">
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">Yeh tips traditional Ayurvedic knowledge par based hain. Koi bhi herb ya remedy use karne se pehle apne doctor se zaroor poochein.</p>
+        </div>
+        <div class="card">
+          <div class="tab-row">
+            <button class="tab-btn ayur-tab active" data-tri="1" onclick="INDIA.renderAyurvedaTri(1)">🌱 1st Tri</button>
+            <button class="tab-btn ayur-tab" data-tri="2" onclick="INDIA.renderAyurvedaTri(2)">🌸 2nd Tri</button>
+            <button class="tab-btn ayur-tab" data-tri="3" onclick="INDIA.renderAyurvedaTri(3)">🌟 3rd Tri</button>
+            <button class="tab-btn ayur-tab" data-tri="postpartum" onclick="INDIA.renderAyurvedaTri('postpartum')">🤰 Postpartum</button>
+          </div>
+          <div id="ayurvedaContent"></div>
+        </div>
       </div>
     </main>
 

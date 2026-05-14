@@ -439,7 +439,7 @@ function goTo(id) {
       weight: loadWeights,
       sleep: loadSleepLogs,
       nutrition: () => { loadFoodLog(); loadWater(); },
-      medicine: loadMedicines,
+      medicine: () => { loadMedicines(); switchMedTab('meds'); },
       bag: loadBag,
       names: loadNames,
       journal: loadJournal,
@@ -1346,6 +1346,25 @@ function renderJournal(){
   const el=$('journalEntries'); if(el){ el.innerHTML=html; }
   const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }
   renderIcons();
+}
+
+function switchMedTab(tab) {
+  const medPane = document.getElementById('medPane');
+  const ayurPane = document.getElementById('ayurvedaPane');
+  const tabMeds = document.getElementById('medTabMeds');
+  const tabAyur = document.getElementById('medTabAyurveda');
+  if (tab === 'meds') {
+    if(medPane) medPane.style.display = '';
+    if(ayurPane) ayurPane.style.display = 'none';
+    if(tabMeds) tabMeds.classList.add('active');
+    if(tabAyur) tabAyur.classList.remove('active');
+  } else {
+    if(medPane) medPane.style.display = 'none';
+    if(ayurPane) ayurPane.style.display = '';
+    if(tabMeds) tabMeds.classList.remove('active');
+    if(tabAyur) tabAyur.classList.add('active');
+    if(window.INDIA) window.INDIA.renderAyurvedaTri(1);
+  }
 }
 
 function switchJournalTab(tab) {

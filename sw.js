@@ -4,7 +4,7 @@
  * Version: v7.7
  */
 
-const CACHE_NAME = 'mamacare-v7.7';
+const CACHE_NAME = 'mamacare-v7.8';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
   '/app-onboard.js',
   '/app-smart.js',
   '/app-tracker.js',
+  '/app-enhancements.js',
   '/style.css',
   '/manifest.json',
   'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600;700&display=swap',

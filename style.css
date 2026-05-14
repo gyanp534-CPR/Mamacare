@@ -996,3 +996,338 @@ footer strong {
   height: 10px;
   margin: 0;
 }
+
+/* ── SWIPEABLE CAROUSEL FOR SLEEP TIPS ── */
+.tips-carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 8px 32px rgba(216, 140, 154, 0.12);
+}
+.tips-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: pan-y;
+}
+.tip-card {
+  min-width: 100%;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  position: relative;
+}
+.tip-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--rose), #E59FA9, var(--peach));
+}
+.tip-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rose);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tip-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-main);
+}
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0;
+  background: white;
+}
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(216, 140, 154, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.carousel-dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--rose), #E59FA9);
+}
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(216, 140, 154, 0.15);
+}
+.carousel-nav:hover {
+  background: white;
+  border-color: var(--rose);
+  transform: translateY(-50%) scale(1.1);
+}
+.carousel-nav.prev { left: 12px; }
+.carousel-nav.next { right: 12px; }
+.carousel-nav svg {
+  width: 20px;
+  height: 20px;
+  color: var(--rose);
+}
+
+/* ── LANGUAGE SELECTOR (Subtle) ── */
+#langBar {
+  display: none;
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  background: rgba(252, 248, 245, 0.98);
+  backdrop-filter: blur(32px);
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(216, 140, 154, 0.2);
+  z-index: 999;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+#langBar.show {
+  display: flex !important;
+}
+.lang-toggle {
+  background: rgba(216, 140, 154, 0.1);
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.lang-toggle:hover {
+  background: var(--rose);
+  border-color: var(--rose);
+  transform: scale(1.1);
+}
+.lang-toggle:hover svg {
+  color: white;
+}
+.lang-toggle svg {
+  width: 20px;
+  height: 20px;
+  color: var(--rose);
+}
+
+/* ── PHOTO UPLOAD OPTIONS ── */
+.photo-options {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+}
+.photo-option-btn {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(216, 140, 154, 0.1), rgba(246, 200, 181, 0.08));
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.photo-option-btn:hover {
+  background: white;
+  border-color: var(--rose);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.18);
+}
+.photo-option-btn svg {
+  width: 32px;
+  height: 32px;
+  color: var(--rose);
+}
+.photo-option-btn span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* ── ENHANCED BIRTH PLAN ── */
+#birthPlanForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.bp-section {
+  background: white;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(216, 140, 154, 0.08);
+  transition: all 0.3s ease;
+}
+.bp-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.15);
+  border-color: var(--rose);
+}
+.bp-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rose);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bp-section-title svg {
+  width: 22px;
+  height: 22px;
+}
+.bp-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(216, 140, 154, 0.04);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.bp-option:hover {
+  background: rgba(216, 140, 154, 0.12);
+}
+.bp-option input[type="checkbox"],
+.bp-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--rose);
+}
+.bp-option label {
+  flex: 1;
+  cursor: pointer;
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+/* ── MOOD SECTION ENHANCEMENT ── */
+.mood-detail-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+.mood-detail-content {
+  background: white;
+  border-radius: 28px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mood-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.mood-detail-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--rose);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mood-close-btn {
+  background: rgba(216, 140, 154, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.mood-close-btn:hover {
+  background: var(--rose);
+  transform: rotate(90deg);
+}
+.mood-close-btn:hover svg {
+  color: white;
+}
+.mood-detail-body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-main);
+}
+.mood-share-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1.5px solid rgba(216, 140, 154, 0.15);
+}
+.mood-share-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.mood-share-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 16px;
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 16px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  resize: vertical;
+}
+.mood-share-btn {
+  margin-top: 12px;
+  width: 100%;
+}

@@ -1,19 +1,36 @@
 {
-  "name": "MamaCare — Pregnancy Companion",
+  "name": "MamaCare — Complete Pregnancy Companion",
   "short_name": "MamaCare",
-  "description": "Complete pregnancy companion — Hindi/Hinglish/English + 5 more languages",
+  "description": "Your complete pregnancy companion with AI support, tracking, and expert guidance in 7 languages",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fdf6f0",
-  "theme_color": "#e8a0a8",
+  "theme_color": "#D88C9A",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "https://via.placeholder.com/192x192/e8a0a8/ffffff?text=MC",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "https://via.placeholder.com/512x512/e8a0a8/ffffff?text=MC", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "https://via.placeholder.com/192x192/D88C9A/ffffff?text=MC",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "https://via.placeholder.com/512x512/D88C9A/ffffff?text=MC", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
-  "categories": ["health", "medical", "lifestyle"],
+  "categories": ["health", "medical", "lifestyle", "wellness"],
   "lang": "hi",
   "dir": "ltr",
   "scope": "/",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Mood Tracker",
+      "short_name": "Mood",
+      "description": "Track your daily mood",
+      "url": "/?page=mood",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/D88C9A/ffffff?text=M", "sizes": "96x96" }]
+    },
+    {
+      "name": "Due Date Calculator",
+      "short_name": "Due Date",
+      "description": "Calculate your due date",
+      "url": "/?page=due",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/D88C9A/ffffff?text=D", "sizes": "96x96" }]
+    }
+  ]
 }

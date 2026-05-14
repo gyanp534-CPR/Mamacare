@@ -1129,7 +1129,26 @@ const BP_SECTIONS=[
 
 function initBirthPlan(){
   const form=$('birthPlanForm');if(!form)return;
-  form.innerHTML=BP_SECTIONS.map(sec=>`<div class="bp-sec"><h4 style="display:flex; align-items:center; gap:6px;">${sec.title}</h4>${sec.fields?`<div class="g2">${sec.fields.map(f=>`<div><label>${f.l}</label><input type="${f.t||'text'}" id="${f.id}" placeholder="${f.ph||''}" onchange="MC.saveBirthPlan()"/></div>`).join('')}</div>`:''} ${sec.opts?sec.opts.map(opt=>`<div style="margin-bottom:12px"><label style="margin-bottom:7px;display:block">${opt.q}</label><div class="bp-opts" id="${opt.id}">${opt.opts.map(o=>`<button class="bp-opt" onclick="this.classList.toggle('sel');MC.saveBirthPlan()">${o}</button>`).join('')}</div></div>`).join(''):''} ${sec.textarea?`<div><label>${sec.textarea.l}</label><textarea id="${sec.textarea.id}" placeholder="${sec.textarea.ph}" oninput="MC.saveBirthPlan()"></textarea></div>`:''}</div>`).join('');
+  form.innerHTML=BP_SECTIONS.map(sec=>`
+    <div class="bp-section">
+      <div class="bp-section-title">${sec.title}</div>
+      ${sec.fields?`<div class="g2">${sec.fields.map(f=>`<div><label>${f.l}</label><input type="${f.t||'text'}" id="${f.id}" placeholder="${f.ph||''}" onchange="MC.saveBirthPlan()"/></div>`).join('')}</div>`:''}
+      ${sec.opts?sec.opts.map(opt=>`
+        <div style="margin-bottom:16px">
+          <label style="margin-bottom:10px;display:block;font-size:14px;font-weight:600;color:var(--text-main)">${opt.q}</label>
+          <div class="bp-opts" id="${opt.id}" style="display:flex;flex-wrap:wrap;gap:10px">
+            ${opt.opts.map(o=>`
+              <div class="bp-option">
+                <input type="checkbox" id="${opt.id}_${o.replace(/\s/g,'_')}" onchange="MC.saveBirthPlan()">
+                <label for="${opt.id}_${o.replace(/\s/g,'_')}">${o}</label>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join(''):''}
+      ${sec.textarea?`<div><label>${sec.textarea.l}</label><textarea id="${sec.textarea.id}" placeholder="${sec.textarea.ph}" oninput="MC.saveBirthPlan()"></textarea></div>`:''}
+    </div>
+  `).join('');
   loadBirthPlan();
 }
 

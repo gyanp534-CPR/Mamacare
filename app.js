@@ -787,6 +787,7 @@ const MEAL_PLANS={
   1:{focus:'Folic Acid, B6 (nausea), Iron, Zinc. Small frequent meals.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Dalia + fruits (fiber)','Banana + wheat toast (B6)','Ginger lemon water (nausea)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Walnuts + 2 dates (iron)','Coconut water (electrolytes)']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Dal + rice + palak (iron+folate)','Curd (calcium+probiotics)','Salad + nimbu (Vit C = iron 3x)']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Khichdi / idli (easy digest)','Vegetable soup','Warm haldi milk (calcium)']}],avoid:['Raw papaya/pineapple','Unpasteurized dairy','High mercury fish','Raw sprouts']},
   2:{focus:'Calcium, Vit D, Omega-3, Protein. Baby bones + brain developing.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['2 eggs + wheat toast (choline)','OJ/mosambi (Vit C)','Mixed nuts']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Greek yogurt + berries','Ragi ladoo (iron+calcium)']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Fish/tofu curry (omega-3)','Rajma/chhole (protein+iron)','Brown rice + salad']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Paneer/chicken (protein)','Methi saag (iron+folate)','Sweet potato (beta-carotene)']}],avoid:['Junk/processed foods','Excess sweets (GD risk)','Caffeine >200mg/day','Smoked meats']},
   3:{focus:'Vit K, Iron, Calcium, Fiber (constipation). Very small meals — stomach cramped.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Oats + flaxseeds (omega-3+fiber)','2-3 dates (iron + labor prep)','Warm milk (calcium)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Dry fruits mix','Tender coconut water']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Palak paneer (iron+calcium)','Dal makhani (protein)','Small rice/roti portion']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Light khichdi / soup','Boiled vegetables','Avoid heavy — heartburn worse!']}],avoid:['Gas foods (beans, broccoli)','Spicy food (heartburn)','Large meals','Lying down after eating']},
+  4:{focus:'🤱 Postpartum Recovery + Breastfeeding: Protein, Iron, Calcium, Omega-3, Hydration.',meals:[{t:'<i data-lucide="sunrise" class="app-icon-inline"></i> Breakfast',i:['Methi paratha + ghee (milk supply)','2 boiled eggs (protein)','Warm turmeric milk (healing)']},{t:'<i data-lucide="cookie" class="app-icon-inline"></i> Mid-morning',i:['Dry fruits ladoo (energy)','Coconut water (hydration)','Almonds + dates']},{t:'<i data-lucide="sun" class="app-icon-inline"></i> Lunch',i:['Dal + rice + ghee (strength)','Chicken/fish curry (protein+omega-3)','Spinach sabzi (iron)','Curd (probiotics)']},{t:'<i data-lucide="coffee" class="app-icon-inline"></i> Evening',i:['Ajwain water (digestion)','Ragi porridge (calcium+iron)','Gond ladoo (healing)']},{t:'<i data-lucide="moon" class="app-icon-inline"></i> Dinner',i:['Moong dal khichdi + ghee','Paneer bhurji (protein+calcium)','Warm soup (hydration)']}],avoid:['Spicy/oily foods (baby colic)','Caffeine (passes to milk)','Alcohol','Gas-forming foods (cabbage)','Cold foods (traditional)']},
 };
 
 function initNutrition(){
@@ -797,9 +798,33 @@ function initNutrition(){
 
 function renderMealPlan(tri){
   const plan=MEAL_PLANS[tri];const el=$('mealPlanContent');if(!el||!plan) return;
-  el.innerHTML=`<div style="background:rgba(232,160,168,.08);border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.7"><strong style="color:var(--accent)">Focus:</strong> ${plan.focus}</div>`+
-    plan.meals.map(m=>`<div style="margin-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:6px">${m.t}</div>${m.i.map(i=>`<div style="font-size:12.5px;color:var(--muted);padding:4px 0 4px 12px;border-left:2px solid var(--blush);margin-bottom:3px;line-height:1.5">${i}</div>`).join('')}</div>`).join('')+
-    `<div style="background:#fff5f5;border-radius:10px;padding:10px 12px;margin-top:8px"><div style="font-size:11px;font-weight:600;color:#c94040;margin-bottom:5px"><i data-lucide="alert-triangle" class="app-icon-inline"></i> Avoid this trimester:</div>${plan.avoid.map(a=>`<div style="font-size:12.5px;color:var(--muted);padding:2px 0">• ${a}</div>`).join('')}</div>`;
+  const triEmoji = tri === 1 ? '🌱' : tri === 2 ? '🌸' : tri === 3 ? '🌺' : '🤱';
+  el.innerHTML=`
+    <div style="background:linear-gradient(135deg,rgba(216,140,154,0.12),rgba(246,200,181,0.08));border-radius:16px;padding:18px;margin-bottom:20px;border-left:4px solid var(--rose)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:28px">${triEmoji}</span>
+        <strong style="font-size:15px;color:var(--rose)">Focus Nutrients</strong>
+      </div>
+      <p style="font-size:14px;color:var(--text-main);line-height:1.7;margin:0">${plan.focus}</p>
+    </div>
+    ${plan.meals.map((m,i)=>`
+      <div style="background:white;border-radius:18px;padding:20px;margin-bottom:16px;border:1.5px solid rgba(216,140,154,0.15);box-shadow:0 4px 16px rgba(216,140,154,0.08);transition:all 0.3s ease;animation:fadeInUp 0.4s ease-out ${i*0.1}s backwards" onmouseover="this.style.transform='translateX(6px)';this.style.boxShadow='0 8px 24px rgba(216,140,154,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 16px rgba(216,140,154,0.08)'">
+        <div style="font-weight:700;font-size:15px;margin-bottom:14px;color:var(--rose);display:flex;align-items:center;gap:8px">${m.t}</div>
+        <ul style="list-style:none;padding:0;margin:0">
+          ${m.i.map(item=>`<li style="padding:10px 0 10px 32px;position:relative;font-size:14px;line-height:1.6;color:var(--text-main);border-bottom:1px solid rgba(216,140,154,0.08)"><span style="position:absolute;left:0;width:22px;height:22px;background:linear-gradient(135deg,var(--rose-light),var(--peach));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--rose)">✓</span>${item}</li>`).join('')}
+        </ul>
+      </div>
+    `).join('')}
+    <div style="background:linear-gradient(135deg,rgba(224,107,116,0.08),rgba(224,107,116,0.04));border-radius:16px;padding:18px;border-left:4px solid var(--danger)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <i data-lucide="alert-triangle" style="width:20px;height:20px;color:var(--danger)"></i>
+        <strong style="font-size:14px;color:var(--danger)">Avoid This ${tri===4?'Period':'Trimester'}</strong>
+      </div>
+      <ul style="list-style:none;padding:0;margin:0">
+        ${plan.avoid.map(a=>`<li style="padding:8px 0 8px 28px;position:relative;font-size:13.5px;color:var(--text-main);line-height:1.6"><span style="position:absolute;left:0;font-size:16px">⚠️</span>${a}</li>`).join('')}
+      </ul>
+    </div>
+  `;
   renderIcons();
 }
 

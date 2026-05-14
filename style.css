@@ -103,13 +103,17 @@ body {
   border-radius: 28px; padding: 28px; margin-bottom: 24px;
   box-shadow: 0 8px 32px rgba(216, 140, 154, 0.1);
   transition: var(--transition-smooth);
-  position: relative; overflow: hidden;
+  position: relative; overflow: visible;
 }
 .card::before {
   content: ''; position: absolute; top: -50%; right: -50%;
   width: 200%; height: 200%;
   background: radial-gradient(circle, rgba(216, 140, 154, 0.05) 0%, transparent 70%);
   opacity: 0; transition: opacity 0.6s ease;
+  z-index: 0; pointer-events: none;
+}
+.card > * {
+  position: relative; z-index: 1;
 }
 .card:hover::before { opacity: 1; }
 .card:hover { 
@@ -728,4 +732,267 @@ footer strong {
 }
 .more-item:hover svg {
   transform: scale(1.1) rotate(5deg);
+}
+
+/* ── ENHANCED TAB BUTTONS ── */
+.tab-row {
+  display: flex; gap: 8px; margin-bottom: 20px;
+  overflow-x: auto; scrollbar-width: none;
+  padding: 4px;
+}
+.tab-row::-webkit-scrollbar { display: none; }
+.tab-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 100px; padding: 12px 24px;
+  font-size: 13.5px; font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer; white-space: nowrap;
+  transition: var(--transition-bounce);
+  position: relative; overflow: hidden;
+}
+.tab-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--rose-light), var(--peach));
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.tab-btn > * { position: relative; z-index: 1; }
+.tab-btn:hover {
+  background: white;
+  border-color: var(--rose);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(216, 140, 154, 0.15);
+}
+.tab-btn:hover::before { opacity: 0.1; }
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 6px 20px rgba(216, 140, 154, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ── ENHANCED MEAL PLAN ── */
+#mealPlanContent {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
+  border-radius: 20px;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+}
+#mealPlanContent > div {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  border-left: 4px solid var(--rose);
+  box-shadow: 0 4px 16px rgba(216, 140, 154, 0.08);
+  transition: var(--transition-smooth);
+}
+#mealPlanContent > div:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.15);
+}
+#mealPlanContent strong {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 700;
+  color: var(--rose);
+  margin-bottom: 12px;
+}
+#mealPlanContent ul {
+  list-style: none; padding: 0;
+  margin: 8px 0;
+}
+#mealPlanContent li {
+  padding: 8px 0 8px 28px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+#mealPlanContent li::before {
+  content: '✓';
+  position: absolute; left: 0;
+  width: 20px; height: 20px;
+  background: linear-gradient(135deg, var(--rose-light), var(--peach));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  color: var(--rose);
+}
+
+/* ── ENHANCED FOOD LOG ── */
+#foodList > div {
+  background: white;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(216, 140, 154, 0.06);
+}
+#foodList > div:hover {
+  transform: translateX(4px);
+  box-shadow: 0 6px 20px rgba(216, 140, 154, 0.12);
+  border-color: var(--rose);
+}
+#foodList strong {
+  font-size: 14.5px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+#foodList small {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: rgba(216, 140, 154, 0.1);
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-weight: 600;
+}
+
+/* ── ENHANCED WATER TRACKER ── */
+#waterTrack {
+  display: flex; justify-content: center; gap: 8px;
+  flex-wrap: wrap;
+}
+#waterTrack > div {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(136, 173, 196, 0.15), rgba(136, 173, 196, 0.08));
+  border: 2px solid rgba(136, 173, 196, 0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+  font-size: 20px;
+}
+#waterTrack > div:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 16px rgba(136, 173, 196, 0.25);
+}
+#waterTrack > div.filled {
+  background: linear-gradient(135deg, var(--blue), #A5C4D8);
+  border-color: var(--blue);
+  box-shadow: 0 4px 12px rgba(136, 173, 196, 0.3);
+}
+
+/* ── ENHANCED MEDICINE LIST ── */
+#medList > div {
+  background: white;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 14px;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 16px rgba(216, 140, 154, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+#medList > div::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--rose), #E59FA9);
+}
+#medList > div:hover {
+  transform: translateX(6px);
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.15);
+  border-color: var(--rose);
+}
+#medList strong {
+  font-size: 15px;
+  color: var(--text-main);
+  font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+#medList small {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 6px;
+}
+
+/* ── ENHANCED SUPPLEMENT GUIDE ── */
+#suppGuide > div {
+  background: linear-gradient(135deg, rgba(115, 181, 157, 0.08), rgba(115, 181, 157, 0.04));
+  border: 1.5px solid rgba(115, 181, 157, 0.2);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(115, 181, 157, 0.08);
+}
+#suppGuide > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(115, 181, 157, 0.15);
+  border-color: var(--green);
+}
+#suppGuide strong {
+  font-size: 14.5px;
+  color: var(--green);
+  font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px;
+}
+#suppGuide p {
+  font-size: 13.5px;
+  color: var(--text-main);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── STATS CARDS ENHANCEMENT ── */
+#wtStats > div, #sleepStats > div, #medStats > div {
+  background: white;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  transition: var(--transition-bounce);
+  box-shadow: 0 4px 16px rgba(216, 140, 154, 0.08);
+}
+#wtStats > div:hover, #sleepStats > div:hover, #medStats > div:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.18);
+  border-color: var(--rose);
+}
+#wtStats strong, #sleepStats strong, #medStats strong {
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  margin-bottom: 4px;
+}
+#wtStats small, #sleepStats small, #medStats small {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* ── NUTRITION BARS ── */
+#nutriBars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#nutriBars > div {
+  background: white;
+  border: 1.5px solid rgba(216, 140, 154, 0.15);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(216, 140, 154, 0.06);
+}
+#nutriBars strong {
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+}
+#nutriBars .timeline-bar {
+  height: 10px;
+  margin: 0;
 }

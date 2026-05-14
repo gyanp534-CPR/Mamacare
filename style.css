@@ -83,8 +83,8 @@ body {
 /* ── LAYOUT & PAGES ── */
 .app-shell { position: relative; z-index: 1; }
 .page {
-  display: none; width: 100%; max-width: 800px; /* Narrower for better reading */
-  margin: 0 auto; padding: 24px 20px 120px;
+  display: none; width: 100%; max-width: 800px;
+  margin: 0 auto; padding: 16px 16px 100px;
 }
 .page.active {
   display: block;
@@ -100,8 +100,8 @@ body {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.7));
   backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
   border: 1.5px solid rgba(255, 255, 255, 0.9);
-  border-radius: 28px; padding: 28px; margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(216, 140, 154, 0.1);
+  border-radius: 20px; padding: 18px; margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(216, 140, 154, 0.08);
   transition: var(--transition-smooth);
   position: relative; overflow: visible;
 }
@@ -128,8 +128,8 @@ body {
 }
 .sec-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.9rem; font-weight: 500; line-height: 1.2;
-  margin-bottom: 20px; 
+  font-size: 1.6rem; font-weight: 500; line-height: 1.2;
+  margin-bottom: 14px; 
   background: linear-gradient(135deg, var(--text-main), var(--rose));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -140,9 +140,9 @@ body {
 /* ── BUTTONS ── */
 .btn {
   border: none; cursor: pointer; border-radius: 100px;
-  padding: 15px 28px; font-size: 15px; font-weight: 600;
+  padding: 12px 22px; font-size: 14px; font-weight: 600;
   transition: var(--transition-bounce);
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   position: relative; overflow: hidden;
 }
 .btn::before {
@@ -192,19 +192,19 @@ input:focus, textarea:focus {
 label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
 
 /* ── GRID SYSTEMS ── */
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 @media(max-width: 600px){ .g3 { grid-template-columns: 1fr 1fr; } }
 
 /* ── DASHBOARD BENTO GRID ── */
-.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .feature-item {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
   border: 1.5px solid rgba(216, 140, 154, 0.15);
-  border-radius: 24px; padding: 24px 12px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  border-radius: 18px; padding: 16px 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
   cursor: pointer; transition: var(--transition-bounce);
-  box-shadow: 0 4px 20px rgba(216, 140, 154, 0.08);
+  box-shadow: 0 2px 12px rgba(216, 140, 154, 0.07);
   position: relative; overflow: hidden;
 }
 .feature-item::before {
@@ -224,16 +224,16 @@ label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-m
 .mi-icon { position: relative; z-index: 1; }
 .mi-label { position: relative; z-index: 1; }
 .feature-item svg { 
-  width: 36px; height: 36px; color: var(--rose); 
+  width: 28px; height: 28px; color: var(--rose); 
   transition: var(--transition-smooth);
-  filter: drop-shadow(0 2px 8px rgba(216, 140, 154, 0.2));
+  filter: drop-shadow(0 2px 6px rgba(216, 140, 154, 0.2));
 }
 .feature-item:hover svg { 
   transform: scale(1.15) rotate(5deg); 
   color: #C67684;
 }
 .feature-item span, .mi-label { 
-  font-size: 13px; font-weight: 600; color: var(--text-main);
+  font-size: 12px; font-weight: 600; color: var(--text-main);
   transition: var(--transition-smooth);
 }
 .feature-item:hover span, .feature-item:hover .mi-label { 
@@ -309,8 +309,10 @@ label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-m
 .bn-item:active { transform: scale(0.95); }
 .bn-item:active svg { transform: scale(0.9); }
 
-/* ── RESPONSIVE RESPONSIVE ── */
-@media(min-width: 768px) { #bottomNav { display: none; } }
+/* ── BOTTOM NAV: mobile only ── */
+#bottomNav { display: none; }
+#bottomNav.nav-visible { display: block; }
+@media(min-width: 768px) { #bottomNav { display: none !important; } }
 
 /* ── ENHANCED DASHBOARD HERO ── */
 #dbHero {
@@ -332,7 +334,7 @@ label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-m
 
 /* ── DASHBOARD SECTIONS ── */
 .dashboard-section {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   animation: fadeInUp 0.6s ease-out backwards;
 }
 .dashboard-section:nth-child(1) { animation-delay: 0.1s; }
@@ -346,7 +348,7 @@ label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-m
 
 .section-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px; padding: 0 4px;
+  margin-bottom: 10px; padding: 0 2px;
 }
 .section-header .sec-label {
   font-size: 12px; letter-spacing: 0.12em;
@@ -501,18 +503,16 @@ label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-m
 
 /* ── RESPONSIVE ENHANCEMENTS ── */
 @media(max-width: 600px) {
-  .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .feature-item { padding: 20px 10px; }
-  .feature-item svg { width: 32px; height: 32px; }
-  .card { padding: 20px; border-radius: 24px; }
-  .sec-title { font-size: 1.6rem; }
-  .fab { bottom: 80px; right: 20px; width: 56px; height: 56px; }
+  .feature-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .feature-item { padding: 14px 8px; }
+  .feature-item svg { width: 24px; height: 24px; }
+  .card { padding: 14px; border-radius: 18px; }
+  .sec-title { font-size: 1.4rem; }
+  .fab { bottom: 80px; right: 16px; width: 52px; height: 52px; }
+  .page { padding: 12px 12px 90px; }
 }
 
-/* ── ALWAYS SHOW BOTTOM NAV ── */
-@media(min-width: 768px) { 
-  #bottomNav { display: block !important; }
-}
+/* ── BOTTOM NAV: mobile only (no override) ── */
 
 /* ── SMOOTH SCROLLBAR ── */
 ::-webkit-scrollbar { width: 8px; }
@@ -529,10 +529,7 @@ label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-m
   50% { transform: translateY(-10px) scale(1.05); }
 }
 
-/* ── ENHANCED TOP BAR (HIDDEN - Using bottom nav only) ── */
-#topBar {
-  display: none !important;
-}
+/* ── ENHANCED TOP BAR (kept visible) ── */
 
 /* ── TOP TABS ENHANCEMENT ── */
 .top-tabs {
@@ -694,12 +691,12 @@ footer strong {
 
 /* ── MORE MENU ENHANCEMENT ── */
 #moreMenu {
-  position: fixed; bottom: 70px; left: 0; right: 0;
+  position: fixed; bottom: 65px; left: 0; right: 0;
   background: rgba(252, 248, 245, 0.98);
   backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
   border-top: 1.5px solid rgba(216, 140, 154, 0.2);
-  padding: 20px;
-  max-height: 70vh; overflow-y: auto;
+  padding: 16px;
+  max-height: 65vh; overflow-y: auto;
   box-shadow: 0 -8px 32px rgba(216, 140, 154, 0.15);
   transform: translateY(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -709,16 +706,16 @@ footer strong {
   transform: translateY(0);
 }
 .more-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 12px; max-width: 600px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; max-width: 600px; margin: 0 auto;
 }
 .more-item {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
   border: 1.5px solid rgba(216, 140, 154, 0.15);
-  border-radius: 20px; padding: 20px 12px;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  border-radius: 16px; padding: 14px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
   cursor: pointer; transition: var(--transition-bounce);
-  box-shadow: 0 4px 16px rgba(216, 140, 154, 0.08);
+  box-shadow: 0 2px 10px rgba(216, 140, 154, 0.07);
 }
 .more-item:hover {
   background: white;
@@ -727,25 +724,26 @@ footer strong {
   border-color: var(--rose);
 }
 .more-item svg {
-  width: 32px; height: 32px; color: var(--rose);
+  width: 26px; height: 26px; color: var(--rose);
   transition: var(--transition-smooth);
 }
 .more-item:hover svg {
   transform: scale(1.1) rotate(5deg);
 }
+.more-item .mi-label { font-size: 11.5px; }
 
 /* ── ENHANCED TAB BUTTONS ── */
 .tab-row {
-  display: flex; gap: 8px; margin-bottom: 20px;
+  display: flex; gap: 7px; margin-bottom: 14px;
   overflow-x: auto; scrollbar-width: none;
-  padding: 4px;
+  padding: 2px;
 }
 .tab-row::-webkit-scrollbar { display: none; }
 .tab-btn {
   background: rgba(255, 255, 255, 0.8);
   border: 1.5px solid rgba(216, 140, 154, 0.2);
-  border-radius: 100px; padding: 12px 24px;
-  font-size: 13.5px; font-weight: 600;
+  border-radius: 100px; padding: 9px 18px;
+  font-size: 13px; font-weight: 600;
   color: var(--text-muted);
   cursor: pointer; white-space: nowrap;
   transition: var(--transition-bounce);
@@ -1549,4 +1547,596 @@ footer strong {
   width: 16px;
   height: 16px;
   color: var(--rose);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   ENHANCED YOGA SECTION - INTERACTIVE & VISUAL
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── YOGA CARD ENHANCED ── */
+.yoga-card-enhanced {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  border: 1.5px solid rgba(216, 140, 154, 0.2);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.yoga-card-enhanced::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(216, 140, 154, 0.08) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.yoga-card-enhanced:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 16px 48px rgba(216, 140, 154, 0.2);
+  border-color: var(--rose);
+}
+
+.yoga-card-enhanced:hover::before {
+  opacity: 1;
+}
+
+.yoga-card-enhanced > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── YOGA CARD HEADER ── */
+.yoga-card-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid rgba(216, 140, 154, 0.1);
+}
+
+.yoga-icon-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(216, 140, 154, 0.15), rgba(246, 200, 181, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  animation: yogaIconBounce 3s ease-in-out infinite;
+}
+
+@keyframes yogaIconBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.05); }
+}
+
+.yoga-card-meta {
+  flex: 1;
+}
+
+/* ── YOGA PILLS ── */
+.yoga-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.yoga-pill-time {
+  background: linear-gradient(135deg, rgba(136, 173, 196, 0.15), rgba(136, 173, 196, 0.08));
+  color: var(--blue);
+  border: 1px solid rgba(136, 173, 196, 0.3);
+}
+
+.yoga-pill-level {
+  background: linear-gradient(135deg, rgba(115, 181, 157, 0.15), rgba(115, 181, 157, 0.08));
+  color: var(--green);
+  border: 1px solid rgba(115, 181, 157, 0.3);
+}
+
+/* ── YOGA DEMO PLACEHOLDER ── */
+.yoga-card-preview {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, rgba(243, 217, 221, 0.3), rgba(246, 200, 181, 0.2));
+  border: 2px dashed rgba(216, 140, 154, 0.3);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.yoga-card-preview:hover {
+  background: linear-gradient(135deg, rgba(243, 217, 221, 0.5), rgba(246, 200, 181, 0.4));
+  border-color: var(--rose);
+  transform: scale(1.02);
+}
+
+.yoga-demo-placeholder {
+  text-align: center;
+  animation: demoFloat 2s ease-in-out infinite;
+}
+
+@keyframes demoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── YOGA CARD ACTIONS ── */
+.yoga-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.yoga-btn-start,
+.yoga-btn-info {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.yoga-btn-start::before,
+.yoga-btn-info::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.yoga-btn-start:hover::before,
+.yoga-btn-info:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.yoga-btn-start {
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  color: white;
+  box-shadow: 0 6px 16px rgba(216, 140, 154, 0.3);
+}
+
+.yoga-btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(216, 140, 154, 0.4);
+}
+
+.yoga-btn-info {
+  background: rgba(216, 140, 154, 0.1);
+  color: var(--rose);
+  border: 1.5px solid rgba(216, 140, 154, 0.3);
+}
+
+.yoga-btn-info:hover {
+  background: var(--rose);
+  color: white;
+  border-color: var(--rose);
+  transform: translateY(-2px);
+}
+
+/* ── YOGA DETAIL EXPANDED ── */
+.yoga-detail-expanded {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1.5px solid rgba(216, 140, 154, 0.1);
+  animation: expandDown 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes expandDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 1000px;
+  }
+}
+
+.yoga-detail-section {
+  margin-bottom: 16px;
+  padding: 14px;
+  background: rgba(216, 140, 154, 0.05);
+  border-radius: 12px;
+  border-left: 3px solid rgba(216, 140, 154, 0.3);
+}
+
+.yoga-avoid-section {
+  background: rgba(224, 107, 116, 0.08);
+  border-left-color: rgba(224, 107, 116, 0.4);
+}
+
+/* ── YOGA STEPS ── */
+.yoga-step-enhanced {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid rgba(216, 140, 154, 0.1);
+}
+
+.yoga-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── YOGA MODAL ── */
+.yoga-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.yoga-modal-content {
+  width: 100%;
+  max-width: 600px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+  border-radius: 32px 32px 0 0;
+  padding: 28px 24px 40px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 -8px 32px rgba(216, 140, 154, 0.2);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.yoga-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(216, 140, 154, 0.1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.yoga-modal-close:hover {
+  background: var(--rose);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.yoga-modal-close svg {
+  width: 20px;
+  height: 20px;
+  color: var(--rose);
+}
+
+.yoga-modal-close:hover svg {
+  color: white;
+}
+
+.yoga-modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(216, 140, 154, 0.15);
+}
+
+/* ── YOGA DEMO LARGE ── */
+.yoga-demo-large {
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(135deg, rgba(243, 217, 221, 0.4), rgba(246, 200, 181, 0.3));
+  border: 2px dashed rgba(216, 140, 154, 0.3);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.yoga-demo-large::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(216, 140, 154, 0.1) 50%, transparent 70%);
+  animation: shimmerWave 3s infinite;
+}
+
+@keyframes shimmerWave {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── YOGA TIMER SECTION ── */
+.yoga-timer-section {
+  background: linear-gradient(135deg, rgba(136, 173, 196, 0.1), rgba(136, 173, 196, 0.05));
+  border: 1.5px solid rgba(136, 173, 196, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.yoga-timer-display {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--blue);
+  font-family: 'Courier New', monospace;
+  margin: 16px 0;
+  letter-spacing: 2px;
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.yoga-timer-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.yoga-timer-btn {
+  padding: 10px 18px;
+  border: 1.5px solid var(--blue);
+  background: rgba(136, 173, 196, 0.1);
+  color: var(--blue);
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.yoga-timer-btn:hover {
+  background: var(--blue);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(136, 173, 196, 0.3);
+}
+
+/* ── YOGA STEPS MODAL ── */
+.yoga-steps-modal {
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba(216, 140, 154, 0.05);
+  border-radius: 12px;
+  border-left: 4px solid var(--rose);
+}
+
+.yoga-step-modal {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid rgba(216, 140, 154, 0.1);
+}
+
+.yoga-step-modal:last-child {
+  margin-bottom: 0;
+}
+
+.yoga-step-num-modal {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── YOGA BENEFITS MODAL ── */
+.yoga-benefits-modal {
+  margin: 20px 0;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(115, 181, 157, 0.1), rgba(115, 181, 157, 0.05));
+  border-radius: 12px;
+  border-left: 4px solid var(--green);
+}
+
+/* ── YOGA DONE BUTTON ── */
+.yoga-btn-done {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  background: linear-gradient(135deg, var(--rose), #E59FA9);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(216, 140, 154, 0.3);
+}
+
+.yoga-btn-done:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(216, 140, 154, 0.4);
+}
+
+.yoga-btn-done:active {
+  transform: scale(0.98);
+}
+
+/* ── YOGA GRID LAYOUT ── */
+#yogaGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  #yogaGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── YOGA FILTER ROW ── */
+#yogaFilterRow {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#yogaFilterRow::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── AVOID LIST ── */
+#avoidList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+@media (min-width: 600px) {
+  #avoidList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── RESPONSIVE YOGA ── */
+@media (max-width: 600px) {
+  .yoga-card-enhanced {
+    padding: 16px;
+  }
+
+  .yoga-card-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .yoga-icon-large {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+
+  .yoga-card-actions {
+    flex-direction: column;
+  }
+
+  .yoga-modal-content {
+    border-radius: 24px 24px 0 0;
+    padding: 20px 16px 32px;
+  }
+
+  .yoga-timer-display {
+    font-size: 40px;
+  }
+
+  .yoga-demo-large {
+    height: 200px;
+  }
 }

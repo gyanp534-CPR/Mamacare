@@ -340,7 +340,7 @@ async function onLogin(u) {
   if ($('authScreen')) $('authScreen').style.display='none';
   if ($('langBar'))    $('langBar').style.display='flex';
   if ($('topBar'))     $('topBar').style.display='block';
-  if ($('bottomNav'))  $('bottomNav').style.display='block';
+  if ($('bottomNav'))  $('bottomNav').classList.add('nav-visible');
   
   const em=u.email||''; setText('topUserEmail', em.length>22?em.slice(0,19)+'...':em);
   
@@ -389,7 +389,7 @@ async function logout(){
   if ($('authScreen')) $('authScreen').style.display='flex';
   if ($('langBar'))    $('langBar').style.display='none';
   if ($('topBar'))     $('topBar').style.display='none';
-  if ($('bottomNav'))  $('bottomNav').style.display='none'; 
+  if ($('bottomNav'))  $('bottomNav').classList.remove('nav-visible');
   
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if ($('page-dashboard')) $('page-dashboard').classList.add('active');
@@ -716,24 +716,303 @@ function initYogaFilters(){
   renderYogaGrid();
 }
 
+function getYogaPoseAnimation(poseName){
+  const animations={
+    'Cat-Cow Stretch':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="catcow-anim">
+        <ellipse cx="100" cy="80" rx="35" ry="40" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <circle cx="100" cy="50" r="20" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="70" y1="110" x2="50" y2="160" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="130" y1="110" x2="150" y2="160" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="80" y1="115" x2="60" y2="165" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="120" y1="115" x2="140" y2="165" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <path d="M 100 120 Q 110 140 100 160" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+      <style>
+        @keyframes catcow { 0%,100%{transform:scaleY(0.9)} 50%{transform:scaleY(1.1)} }
+        #catcow-anim { animation: catcow 2s ease-in-out infinite; transform-origin: 100px 100px; }
+      </style>
+    </svg>`,
+    'Butterfly Pose':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="butterfly-anim">
+        <circle cx="100" cy="60" r="18" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="100" y1="78" x2="100" y2="120" stroke="#D88C9A" stroke-width="3"/>
+        <path d="M 100 120 L 70 150 L 70 160" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 100 120 L 130 150 L 130 160" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 70 150 Q 60 145 50 150" stroke="#D88C9A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 130 150 Q 140 145 150 150" stroke="#D88C9A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </g>
+      <style>
+        @keyframes butterfly { 0%,100%{transform:rotateX(0deg)} 50%{transform:rotateX(15deg)} }
+        #butterfly-anim { animation: butterfly 2.5s ease-in-out infinite; transform-origin: 100px 100px; }
+      </style>
+    </svg>`,
+    'Prenatal Squats':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="squat-anim">
+        <circle cx="100" cy="50" r="16" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="100" y1="66" x2="100" y2="100" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="75" y1="100" x2="60" y2="150" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="125" y1="100" x2="140" y2="150" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="60" y1="150" x2="60" y2="165" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="140" y1="150" x2="140" y2="165" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <style>
+        @keyframes squat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(30px)} }
+        #squat-anim { animation: squat 2s ease-in-out infinite; transform-origin: 100px 100px; }
+      </style>
+    </svg>`,
+    'Ujjayi Pranayama':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="breath-anim">
+        <circle cx="100" cy="100" r="50" fill="none" stroke="#D88C9A" stroke-width="2" opacity="0.3"/>
+        <circle cx="100" cy="100" r="35" fill="none" stroke="#D88C9A" stroke-width="2.5"/>
+        <circle cx="100" cy="100" r="20" fill="none" stroke="#D88C9A" stroke-width="2" opacity="0.5"/>
+        <path d="M 100 50 Q 120 70 100 100 Q 80 70 100 50" fill="#D88C9A" opacity="0.2"/>
+      </g>
+      <style>
+        @keyframes breathe { 0%,100%{r:35} 50%{r:50} }
+        #breath-anim circle:nth-child(2) { animation: breathe 4s ease-in-out infinite; }
+      </style>
+    </svg>`,
+    'Kegel Exercises':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="kegel-anim">
+        <ellipse cx="100" cy="100" rx="40" ry="50" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <path d="M 70 80 Q 70 100 75 120" stroke="#D88C9A" stroke-width="2.5" fill="none"/>
+        <path d="M 130 80 Q 130 100 125 120" stroke="#D88C9A" stroke-width="2.5" fill="none"/>
+        <circle cx="100" cy="100" r="15" fill="none" stroke="#D88C9A" stroke-width="2" opacity="0.5"/>
+      </g>
+      <style>
+        @keyframes kegel { 0%,100%{opacity:0.5} 50%{opacity:1} }
+        #kegel-anim circle { animation: kegel 1.5s ease-in-out infinite; }
+      </style>
+    </svg>`,
+    'Side-Lying Leg Lifts':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="sidelift-anim">
+        <circle cx="80" cy="80" r="16" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="80" y1="96" x2="80" y2="130" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="60" y1="130" x2="50" y2="170" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="80" y1="130" x2="80" y2="170" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="100" y1="110" x2="140" y2="80" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="140" y1="80" x2="140" y2="130" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <style>
+        @keyframes sidelift { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+        #sidelift-anim line:nth-child(5) { animation: sidelift 2s ease-in-out infinite; }
+      </style>
+    </svg>`,
+    'Prenatal Walking':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="walk-anim">
+        <circle cx="100" cy="50" r="16" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="100" y1="66" x2="100" y2="110" stroke="#D88C9A" stroke-width="3"/>
+        <line x1="80" y1="110" x2="70" y2="160" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="120" y1="110" x2="130" y2="160" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="70" y1="160" x2="70" y2="175" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+        <line x1="130" y1="160" x2="130" y2="175" stroke="#D88C9A" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <style>
+        @keyframes walk { 0%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 100%{transform:translateX(-5px)} }
+        #walk-anim { animation: walk 1.5s ease-in-out infinite; }
+      </style>
+    </svg>`,
+    "Child's Pose":`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="child-anim">
+        <circle cx="100" cy="70" r="14" fill="none" stroke="#D88C9A" stroke-width="3"/>
+        <path d="M 100 84 Q 90 100 85 130" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 100 84 Q 110 100 115 130" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 85 130 L 75 160" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M 115 130 L 125 160" stroke="#D88C9A" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+      <style>
+        @keyframes child { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+        #child-anim { animation: child 2.5s ease-in-out infinite; }
+      </style>
+    </svg>`,
+    'Lamaze Breathing':`<svg viewBox="0 0 200 200" style="width:100%;height:100%;max-width:200px">
+      <g id="lamaze-anim">
+        <circle cx="100" cy="100" r="45" fill="none" stroke="#D88C9A" stroke-width="2.5"/>
+        <circle cx="100" cy="100" r="30" fill="none" stroke="#D88C9A" stroke-width="2" opacity="0.6"/>
+        <circle cx="100" cy="100" r="15" fill="none" stroke="#D88C9A" stroke-width="1.5" opacity="0.3"/>
+        <path d="M 100 55 L 100 145" stroke="#D88C9A" stroke-width="1" opacity="0.4"/>
+        <path d="M 55 100 L 145 100" stroke="#D88C9A" stroke-width="1" opacity="0.4"/>
+      </g>
+      <style>
+        @keyframes lamaze { 0%,100%{r:45} 25%{r:55} 50%{r:45} 75%{r:35} }
+        #lamaze-anim circle:nth-child(1) { animation: lamaze 4s ease-in-out infinite; }
+      </style>
+    </svg>`
+  };
+  return animations[poseName]||`<div style="text-align:center;padding:40px;color:var(--text-muted)">Visual demonstration</div>`;
+}
+
 function renderYogaGrid(){
   const g=$('yogaGrid');if(!g)return;
   const filtered=yogaFilterKey==='all'?YOGA:YOGA.filter(y=>y.cat.includes(yogaFilterKey));
-  g.innerHTML=filtered.map(y=>`
-    <div class="yoga-card" onclick="this.classList.toggle('open')">
-      <div style="font-size:38px;margin-bottom:8px; color:var(--rose)">${y.icon}</div>
-      <div style="font-weight:600;font-size:13.5px;margin-bottom:4px">${y.name}</div>
-      <div style="display:flex;gap:5px;margin-bottom:7px"><span class="pill pill-g"><i data-lucide="clock" class="app-icon-inline" style="width:12px; height:12px;"></i> ${y.dur}</span><span class="pill pill-b">${y.lvl}</span></div>
-      <div style="font-size:12.5px;color:var(--muted);line-height:1.55">${y.short}</div>
-      <div style="font-size:11.5px;color:var(--accent);margin-top:8px;font-weight:500">▼ Tap for details</div>
-      <div class="yoga-detail">
-        <p style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:10px"><strong style="color:var(--green)">Why:</strong> ${y.why}</p>
-        ${y.steps.map((s,i)=>`<div class="yoga-step"><div class="yoga-step-num">${i+1}</div><div style="font-size:12.5px;line-height:1.6">${s}</div></div>`).join('')}
-        <div style="background:var(--cream);border-radius:10px;padding:9px 12px;margin-top:8px;font-size:12px"><strong style="color:var(--green)">Benefits:</strong> ${y.benefits}</div>
-        <div style="background:#fff5f5;border-radius:10px;padding:8px 12px;margin-top:6px;font-size:12px;color:#c94040"><i data-lucide="alert-triangle" class="app-icon-inline"></i> ${y.avoid}</div>
+  g.innerHTML=filtered.map((y,idx)=>`
+    <div class="yoga-card-enhanced" data-yoga-id="${idx}">
+      <div class="yoga-card-header">
+        <div class="yoga-icon-large">${y.icon}</div>
+        <div class="yoga-card-meta">
+          <div style="font-weight:700;font-size:14.5px;color:var(--text-main)">${y.name}</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <span class="yoga-pill yoga-pill-time"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${y.dur}</span>
+            <span class="yoga-pill yoga-pill-level">${y.lvl}</span>
+          </div>
+        </div>
       </div>
-    </div>`).join('');
+      
+      <div class="yoga-card-preview" onclick="startYogaPose(${idx})" style="cursor:pointer">
+        <div class="yoga-demo-placeholder">
+          ${getYogaPoseAnimation(y.name)}
+        </div>
+      </div>
+      
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin:12px 0">${y.short}</div>
+      
+      <div class="yoga-card-actions">
+        <button class="yoga-btn-start" onclick="startYogaPose(${idx})">
+          <i data-lucide="play" class="app-icon-inline"></i> Start Pose
+        </button>
+        <button class="yoga-btn-info" onclick="toggleYogaDetail(${idx})">
+          <i data-lucide="info" class="app-icon-inline"></i> Details
+        </button>
+      </div>
+      
+      <div class="yoga-detail-expanded" id="yoga-detail-${idx}" style="display:none">
+        <div class="yoga-detail-section">
+          <div style="font-weight:700;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <i data-lucide="lightbulb" class="app-icon-inline"></i> Why This Pose
+          </div>
+          <p style="font-size:12.5px;color:var(--text-muted);line-height:1.65">${y.why}</p>
+        </div>
+        
+        <div class="yoga-detail-section">
+          <div style="font-weight:700;color:var(--text-main);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+            <i data-lucide="list" class="app-icon-inline"></i> Step-by-Step
+          </div>
+          ${y.steps.map((s,i)=>`
+            <div class="yoga-step-enhanced">
+              <div class="yoga-step-num">${i+1}</div>
+              <div style="font-size:12.5px;line-height:1.65;color:var(--text-main)">${s}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="yoga-detail-section">
+          <div style="font-weight:700;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <i data-lucide="heart" class="app-icon-inline"></i> Benefits
+          </div>
+          <div style="font-size:12.5px;color:var(--text-muted);line-height:1.65">${y.benefits}</div>
+        </div>
+        
+        <div class="yoga-detail-section yoga-avoid-section">
+          <div style="font-weight:700;color:#c94040;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <i data-lucide="alert-triangle" class="app-icon-inline"></i> Caution
+          </div>
+          <div style="font-size:12.5px;color:#c94040;line-height:1.65">${y.avoid}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
   renderIcons();
+}
+
+function toggleYogaDetail(idx){
+  const detail=$(`yoga-detail-${idx}`);
+  if(detail) detail.style.display=detail.style.display==='none'?'block':'none';
+}
+
+function startYogaPose(idx){
+  const filtered=yogaFilterKey==='all'?YOGA:YOGA.filter(y=>y.cat.includes(yogaFilterKey));
+  const pose=filtered[idx];
+  if(!pose) return;
+  
+  const modal=document.createElement('div');
+  modal.className='yoga-modal';
+  modal.innerHTML=`
+    <div class="yoga-modal-content">
+      <button class="yoga-modal-close" onclick="this.closest('.yoga-modal').remove()">
+        <i data-lucide="x" class="app-icon-inline"></i>
+      </button>
+      
+      <div class="yoga-modal-header">
+        <div style="font-size:56px;margin-bottom:12px">${pose.icon}</div>
+        <div style="font-size:20px;font-weight:700;color:var(--text-main);margin-bottom:4px">${pose.name}</div>
+        <div style="font-size:13px;color:var(--text-muted)">${pose.dur} • ${pose.lvl}</div>
+      </div>
+      
+      <div class="yoga-demo-large">
+        ${getYogaPoseAnimation(pose.name)}
+      </div>
+      
+      <div class="yoga-timer-section">
+        <div style="font-weight:700;margin-bottom:12px;color:var(--text-main)">Hold for:</div>
+        <div class="yoga-timer-display" id="yogaTimer">0:00</div>
+        <div class="yoga-timer-controls">
+          <button class="yoga-timer-btn" onclick="startYogaTimer()">
+            <i data-lucide="play" class="app-icon-inline"></i> Start
+          </button>
+          <button class="yoga-timer-btn" onclick="pauseYogaTimer()">
+            <i data-lucide="pause" class="app-icon-inline"></i> Pause
+          </button>
+          <button class="yoga-timer-btn" onclick="resetYogaTimer()">
+            <i data-lucide="rotate-ccw" class="app-icon-inline"></i> Reset
+          </button>
+        </div>
+      </div>
+      
+      <div class="yoga-steps-modal">
+        <div style="font-weight:700;margin-bottom:12px;color:var(--text-main);display:flex;align-items:center;gap:6px">
+          <i data-lucide="list" class="app-icon-inline"></i> Instructions
+        </div>
+        ${pose.steps.map((s,i)=>`
+          <div class="yoga-step-modal">
+            <div class="yoga-step-num-modal">${i+1}</div>
+            <div style="font-size:13.5px;line-height:1.7;color:var(--text-main)">${s}</div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="yoga-benefits-modal">
+        <div style="font-weight:700;margin-bottom:10px;color:var(--green);display:flex;align-items:center;gap:6px">
+          <i data-lucide="heart" class="app-icon-inline"></i> Benefits
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.7">${pose.benefits}</div>
+      </div>
+      
+      <button class="yoga-btn-done" onclick="this.closest('.yoga-modal').remove()">
+        <i data-lucide="check" class="app-icon-inline"></i> Done
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  renderIcons();
+}
+
+let yogaTimerInterval=null;
+let yogaTimerSeconds=0;
+
+function startYogaTimer(){
+  if(yogaTimerInterval) return;
+  yogaTimerInterval=setInterval(()=>{
+    yogaTimerSeconds++;
+    const mins=Math.floor(yogaTimerSeconds/60);
+    const secs=yogaTimerSeconds%60;
+    const timer=$('yogaTimer');
+    if(timer) timer.textContent=`${mins}:${secs.toString().padStart(2,'0')}`;
+  },1000);
+}
+
+function pauseYogaTimer(){
+  if(yogaTimerInterval){
+    clearInterval(yogaTimerInterval);
+    yogaTimerInterval=null;
+  }
+}
+
+function resetYogaTimer(){
+  pauseYogaTimer();
+  yogaTimerSeconds=0;
+  const timer=$('yogaTimer');
+  if(timer) timer.textContent='0:00';
 }
 
 // ══════════════════════════════════════
@@ -1060,13 +1339,32 @@ async function loadJournal(){
 async function deleteJournalEntry(id){if(!confirm('Delete karein?'))return;if(supa) await supa.from('journal_entries').delete().eq('id',id);journalList=journalList.filter(e=>e.id!==id);renderJournal();}
 
 function renderJournal(){
-  const el=$('journalEntries');if(!el)return;
-  if(!journalList.length){el.innerHTML='<p style="text-align:center;color:var(--muted);font-size:13.5px;padding:22px">Koi entry nahi. Upar se pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>'; renderIcons(); return;}
-  el.innerHTML=journalList.map(e=>{
+  const html = journalList.length ? journalList.map(e=>{
     const moodIcon = e.mood || 'smile';
-    return `<div style="background:white;border-radius:18px;padding:16px;margin-bottom:11px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'10px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:22px;height:22px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:3px 10px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13.5px;line-height:1.75;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`;
-  }).join('');
+    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`;
+  }).join('') : '<p style="text-align:center;color:var(--muted);font-size:13px;padding:18px">Koi entry nahi. Pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>';
+  const el=$('journalEntries'); if(el){ el.innerHTML=html; }
+  const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }
   renderIcons();
+}
+
+function switchJournalTab(tab) {
+  const diary = document.getElementById('journalDiaryPane');
+  const journal = document.getElementById('journalJournalPane');
+  const tabDiary = document.getElementById('journalTabDiary');
+  const tabJournal = document.getElementById('journalTabJournal');
+  if (tab === 'diary') {
+    if(diary) diary.style.display = '';
+    if(journal) journal.style.display = 'none';
+    if(tabDiary) tabDiary.classList.add('active');
+    if(tabJournal) tabJournal.classList.remove('active');
+  } else {
+    if(diary) diary.style.display = 'none';
+    if(journal) journal.style.display = '';
+    if(tabDiary) tabDiary.classList.remove('active');
+    if(tabJournal) tabJournal.classList.add('active');
+    renderJournal();
+  }
 }
 
 // ══════════════════════════════════════

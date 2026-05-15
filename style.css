@@ -81,6 +81,33 @@
   0%   { transform: translateY(0); }
   100% { transform: translateY(-10px); }
 }
+/* Logo crop — show only heart portion, hide baked-in text */
+.splash-logo-crop {
+  width: 220px;
+  height: 220px; /* ~58% of 1024px image = heart only */
+  overflow: hidden;
+  position: relative;
+}
+.splash-logo-img {
+  width: 220px;
+  height: auto; /* natural height, we clip bottom */
+  display: block;
+  filter: drop-shadow(0 16px 48px rgba(168,85,247,0.45)) drop-shadow(0 4px 16px rgba(0,0,0,0.15));
+}
+
+/* Auth logo crop */
+.auth-logo-crop {
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+}
+.auth-logo-img {
+  width: 90px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+}
+
 .splash-logo-svg {
   width: 200px; height: 200px;
   border-radius: 0;

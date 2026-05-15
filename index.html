@@ -39,9 +39,9 @@
     <div class="splash-wave"></div>
 
     <div class="splash-content">
-      <!-- Logo: mother+baby heart SVG -->
+      <!-- Logo: mother+baby heart -->
       <div class="splash-logo-wrap">
-        <img class="splash-logo-svg" src="mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png" alt="Mama Gyan" />
+        <canvas id="splashLogoCanvas" class="splash-logo-svg"></canvas>
       </div>
 
       <!-- App name -->
@@ -76,7 +76,7 @@
 
       <div class="auth-logo">
         <div class="auth-logo-icon">
-          <img src="mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png" alt="Mama Gyan" style="width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.15));" />
+          <canvas id="authLogoCanvas" style="width:90px;height:90px;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.15));"></canvas>
         </div>
         <h2>mamacare</h2>
         <p>Complete Pregnancy Companion</p>
@@ -850,6 +850,43 @@
 
     window.installPWA = installPWA;
     window.dismissInstallBanner = dismissInstallBanner;
+  </script>
+  <script>
+  // Remove white background from logo PNG and render on canvas
+  function removeWhiteBg(src, canvasEl, size) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      canvasEl.width  = size;
+      canvasEl.height = size;
+      const ctx = canvasEl.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size);
+      const d = data.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i+1], b = d[i+2];
+        // If pixel is near-white, make it transparent
+        if (r > 230 && g > 230 && b > 230) {
+          // Soft edge: fade based on how white it is
+          const whiteness = Math.min(r, g, b);
+          d[i+3] = Math.round((255 - whiteness) * (255 / 25));
+          if (d[i+3] > 255) d[i+3] = 0;
+        }
+      }
+      ctx.putImageData(data, 0, 0);
+    };
+    img.src = src;
+  }
+
+  const LOGO_SRC = 'mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png';
+
+  window.addEventListener('DOMContentLoaded', function() {
+    const splashCanvas = document.getElementById('splashLogoCanvas');
+    if (splashCanvas) removeWhiteBg(LOGO_SRC, splashCanvas, 400);
+
+    const authCanvas = document.getElementById('authLogoCanvas');
+    if (authCanvas) removeWhiteBg(LOGO_SRC, authCanvas, 200);
+  });
   </script>
 </body>
 </html>

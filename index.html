@@ -41,84 +41,7 @@
     <div class="splash-content">
       <!-- Logo: mother+baby heart SVG -->
       <div class="splash-logo-wrap">
-        <svg class="splash-logo-svg" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="heartGlow" cx="50%" cy="40%" r="60%">
-              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-            </radialGradient>
-            <filter id="logoGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="8" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <filter id="softBlur">
-              <feGaussianBlur stdDeviation="2"/>
-            </filter>
-            <!-- Heart clip -->
-            <clipPath id="heartClip">
-              <path d="M110 185 C55 148 20 118 20 82 C20 56 40 38 65 38 C80 38 94 46 110 60 C126 46 140 38 155 38 C180 38 200 56 200 82 C200 118 165 148 110 185Z"/>
-            </clipPath>
-          </defs>
-
-          <!-- Outer glow ring -->
-          <path d="M110 185 C55 148 20 118 20 82 C20 56 40 38 65 38 C80 38 94 46 110 60 C126 46 140 38 155 38 C180 38 200 56 200 82 C200 118 165 148 110 185Z"
-                fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3" filter="url(#logoGlow)"/>
-
-          <!-- Heart body: pink-to-lavender gradient -->
-          <path d="M110 185 C55 148 20 118 20 82 C20 56 40 38 65 38 C80 38 94 46 110 60 C126 46 140 38 155 38 C180 38 200 56 200 82 C200 118 165 148 110 185Z"
-                fill="url(#heartGradFill)"/>
-
-          <!-- Heart gradient def -->
-          <defs>
-            <linearGradient id="heartGradFill" x1="20%" y1="0%" x2="80%" y2="100%">
-              <stop offset="0%" stop-color="#F9A8C9"/>
-              <stop offset="50%" stop-color="#E879A0"/>
-              <stop offset="100%" stop-color="#A855C8"/>
-            </linearGradient>
-            <linearGradient id="motherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-              <stop offset="100%" stop-color="#F0D0FF" stop-opacity="0.85"/>
-            </linearGradient>
-            <linearGradient id="babyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
-              <stop offset="100%" stop-color="#DDB8F0" stop-opacity="0.8"/>
-            </linearGradient>
-          </defs>
-
-          <!-- Glass sheen on heart -->
-          <path d="M65 42 C45 55 25 72 22 92 C20 106 26 120 36 130 C44 112 44 88 60 72 C68 62 78 54 90 48Z"
-                fill="url(#heartGlow)" clip-path="url(#heartClip)"/>
-
-          <!-- Mother silhouette (larger, left-center) -->
-          <g clip-path="url(#heartClip)" fill="url(#motherGrad)">
-            <!-- Mother head -->
-            <ellipse cx="95" cy="72" rx="13" ry="15"/>
-            <!-- Mother neck -->
-            <rect x="90" y="85" width="10" height="8" rx="4"/>
-            <!-- Mother body / torso curved -->
-            <path d="M78 93 C74 100 72 112 74 124 C76 132 82 138 90 140 C96 141 102 140 108 138 C114 136 118 130 118 122 C118 112 114 102 110 95 C106 90 100 88 95 88 C89 88 82 90 78 93Z"/>
-            <!-- Mother arm cradling -->
-            <path d="M74 124 C68 128 64 134 66 142 C68 148 76 150 84 148 C90 146 96 142 100 138" stroke="url(#motherGrad)" stroke-width="9" stroke-linecap="round" fill="none"/>
-          </g>
-
-          <!-- Baby silhouette (smaller, nestled inside mother) -->
-          <g clip-path="url(#heartClip)" fill="url(#babyGrad)" opacity="0.9">
-            <!-- Baby head -->
-            <ellipse cx="112" cy="108" rx="10" ry="11"/>
-            <!-- Baby body curled -->
-            <path d="M104 118 C100 124 100 132 104 138 C108 143 116 144 122 140 C128 136 130 128 128 120 C126 114 120 110 114 110 C110 110 106 113 104 118Z"/>
-            <!-- Baby tiny arm -->
-            <path d="M104 128 C100 132 100 138 104 142" stroke="url(#babyGrad)" stroke-width="6" stroke-linecap="round" fill="none"/>
-          </g>
-
-          <!-- Leaf/petal accent bottom -->
-          <path d="M110 175 C104 168 96 162 92 155 C96 158 104 160 110 158 C116 160 124 158 128 155 C124 162 116 168 110 175Z"
-                fill="white" opacity="0.4" clip-path="url(#heartClip)"/>
-
-          <!-- Specular highlight top-left -->
-          <ellipse cx="72" cy="62" rx="16" ry="20" fill="white" opacity="0.22" filter="url(#softBlur)" clip-path="url(#heartClip)"/>
-          <ellipse cx="68" cy="56" rx="6" ry="8" fill="white" opacity="0.5" clip-path="url(#heartClip)"/>
-        </svg>
+        <img class="splash-logo-svg" src="mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png" alt="Mama Gyan" />
       </div>
 
       <!-- App name -->
@@ -152,7 +75,9 @@
       </button>
 
       <div class="auth-logo">
-        <div class="auth-logo-icon">💗</div>
+        <div class="auth-logo-icon">
+          <img src="mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png" alt="Mama Gyan" style="width:72px;height:72px;border-radius:18px;" />
+        </div>
         <h2>mamacare</h2>
         <p>Complete Pregnancy Companion</p>
       </div>

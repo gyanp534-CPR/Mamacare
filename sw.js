@@ -4,11 +4,12 @@
  * Version: v7.7
  */
 
-const CACHE_NAME = 'mamacare-v7.9';
+const CACHE_NAME = 'mamacare-v8.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/app.js',
+  '/app-improvements.js',
   '/meal-plans-indian.js',
   '/app-baby.js',
   '/app-coach.js',
@@ -22,10 +23,7 @@ const STATIC_ASSETS = [
   '/app-enhancements.js',
   '/style.css',
   '/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600;700&display=swap',
-  'https://unpkg.com/lucide@latest',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js',
+  '/icon-192.svg',
 ];
 
 // Install — cache static shell
@@ -91,14 +89,14 @@ self.addEventListener('push', e => {
   const data = e.data ? e.data.json() : {};
   const title = data.title || 'MamaCare 🌸';
   const body  = data.body  || 'Ek important reminder hai!';
-  const icon  = data.icon  || '/icons/icon-192.png';
+  const icon  = data.icon  || '/icon-192.svg';
   const tag   = data.tag   || 'mamacare-default';
   const url   = data.url   || '/';
 
   e.waitUntil(
     self.registration.showNotification(title, {
       body, icon, tag,
-      badge: '/icons/icon-72.png',
+      badge: '/icon-192.svg',
       data: { url },
       vibrate: [200, 100, 200],
       actions: [

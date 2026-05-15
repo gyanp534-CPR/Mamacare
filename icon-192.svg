@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F3D9DD"/>
+      <stop offset="100%" style="stop-color:#F6C8B5"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <text x="96" y="88" font-family="Georgia,serif" font-size="52" font-weight="700" fill="#D88C9A" text-anchor="middle" dominant-baseline="middle">MG</text>
+  <text x="96" y="130" font-family="Georgia,serif" font-size="18" fill="#C67684" text-anchor="middle">Mama Gyan</text>
+  <circle cx="96" cy="44" r="7" fill="#D88C9A"/>
+</svg>

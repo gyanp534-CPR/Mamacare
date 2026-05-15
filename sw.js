@@ -4,7 +4,7 @@
  * Version: v7.7
  */
 
-const CACHE_NAME = 'mamacare-v8.0';
+const CACHE_NAME = 'mamacare-v10.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -23,7 +23,9 @@ const STATIC_ASSETS = [
   '/app-enhancements.js',
   '/style.css',
   '/manifest.json',
-  '/icon-192.svg',
+  '/mcAppIcons/android/mipmap-xxxhdpi/icon.png',
+  '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/512.png',
+  '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
 ];
 
 // Install — cache static shell
@@ -89,14 +91,14 @@ self.addEventListener('push', e => {
   const data = e.data ? e.data.json() : {};
   const title = data.title || 'MamaCare 🌸';
   const body  = data.body  || 'Ek important reminder hai!';
-  const icon  = data.icon  || '/icon-192.svg';
+  const icon  = data.icon  || '/mcAppIcons/android/mipmap-xxxhdpi/icon.png';
   const tag   = data.tag   || 'mamacare-default';
   const url   = data.url   || '/';
 
   e.waitUntil(
     self.registration.showNotification(title, {
       body, icon, tag,
-      badge: '/icon-192.svg',
+      badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
       data: { url },
       vibrate: [200, 100, 200],
       actions: [

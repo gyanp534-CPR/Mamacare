@@ -337,7 +337,11 @@ function otpInput(el, idx) {
 
 async function onLogin(u) {
   user=u; window.user=u;
-  if ($('authScreen')) $('authScreen').style.display='none';
+  // Hide both splash and auth
+  const splash = document.getElementById('splashScreen');
+  const auth   = document.getElementById('authScreen');
+  if (splash) splash.classList.add('hidden');
+  if (auth)   auth.style.display='none';
   if ($('langBar'))    $('langBar').style.display='flex';
   if ($('topBar'))     $('topBar').style.display='block';
   if ($('bottomNav'))  $('bottomNav').classList.add('nav-visible');
@@ -386,7 +390,9 @@ async function logout(){
   foodLogs=[]; medicines=[]; medTaken={};
   bagItems=[]; savedNames=[]; journalList=[]; apptList=[];
 
-  if ($('authScreen')) $('authScreen').style.display='flex';
+  if ($('authScreen')) $('authScreen').style.display='none';
+  const splash = document.getElementById('splashScreen');
+  if (splash) splash.classList.remove('hidden');
   if ($('langBar'))    $('langBar').style.display='none';
   if ($('topBar'))     $('topBar').style.display='none';
   if ($('bottomNav'))  $('bottomNav').classList.remove('nav-visible');
@@ -398,11 +404,41 @@ async function logout(){
 // Initialization Entry Point
 window.addEventListener('DOMContentLoaded', async () => {
   bindStaticEvents(); // Wire up all the clean HTML IDs
-  
+
+  // ── Splash "Get Started" button ──
+  const getStartedBtn = document.getElementById('getStartedBtn');
+  if (getStartedBtn) {
+    getStartedBtn.addEventListener('click', () => {
+      const splash = document.getElementById('splashScreen');
+      const auth   = document.getElementById('authScreen');
+      if (splash) splash.classList.add('hidden');
+      if (auth)   auth.style.display = 'flex';
+    });
+  }
+
+  // ── Auth "Back to Splash" button ──
+  const backToSplash = document.getElementById('authBackToSplash');
+  if (backToSplash) {
+    backToSplash.addEventListener('click', () => {
+      const splash = document.getElementById('splashScreen');
+      const auth   = document.getElementById('authScreen');
+      if (splash) splash.classList.remove('hidden');
+      if (auth)   auth.style.display = 'none';
+    });
+  }
+
   if(supa) {
     const {data:{session}}=await supa.auth.getSession();
-    if(session?.user) onLogin(session.user);
-    else applyLang(lang);
+    if(session?.user) {
+      // Already logged in — skip splash & auth entirely
+      const splash = document.getElementById('splashScreen');
+      const auth   = document.getElementById('authScreen');
+      if (splash) splash.classList.add('hidden');
+      if (auth)   auth.style.display = 'none';
+      onLogin(session.user);
+    } else {
+      applyLang(lang);
+    }
   } else {
     applyLang(lang);
   }

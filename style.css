@@ -2,6 +2,280 @@
    MamaCare — Premium "Calm Sanctuary" UI/UX
    ========================================================================== */
 
+/* ══════════════════════════════════════════════════════════════
+   SPLASH SCREEN
+   ══════════════════════════════════════════════════════════════ */
+#splashScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(160deg, #F9A8C9 0%, #E879A0 30%, #A855C8 65%, #7C3AED 100%);
+}
+#splashScreen.hidden { display: none; }
+
+/* Animated background blobs */
+.splash-blob {
+  position: absolute; border-radius: 50%;
+  filter: blur(60px); pointer-events: none;
+}
+.splash-blob-1 {
+  width: 70vw; height: 70vw; max-width: 500px; max-height: 500px;
+  background: radial-gradient(circle, rgba(255,180,210,0.5), transparent 70%);
+  top: -15%; left: -15%;
+  animation: blobFloat 12s ease-in-out infinite alternate;
+}
+.splash-blob-2 {
+  width: 60vw; height: 60vw; max-width: 420px; max-height: 420px;
+  background: radial-gradient(circle, rgba(168,85,247,0.4), transparent 70%);
+  bottom: -10%; right: -10%;
+  animation: blobFloat 15s ease-in-out infinite alternate-reverse;
+}
+.splash-blob-3 {
+  width: 40vw; height: 40vw; max-width: 300px; max-height: 300px;
+  background: radial-gradient(circle, rgba(232,121,160,0.35), transparent 70%);
+  top: 40%; left: 30%;
+  animation: blobFloat 18s ease-in-out infinite alternate;
+}
+@keyframes blobFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(4vw, 6vh) scale(1.12); }
+}
+
+/* Glass wave shape (decorative, bottom-right) */
+.splash-wave {
+  position: absolute; bottom: -60px; right: -60px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  pointer-events: none;
+}
+.splash-wave::before {
+  content: '';
+  position: absolute; top: 40px; left: 40px; right: 40px; bottom: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Content container */
+.splash-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 32px;
+  text-align: center;
+  animation: splashFadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes splashFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo SVG */
+.splash-logo-wrap {
+  margin-bottom: 32px;
+  filter: drop-shadow(0 20px 60px rgba(168,85,247,0.4)) drop-shadow(0 8px 24px rgba(0,0,0,0.2));
+  animation: logoFloat 4s ease-in-out infinite alternate;
+}
+@keyframes logoFloat {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+.splash-logo-svg {
+  width: 180px; height: 180px;
+}
+
+/* App name */
+.splash-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(2.4rem, 8vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: white;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.15);
+}
+
+/* Tagline */
+.splash-tagline {
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  color: rgba(255,255,255,0.82);
+  line-height: 1.6;
+  margin-bottom: 52px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Get Started CTA */
+.splash-cta {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, #F472B6, #EC4899, #A855C8);
+  background-size: 200% 200%;
+  color: white;
+  border: none; cursor: pointer;
+  border-radius: 100px;
+  padding: 18px 36px;
+  font-size: 1.05rem; font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 32px rgba(168,85,247,0.4), 0 2px 8px rgba(0,0,0,0.15);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: ctaGradient 3s ease infinite;
+  min-width: 220px; justify-content: center;
+}
+@keyframes ctaGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+.splash-cta:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 16px 48px rgba(168,85,247,0.55), 0 4px 12px rgba(0,0,0,0.2);
+}
+.splash-cta:active { transform: scale(0.97); }
+.splash-cta svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   AUTH SCREEN (shown after Get Started)
+   ══════════════════════════════════════════════════════════════ */
+#authScreen {
+  position: fixed; inset: 0; z-index: 9998;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(160deg, #F9A8C9 0%, #E879A0 30%, #A855C8 65%, #7C3AED 100%);
+  animation: splashFadeIn 0.4s ease forwards;
+}
+
+/* Auth card — glass morphism */
+.auth-card {
+  position: relative; z-index: 2;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 28px;
+  padding: 36px 32px;
+  width: 100%; max-width: 400px;
+  margin: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+  animation: splashFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Back button */
+.auth-back-btn {
+  position: absolute; top: 20px; left: 20px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50%; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: white;
+  transition: all 0.3s ease;
+}
+.auth-back-btn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.1);
+}
+
+/* Auth logo */
+.auth-logo {
+  text-align: center; margin-bottom: 28px;
+}
+.auth-logo-icon {
+  font-size: 2.4rem; margin-bottom: 8px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+}
+.auth-logo h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.8rem; font-weight: 400;
+  color: white; letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.auth-logo p {
+  font-size: 13px; color: rgba(255,255,255,0.7);
+  font-weight: 400;
+}
+
+/* Auth steps */
+.auth-step h3 {
+  font-size: 1.2rem; font-weight: 600;
+  color: white; margin-bottom: 8px;
+}
+.auth-step > p {
+  font-size: 13.5px; color: rgba(255,255,255,0.75);
+  line-height: 1.6; margin-bottom: 20px;
+}
+
+/* Auth input */
+.auth-input {
+  width: 100%;
+  background: rgba(255,255,255,0.15) !important;
+  border: 1.5px solid rgba(255,255,255,0.3) !important;
+  border-radius: 16px !important;
+  padding: 16px 18px !important;
+  color: white !important;
+  font-size: 15px !important;
+  outline: none;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+  font-family: 'DM Sans', sans-serif;
+}
+.auth-input::placeholder { color: rgba(255,255,255,0.5) !important; }
+.auth-input:focus {
+  background: rgba(255,255,255,0.22) !important;
+  border-color: rgba(255,255,255,0.6) !important;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.1) !important;
+  transform: none !important;
+}
+
+/* Auth primary button */
+.auth-btn-primary {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(135deg, #F472B6, #EC4899, #A855C8);
+  background-size: 200% 200%;
+  color: white; border: none; cursor: pointer;
+  border-radius: 16px; padding: 16px 24px;
+  font-size: 15px; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: ctaGradient 3s ease infinite;
+  font-family: 'DM Sans', sans-serif;
+}
+.auth-btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+.auth-btn-primary:active { transform: scale(0.97); }
+
+/* Auth message */
+.auth-msg {
+  margin-top: 12px; font-size: 13px;
+  text-align: center; color: rgba(255,255,255,0.8);
+  min-height: 20px;
+}
+
+/* OTP inputs */
+.otp-inputs {
+  display: flex; gap: 10px; justify-content: center;
+  margin-bottom: 20px;
+}
+.otp-input {
+  width: 48px !important; height: 56px !important;
+  text-align: center;
+  background: rgba(255,255,255,0.15) !important;
+  border: 1.5px solid rgba(255,255,255,0.3) !important;
+  border-radius: 14px !important;
+  color: white !important;
+  font-size: 1.4rem !important; font-weight: 700 !important;
+  padding: 0 !important;
+  transition: all 0.3s ease;
+}
+.otp-input:focus {
+  background: rgba(255,255,255,0.25) !important;
+  border-color: white !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.15) !important;
+  transform: scale(1.05) !important;
+}
+
+
+
 :root {
   /* Warm, Soothing Palette */
   --rose: #D88C9A;

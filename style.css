@@ -86,7 +86,6 @@
   border-radius: 0;
   object-fit: contain;
   background: transparent;
-  mix-blend-mode: multiply;
   filter: drop-shadow(0 12px 40px rgba(168,85,247,0.35));
 }
 

@@ -185,7 +185,7 @@ async function subscribe(plan) {
     currency: 'INR',
     name: 'MamaCare Premium',
     description: `Premium ${planLabel}`,
-    image: '/icons/icon-192.png',
+    image: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png',
     ...(subscriptionId ? { subscription_id: subscriptionId } : {}),
     handler: async (response) => {
       await verifyPayment(response, plan, subscriptionId);

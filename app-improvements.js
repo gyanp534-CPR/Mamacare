@@ -330,8 +330,8 @@ function scheduleMedicineReminders(medicines) {
       setTimeout(() => {
         new Notification('💊 Medicine Reminder — Mama Gyan', {
           body: `${med.icon || '💊'} ${med.name} — ${med.dose || ''} lene ka waqt!`,
-          icon: '/icon-192.png',
-          badge: '/icon-192.png',
+          icon: '/mcAppIcons/android/mipmap-xxxhdpi/icon.png',
+          badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
           tag: `med-${med.id}`,
         });
       }, delay);

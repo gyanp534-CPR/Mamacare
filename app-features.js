@@ -351,7 +351,7 @@ function updateNotifStatus(perm) {
 
 function showNotif(title, body, icon = '🌸') {
   if (Notification.permission !== 'granted') return;
-  new Notification(title, { body, icon: 'favicon.svg' });
+  new Notification(title, { body, icon: '/mcAppIcons/android/mipmap-xxxhdpi/icon.png' });
 }
 
 async function loadMedReminders() {

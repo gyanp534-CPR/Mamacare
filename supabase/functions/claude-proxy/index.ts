@@ -15,14 +15,11 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const CORS = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://mamacare-nine.vercel.app/', // REPLACE WITH YOUR DOMAIN
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-// Per-user rate limiting via in-memory map (resets on cold start)
-// For production, use a Supabase table counter instead
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const DAILY_LIMIT = 15; // free tier: 15 calls/day per user
 
 serve(async (req: Request) => {
@@ -54,22 +51,42 @@ serve(async (req: Request) => {
       );
     }
 
-    // ── 2. Rate limiting ───────────────────────────────────────────
-    const now = Date.now();
-    const dayMs = 24 * 60 * 60 * 1000;
-    const uid = user.id;
-    const entry = rateLimitMap.get(uid);
+    // ── 2. Rate limiting (Supabase-backed for persistence) ─────────
+    // Check subscription status first
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('status, plan')
+      .eq('user_id', uid)
+      .maybeSingle();
 
-    if (entry && now < entry.resetAt) {
-      if (entry.count >= DAILY_LIMIT) {
+    const isPremium = sub && sub.status === 'active' && sub.plan.includes('premium');
+
+    if (!isPremium) {
+      // Free tier: check rate limit in database
+      const today = new Date().toISOString().split('T')[0];
+      const { data: rateLimitData } = await supabase
+        .from('ai_usage')
+        .select('call_count')
+        .eq('user_id', uid)
+        .eq('date', today)
+        .maybeSingle();
+
+      const callCount = rateLimitData?.call_count || 0;
+
+      if (callCount >= DAILY_LIMIT) {
         return new Response(
           JSON.stringify({ error: 'Daily AI limit reached. Upgrade to Premium for unlimited access.' }),
           { status: 429, headers: { ...CORS, 'Content-Type': 'application/json' } }
         );
       }
-      entry.count++;
-    } else {
-      rateLimitMap.set(uid, { count: 1, resetAt: now + dayMs });
+
+      // Increment counter
+      await supabase.from('ai_usage').upsert({
+        user_id: uid,
+        date: today,
+        call_count: callCount + 1,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,date' });
     }
 
     // ── 3. Validate API key ────────────────────────────────────────

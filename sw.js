@@ -1,15 +1,16 @@
 /**
  * MamaCare — Service Worker (sw.js)
- * Offline caching + background sync
- * Version: v7.7
+ * Offline caching + background sync + Web Push
+ * Version: v8.0
  */
 
-const CACHE_NAME = 'mamacare-v10.0';
+const CACHE_NAME = 'mamacare-v11.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/app.js',
   '/app-improvements.js',
+  '/app-push.js',
   '/meal-plans-indian.js',
   '/app-baby.js',
   '/app-coach.js',
@@ -94,17 +95,26 @@ self.addEventListener('push', e => {
   const icon  = data.icon  || '/mcAppIcons/android/mipmap-xxxhdpi/icon.png';
   const tag   = data.tag   || 'mamacare-default';
   const url   = data.url   || '/';
+  const type  = data.type  || 'general';
+
+  // Type-specific actions
+  const actionsByType = {
+    medicine:    [{ action: 'taken',   title: '✅ Taken' }, { action: 'snooze', title: '⏰ 30 min' }],
+    water:       [{ action: 'logged',  title: '💧 Logged' }, { action: 'open', title: 'Open App' }],
+    kick:        [{ action: 'open',    title: '👶 Track Now' }, { action: 'dismiss', title: 'Dismiss' }],
+    appointment: [{ action: 'open',    title: '📅 View' }, { action: 'dismiss', title: 'Dismiss' }],
+    default:     [{ action: 'open',    title: 'Open App' }, { action: 'dismiss', title: 'Dismiss' }],
+  };
+  const actions = actionsByType[type] || actionsByType.default;
 
   e.waitUntil(
     self.registration.showNotification(title, {
       body, icon, tag,
       badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
-      data: { url },
+      data: { url, type, originalData: data },
       vibrate: [200, 100, 200],
-      actions: [
-        { action: 'open',    title: 'Open App' },
-        { action: 'dismiss', title: 'Dismiss' },
-      ]
+      requireInteraction: type === 'medicine',
+      actions,
     })
   );
 });
@@ -112,7 +122,28 @@ self.addEventListener('push', e => {
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   if (e.action === 'dismiss') return;
-  const url = e.notification.data?.url || '/';
+
+  const notifData = e.notification.data || {};
+  const type = notifData.type;
+
+  // Handle snooze for medicine
+  if (e.action === 'snooze' && type === 'medicine') {
+    const orig = notifData.originalData || {};
+    setTimeout(() => {
+      self.registration.showNotification(orig.title || 'MamaCare 💊', {
+        body: orig.body || 'Medicine reminder (snoozed)',
+        icon: orig.icon || '/mcAppIcons/android/mipmap-xxxhdpi/icon.png',
+        tag: (orig.tag || 'med') + '-snooze',
+        badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
+        data: notifData,
+        vibrate: [200, 100, 200],
+        actions: [{ action: 'taken', title: '✅ Taken' }, { action: 'dismiss', title: 'Dismiss' }],
+      });
+    }, 30 * 60 * 1000); // 30 minutes
+    return;
+  }
+
+  const url = notifData.url || '/';
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const client of list) {
@@ -132,8 +163,61 @@ self.addEventListener('sync', e => {
   }
 });
 
+// ── IndexedDB helpers ──
+function openOfflineDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('mamacare-offline', 1);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('queue')) {
+        db.createObjectStore('queue', { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+async function getQueuedItems() {
+  const db = await openOfflineDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('queue', 'readonly');
+    const req = tx.objectStore('queue').getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function removeQueuedItem(id) {
+  const db = await openOfflineDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('queue', 'readwrite');
+    tx.objectStore('queue').delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
 async function syncPendingLogs() {
-  // Offline queue stored in IndexedDB — sync when online
-  // Handled by app.js when it detects navigator.onLine
-  return Promise.resolve();
+  let items;
+  try { items = await getQueuedItems(); } catch(e) { return; }
+  if (!items || !items.length) return;
+
+  for (const item of items) {
+    try {
+      const res = await fetch(item.url, {
+        method: item.method || 'POST',
+        headers: { 'Content-Type': 'application/json', ...item.headers },
+        body: JSON.stringify(item.body),
+      });
+      if (res.ok) {
+        await removeQueuedItem(item.id);
+        // Notify app that sync happened
+        const clients = await self.clients.matchAll();
+        clients.forEach(c => c.postMessage({ type: 'SYNC_COMPLETE', table: item.table }));
+      }
+    } catch(e) {
+      // Still offline — leave in queue
+    }
+  }
 }

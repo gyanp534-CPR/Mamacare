@@ -400,3 +400,54 @@ alter table public.user_profile add column if not exists doctor_name text;
 alter table public.user_profile add column if not exists doctor_token text;
 alter table public.user_profile add column if not exists allergies text;
 alter table public.user_profile add column if not exists medical_notes text;
+
+-- ════════════════════════════════════════════
+-- v8.0 ADDITIONS — Push Notifications + Partner
+-- ════════════════════════════════════════════
+
+-- Web Push Subscriptions (for server-side push via VAPID)
+create table if not exists public.push_subscriptions (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null unique,
+  subscription jsonb not null,
+  updated_at timestamptz default now()
+);
+alter table public.push_subscriptions enable row level security;
+create policy "push_subscriptions_own" on public.push_subscriptions
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Contraction Sessions (upsert by user+date)
+alter table public.contraction_sessions
+  add column if not exists updated_at timestamptz default now();
+-- Add unique constraint if not exists
+do $$ begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'contraction_sessions_user_date'
+  ) then
+    alter table public.contraction_sessions
+      add constraint contraction_sessions_user_date unique (user_id, session_date);
+  end if;
+end $$;
+
+-- Sugar logs — add fasting/pp columns if missing
+alter table public.sugar_logs
+  add column if not exists fasting_mg numeric(5,2),
+  add column if not exists pp_mg numeric(5,2),
+  add column if not exists week_number int;
+
+-- Mood logs table (if not exists)
+create table if not exists public.mood_logs (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  mood text not null,
+  mood_type text,
+  note text,
+  logged_at timestamptz default now()
+);
+alter table public.mood_logs enable row level security;
+create policy "mood_logs_own" on public.mood_logs
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Journal photos bucket (run in Supabase Storage UI or via API)
+-- Storage bucket: 'user-photos' (public read, authenticated write)
+-- Storage bucket: 'journal-photos' (public read, authenticated write)

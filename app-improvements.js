@@ -307,7 +307,7 @@ function clearFieldError(inputEl) {
 }
 
 // ══════════════════════════════════════
-// PUSH NOTIFICATIONS SETUP
+// PUSH NOTIFICATIONS — AUTO SCHEDULING
 // ══════════════════════════════════════
 async function requestPushPermission() {
   if (!('Notification' in window)) return false;
@@ -317,27 +317,130 @@ async function requestPushPermission() {
   return result === 'granted';
 }
 
+// Schedule a single notification at a specific time today (or tomorrow if past)
+function scheduleNotification({ id, title, body, icon, tag, delayMs }) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (delayMs <= 0 || delayMs > 24 * 60 * 60 * 1000) return;
+  // Clear any existing timer for this id
+  if (window._notifTimers && window._notifTimers[id]) {
+    clearTimeout(window._notifTimers[id]);
+  }
+  if (!window._notifTimers) window._notifTimers = {};
+  window._notifTimers[id] = setTimeout(() => {
+    new Notification(title, {
+      body,
+      icon: icon || '/mcAppIcons/android/mipmap-xxxhdpi/icon.png',
+      badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
+      tag,
+    });
+    // Reschedule for next day
+    scheduleNotification({ id, title, body, icon, tag, delayMs: delayMs + 24 * 60 * 60 * 1000 });
+  }, delayMs);
+}
+
+function getDelayUntil(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  if (target <= now) target.setDate(target.getDate() + 1);
+  return target - now;
+}
+
+// Schedule medicine reminders from loaded medicines array
 function scheduleMedicineReminders(medicines) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   medicines.forEach(med => {
     if (!med.reminder_time) return;
-    const [h, m] = med.reminder_time.split(':').map(Number);
-    const now = new Date();
-    const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-    if (target <= now) target.setDate(target.getDate() + 1);
-    const delay = target - now;
-    if (delay < 24 * 60 * 60 * 1000) {
-      setTimeout(() => {
-        new Notification('💊 Medicine Reminder — Mama Gyan', {
-          body: `${med.icon || '💊'} ${med.name} — ${med.dose || ''} lene ka waqt!`,
-          icon: '/mcAppIcons/android/mipmap-xxxhdpi/icon.png',
-          badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
-          tag: `med-${med.id}`,
-        });
-      }, delay);
+    const delay = getDelayUntil(med.reminder_time);
+    scheduleNotification({
+      id: `med-${med.id}`,
+      title: '💊 Medicine Reminder — MamaCare',
+      body: `${med.icon || '💊'} ${med.name}${med.dose ? ' — ' + med.dose : ''} lene ka waqt!`,
+      tag: `med-${med.id}`,
+      delayMs: delay,
+    });
+  });
+}
+
+// Schedule appointment reminders (1 day before + 1 hour before)
+function scheduleAppointmentReminders(appointments) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const now = new Date();
+  appointments.forEach(appt => {
+    if (!appt.date) return;
+    const apptDate = new Date(appt.date + (appt.time ? 'T' + appt.time : 'T09:00'));
+    if (apptDate <= now) return;
+
+    // 1 day before reminder
+    const dayBefore = new Date(apptDate.getTime() - 24 * 60 * 60 * 1000);
+    const dayDelay = dayBefore - now;
+    if (dayDelay > 0 && dayDelay < 7 * 24 * 60 * 60 * 1000) {
+      scheduleNotification({
+        id: `appt-day-${appt.id}`,
+        title: '📅 Appointment Reminder — MamaCare',
+        body: `Kal aapka appointment hai: ${appt.doctor || appt.title || 'Doctor visit'}`,
+        tag: `appt-day-${appt.id}`,
+        delayMs: dayDelay,
+      });
+    }
+
+    // 1 hour before reminder
+    const hourBefore = new Date(apptDate.getTime() - 60 * 60 * 1000);
+    const hourDelay = hourBefore - now;
+    if (hourDelay > 0 && hourDelay < 7 * 24 * 60 * 60 * 1000) {
+      scheduleNotification({
+        id: `appt-hour-${appt.id}`,
+        title: '⏰ 1 Hour to Appointment — MamaCare',
+        body: `1 ghante mein appointment: ${appt.doctor || appt.title || 'Doctor visit'}`,
+        tag: `appt-hour-${appt.id}`,
+        delayMs: hourDelay,
+      });
     }
   });
 }
+
+// Daily water reminder at 10am, 2pm, 6pm
+function scheduleDailyWaterReminders() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  [{ t: '10:00', msg: 'Paani peena mat bhoolo! 💧 Subah ka pehla reminder.' },
+   { t: '14:00', msg: 'Dopahar ho gayi — paani peena zaroori hai! 💧' },
+   { t: '18:00', msg: 'Shaam ka reminder: 8 glass paani ka goal poora karo! 💧' }
+  ].forEach(({ t, msg }, i) => {
+    scheduleNotification({
+      id: `water-${i}`,
+      title: '💧 Hydration Reminder — MamaCare',
+      body: msg,
+      tag: `water-${i}`,
+      delayMs: getDelayUntil(t),
+    });
+  });
+}
+
+// Master function — call on login to set up all reminders
+async function initAllReminders() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!window.supa || !window.user) return;
+
+  // Load medicines and schedule
+  const { data: meds } = await window.supa
+    .from('medicines')
+    .select('*')
+    .eq('user_id', window.user.id);
+  if (meds && meds.length) scheduleMedicineReminders(meds);
+
+  // Load appointments and schedule
+  const { data: appts } = await window.supa
+    .from('appointments')
+    .select('*')
+    .eq('user_id', window.user.id);
+  if (appts && appts.length) scheduleAppointmentReminders(appts);
+
+  // Daily water reminders
+  scheduleDailyWaterReminders();
+}
+
+// Expose globally so onLogin can call it
+window.initAllReminders = initAllReminders;
 
 // ══════════════════════════════════════
 // PRIVACY POLICY MODAL
@@ -425,3 +528,118 @@ window.showFieldError = showFieldError;
 window.clearFieldError = clearFieldError;
 window.scheduleMedicineReminders = scheduleMedicineReminders;
 window.requestPushPermission = requestPushPermission;
+
+// ══════════════════════════════════════
+// OFFLINE QUEUE — IndexedDB
+// ══════════════════════════════════════
+const OfflineQueue = (() => {
+  const DB_NAME = 'mamacare-offline';
+  const STORE   = 'queue';
+
+  function open() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE)) {
+          db.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+        }
+      };
+      req.onsuccess = e => resolve(e.target.result);
+      req.onerror   = e => reject(e.target.error);
+    });
+  }
+
+  async function enqueue(item) {
+    const db = await open();
+    return new Promise((resolve, reject) => {
+      const tx  = db.transaction(STORE, 'readwrite');
+      const req = tx.objectStore(STORE).add({ ...item, queuedAt: Date.now() });
+      req.onsuccess = () => resolve(req.result);
+      req.onerror   = () => reject(req.error);
+    });
+  }
+
+  async function getAll() {
+    const db = await open();
+    return new Promise((resolve, reject) => {
+      const tx  = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror   = () => reject(req.error);
+    });
+  }
+
+  async function remove(id) {
+    const db = await open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).delete(id);
+      tx.oncomplete = resolve;
+      tx.onerror    = () => reject(tx.error);
+    });
+  }
+
+  // Flush queue when back online — push to Supabase
+  async function flush() {
+    if (!navigator.onLine || !window.supa || !window.user) return;
+    let items;
+    try { items = await getAll(); } catch(e) { return; }
+    if (!items || !items.length) return;
+
+    for (const item of items) {
+      try {
+        const { error } = await window.supa.from(item.table).insert(item.data);
+        if (!error) {
+          await remove(item.id);
+          console.log(`[Offline Sync] Synced ${item.table} entry`);
+        }
+      } catch(e) { /* still offline */ }
+    }
+
+    // Refresh UI after sync
+    if (window.loadWeights)   window.loadWeights();
+    if (window.loadSleepLogs) window.loadSleepLogs();
+    if (window.loadFoodLog)   window.loadFoodLog();
+    if (window.loadJournal)   window.loadJournal();
+  }
+
+  return { enqueue, getAll, remove, flush };
+})();
+
+window.OfflineQueue = OfflineQueue;
+
+// Flush on reconnect
+window.addEventListener('online', () => {
+  console.log('[MamaCare] Back online — syncing offline queue...');
+  OfflineQueue.flush();
+  // Trigger SW background sync if supported
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(reg => {
+      if ('sync' in reg) reg.sync.register('sync-logs').catch(() => {});
+    });
+  }
+});
+
+// Listen for SW sync complete messages
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SYNC_COMPLETE') {
+      console.log('[MamaCare] SW synced table:', e.data.table);
+      OfflineQueue.flush();
+    }
+  });
+}
+
+// Helper: save to Supabase or queue offline
+async function saveOrQueue(table, data) {
+  if (!window.supa || !window.user) return { queued: false, error: 'Not logged in' };
+  if (!navigator.onLine) {
+    await OfflineQueue.enqueue({ table, data: { ...data, user_id: window.user.id } });
+    return { queued: true };
+  }
+  const { error } = await window.supa.from(table).insert({ ...data, user_id: window.user.id });
+  return { queued: false, error };
+}
+
+window.saveOrQueue = saveOrQueue;

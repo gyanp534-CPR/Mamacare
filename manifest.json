@@ -36,6 +36,29 @@
       "description": "Calculate your due date",
       "url": "/?page=due",
       "icons": [{ "src": "mcAppIcons/android/mipmap-xxxhdpi/icon.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Contraction Timer",
+      "short_name": "Contractions",
+      "description": "Time contractions during labor",
+      "url": "/?page=contractions",
+      "icons": [{ "src": "mcAppIcons/android/mipmap-xxxhdpi/icon.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "SOS Emergency",
+      "short_name": "SOS",
+      "description": "Emergency help and nearest hospital",
+      "url": "/?page=sos",
+      "icons": [{ "src": "mcAppIcons/android/mipmap-xxxhdpi/icon.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "MamaCare — Pregnancy Companion"
     }
   ]
 }

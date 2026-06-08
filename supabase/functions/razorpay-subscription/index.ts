@@ -3,7 +3,8 @@
  * Handles Razorpay subscription create + payment verify
  *
  * Deploy:
- *   supabase functions deploy razorpay-subscription --no-verify-jwt
+ *   supabase functions deploy razorpay-subscription
+ *   (REMOVED --no-verify-jwt for security)
  *
  * Secrets:
  *   supabase secrets set RAZORPAY_KEY_ID=rzp_live_XXX
@@ -15,7 +16,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { createHmac } from 'https://deno.land/std@0.168.0/node/crypto.ts';
 
 const CORS = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://mamacare-nine.vercel.app/', // REPLACE WITH YOUR DOMAIN
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
@@ -24,18 +25,44 @@ serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
 
   try {
+    // ── 1. Verify JWT ──────────────────────────────────────────────
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: valid JWT required.' }),
+        { status: 401, headers: { ...CORS, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const SUPA_URL   = Deno.env.get('SUPABASE_URL')!;
+    const SUPA_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const SUPA_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    // Verify the JWT and get authenticated user
+    const supabaseAuth = createClient(SUPA_URL, SUPA_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: invalid or expired token.' }),
+        { status: 401, headers: { ...CORS, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const KEY_ID     = Deno.env.get('RAZORPAY_KEY_ID')!;
     const KEY_SECRET = Deno.env.get('RAZORPAY_KEY_SECRET')!;
-    const SUPA_URL   = Deno.env.get('SUPABASE_URL')!;
-    const SUPA_KEY   = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
     const body   = await req.json();
     const { action } = body;
-    const supabase   = createClient(SUPA_URL, SUPA_KEY);
+    const supabase   = createClient(SUPA_URL, SUPA_SERVICE_KEY);
 
     // ── CREATE SUBSCRIPTION ──────────────────
     if (action === 'create') {
-      const { plan_id, user_id } = body;
+      const { plan_id } = body;
+      // SECURITY FIX: Use authenticated user.id, not body.user_id
+      const user_id = user.id;
+      
       const res = await fetch('https://api.razorpay.com/v1/subscriptions', {
         method: 'POST',
         headers: {
@@ -58,7 +85,10 @@ serve(async (req: Request) => {
 
     // ── VERIFY PAYMENT ───────────────────────
     if (action === 'verify') {
-      const { payment_id, subscription_id, signature, user_id, plan } = body;
+      const { payment_id, subscription_id, signature, plan } = body;
+      // SECURITY FIX: Use authenticated user.id, not body.user_id
+      const user_id = user.id;
+      
       // HMAC-SHA256 verification
       const payload = `${payment_id}|${subscription_id}`;
       const expected = createHmac('sha256', KEY_SECRET).update(payload).digest('hex');

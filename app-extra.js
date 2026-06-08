@@ -652,25 +652,60 @@
   function handlePhoto(input) {
     const file = input.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      photoData = e.target.result;
-      const prev = document.getElementById('photoPreview');
-      if (prev) { prev.src = photoData; prev.style.display = 'block'; }
-    };
-    reader.readAsDataURL(file);
+    // Store file reference only — no base64 in memory
+    window._extraPhotoFile = file;
+    const url = URL.createObjectURL(file);
+    const prev = document.getElementById('photoPreview');
+    if (prev) { prev.src = url; prev.style.display = 'block'; }
   }
 
-  function saveJournalEntry() {
+  async function saveJournalEntry() {
     const text = document.getElementById('jText').value.trim();
     const week = document.getElementById('jWeek').value;
     const date = document.getElementById('jDate').value;
-    if (!text && !photoData) { alert('Kuch likhein ya photo add karein!'); return; }
-    journalEntries.unshift({ text, week: week || '?', date: date || new Date().toISOString().split('T')[0], mood: selectedJMood, photo: photoData, id: Date.now() });
-    S.set('journalEntries', journalEntries);
+    const file = window._extraPhotoFile;
+    if (!text && !file) { alert('Kuch likhein ya photo add karein!'); return; }
+
+    // Upload photo to cloud (compressed, no base64 localStorage)
+    let photoUrl = null;
+    if (file) {
+      if (window.uploadJournalPhoto) {
+        photoUrl = await window.uploadJournalPhoto(file);
+      } else if (window.uploadPhotoToSupabase) {
+        photoUrl = await window.uploadPhotoToSupabase(file, week, date);
+      }
+      // Fallback: object URL (session only, not persisted)
+      if (!photoUrl) photoUrl = URL.createObjectURL(file);
+    }
+
+    // Save entry WITHOUT photo blob — only URL reference
+    const entry = {
+      text, week: week || '?',
+      date: date || new Date().toISOString().split('T')[0],
+      mood: selectedJMood,
+      photo: photoUrl,  // URL only, not base64
+      id: Date.now(),
+    };
+
+    // Load existing entries, strip any old base64 photos to free storage
+    let existing = [];
+    try {
+      existing = S.get('journalEntries', []).map(e => ({
+        ...e,
+        photo: e.photo && e.photo.startsWith('data:') ? null : e.photo, // strip base64
+      }));
+    } catch(err) { existing = []; }
+
+    journalEntries = [entry, ...existing];
+    try { S.set('journalEntries', journalEntries); } catch(err) {
+      // Storage full — keep only last 20 entries without photos
+      journalEntries = journalEntries.slice(0, 20).map(e => ({ ...e, photo: null }));
+      try { S.set('journalEntries', journalEntries); } catch(e2) { /* ignore */ }
+    }
+
     document.getElementById('jText').value = '';
     document.getElementById('jWeek').value = '';
-    photoData = null;
+    window._extraPhotoFile = null;
     const prev = document.getElementById('photoPreview');
     if (prev) { prev.style.display = 'none'; prev.src = ''; }
     const upload = document.getElementById('photoUpload');

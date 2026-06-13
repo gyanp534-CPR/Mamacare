@@ -1,7 +1,7 @@
 /**
  * MamaCare — Service Worker (sw.js)
  * Offline caching + background sync + Web Push
- * Version: v8.0
+ * Version: v11.0
  */
 
 const CACHE_NAME = 'mamacare-v11.0';

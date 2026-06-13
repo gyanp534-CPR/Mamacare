@@ -1,4 +1,4 @@
-# MamaCare v7.7 🌸
+# MamaCare v8.0 🌸
 **Complete Pregnancy Companion — Hindi/Hinglish/English + 5 more languages**
 
 ---

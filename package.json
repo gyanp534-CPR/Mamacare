@@ -1,0 +1,15 @@
+{
+  "name": "mamacare",
+  "version": "8.0.0",
+  "description": "Complete Pregnancy Companion — MamaCare",
+  "scripts": {
+    "bundle": "node build.js",
+    "dev": "node build.js --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5"
+  },
+  "keywords": ["pregnancy", "health", "pwa", "maternal-health"],
+  "author": "The Gyanam Project",
+  "license": "MIT"
+}

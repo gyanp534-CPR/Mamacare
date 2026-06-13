@@ -1,6 +1,6 @@
 // MamaCare v8.0 — Bundled App
 // Combined from 14 source files
-// Build: 2026-06-13T03:59:50.816Z
+// Build: 2026-06-13T05:54:13.821Z
 
 
 // ═══════════════════════════════════════════════════════════
@@ -1710,10 +1710,52 @@ async function saveJournalEntry(){
   const text=$('jText')?.value.trim(),week=$('jWeek')?.value,date=$('jDate')?.value;
   if(!text&&!photoFile){alert('Kuch likhein ya photo chuniye!');return;}
   if(!user || !supa)return;
-  await supa.from('journal_entries').insert({user_id:user.id,week_number:week||null,entry_date:date||todayStr(),mood:jMood,content_text:text||null});
-  if(photoFile){const url=URL.createObjectURL(photoFile);const a=document.createElement('a');a.href=url;a.download=`mamacare-w${week||'bump'}-${date||todayStr()}.jpg`;a.click();URL.revokeObjectURL(url);photoFile=null;const p=$('photoPreview');if(p){p.style.display='none';p.src='';};if($('photoUpload'))$('photoUpload').value='';}
-  if($('jText'))$('jText').value='';if($('jWeek'))$('jWeek').value='';
-  flash('journal-save',T.synced);loadJournal();
+  
+  let photoUrl = null;
+  
+  // Upload photo to cloud if present
+  if(photoFile){
+    try {
+      flash('journal-save-uploading', 'Photo upload ho raha hai...');
+      const result = await smartPhotoUpload(photoFile, {
+        userId: user.id,
+        week: week || currentWeek,
+        date: date || todayStr()
+      });
+      
+      photoUrl = result.url;
+      
+      // Track usage
+      if(result.provider !== 'local') {
+        trackPhotoUpload(result.provider, photoFile.size);
+      }
+      
+      // Clear photo input
+      photoFile = null;
+      const p = $('photoPreview');
+      if(p){p.style.display='none';p.src='';}
+      if($('photoUpload'))$('photoUpload').value='';
+      
+    } catch(err) {
+      console.error('Photo upload error:', err);
+      flash('journal-save-error', 'Photo upload failed. Entry will be saved without photo.');
+    }
+  }
+  
+  // Save journal entry with photo URL
+  await supa.from('journal_entries').insert({
+    user_id:user.id,
+    week_number:week||null,
+    entry_date:date||todayStr(),
+    mood:jMood,
+    content_text:text||null,
+    photo_url:photoUrl  // ← Cloud URL (Cloudinary/Supabase)
+  });
+  
+  if($('jText'))$('jText').value='';
+  if($('jWeek'))$('jWeek').value='';
+  flash('journal-save',T.synced);
+  loadJournal();
 }
 
 async function loadJournal(){
@@ -1727,7 +1769,8 @@ async function deleteJournalEntry(id){if(!confirm('Delete karein?'))return;if(su
 function renderJournal(){
   const html = journalList.length ? journalList.map(e=>{
     const moodIcon = e.mood || 'smile';
-    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}</div>`;
+    const photoHtml = e.photo_url ? `<div style="margin-top:12px"><img src="${e.photo_url}" alt="Journal photo" style="width:100%;max-width:400px;border-radius:12px;border:2px solid var(--blush)" onclick="window.open('${e.photo_url}','_blank')" /></div>` : '';
+    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text||e.photo_url?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}${photoHtml}</div>`;
   }).join('') : '<p style="text-align:center;color:var(--muted);font-size:13px;padding:18px">Koi entry nahi. Pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>';
   const el=$('journalEntries'); if(el){ el.innerHTML=html; }
   const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }

@@ -93,8 +93,7 @@ create table if not exists public.journal_entries (
   entry_date date default current_date,
   mood text,
   content_text text,
-  -- Photos stored as base64 locally / downloaded to gallery
-  -- No cloud photo storage to save bandwidth
+  photo_url text,  -- Cloud photo URL (Cloudinary/Supabase Storage)
   created_at timestamptz default now()
 );
 

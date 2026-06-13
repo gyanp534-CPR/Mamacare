@@ -10,11 +10,11 @@
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════════
 
-// TODO: Replace with your Cloudinary credentials
-// Get from: https://cloudinary.com/console
+// Cloudinary Configuration
+// Direct browser uploads using unsigned preset (secure for public apps)
 const CLOUDINARY_CONFIG = {
-  cloudName: 'YOUR_CLOUD_NAME',    // Replace with your cloud name
-  uploadPreset: 'mamacare_unsigned' // Create unsigned preset in dashboard
+  cloudName: 'dpaihqxq3',           // Your Cloudinary cloud name
+  uploadPreset: 'mamacare_unsigned' // Unsigned preset (create in dashboard)
 };
 
 // Feature flag (disable if Cloudinary not configured)

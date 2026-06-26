@@ -731,6 +731,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function injectSmartPages() {
   if (document.getElementById('page-symptom-ai')) return;
   const footer = document.querySelector('footer');
+  
+  // Define CARD_THEMES in global scope for use in template
+  const themesHtml = `
+    <button class="theme-selector-btn active" data-theme="classic" onclick="SMART.generateMilestoneCard('classic')" style="padding:12px;border-radius:12px;border:2px solid #e8a0a8;background:linear-gradient(135deg,#fdf6f0,#fdf0e8);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#c97b7b;transition:all 0.3s">Classic Pink</button>
+    <button class="theme-selector-btn" data-theme="modern" onclick="SMART.generateMilestoneCard('modern')" style="padding:12px;border-radius:12px;border:2px solid #a855c8;background:linear-gradient(135deg,#f5f3ff,#f3e8ff);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#7c3aed;transition:all 0.3s">Modern Purple</button>
+    <button class="theme-selector-btn" data-theme="soft" onclick="SMART.generateMilestoneCard('soft')" style="padding:12px;border-radius:12px;border:2px solid #f59e0b;background:linear-gradient(135deg,#fff7ed,#fed7aa);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#d97706;transition:all 0.3s">Soft Peach</button>
+    <button class="theme-selector-btn" data-theme="elegant" onclick="SMART.generateMilestoneCard('elegant')" style="padding:12px;border-radius:12px;border:2px solid #ec4899;background:linear-gradient(135deg,#fdf2f8,#fbcfe8);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#db2777;transition:all 0.3s">Elegant Rose</button>
+    <button class="theme-selector-btn" data-theme="calm" onclick="SMART.generateMilestoneCard('calm')" style="padding:12px;border-radius:12px;border:2px solid #3b82f6;background:linear-gradient(135deg,#eff6ff,#bfdbfe);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#2563eb;transition:all 0.3s">Calm Blue</button>
+  `;
+  
   const html = `
 <!-- SYMPTOM AI -->
 <div class="page" id="page-symptom-ai">
@@ -799,11 +809,7 @@ function injectSmartPages() {
   <div class="card">
     <div class="sec-label">Choose Theme</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-top:10px">
-      ${Object.entries(CARD_THEMES).map(([key, theme]) => `
-        <button class="theme-selector-btn ${key==='classic'?'active':''}" data-theme="${key}" onclick="SMART.generateMilestoneCard('${key}')" style="padding:12px;border-radius:12px;border:2px solid ${theme.borderColor};background:linear-gradient(135deg,${theme.bgGradient[0]},${theme.bgGradient[2]});cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:${theme.weekColor};transition:all 0.3s">
-          ${theme.name}
-        </button>
-      `).join('')}
+      ${themesHtml}
     </div>
   </div>
   

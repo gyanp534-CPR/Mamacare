@@ -319,75 +319,215 @@ function checkDoctorView() {
 checkDoctorView();
 
 // ════════════════════════════════════════
-// 6. MILESTONE SHARE CARDS
+// 6. MILESTONE SHARE CARDS (ENHANCED)
 // ════════════════════════════════════════
-function generateMilestoneCard() {
-  const week    = document.getElementById('shareWeekInput')?.value || '20';
+
+// Card templates with predefined styles
+const CARD_THEMES = {
+  classic: {
+    name: 'Classic Pink',
+    bgGradient: ['#fdf6f0', '#fce8e8', '#fdf0e8'],
+    borderColor: '#e8a0a8',
+    innerBorderColor: '#f5d5d8',
+    weekColor: '#c97b7b',
+    textColor: '#4a2c2a',
+    brandColor: '#9a7070'
+  },
+  modern: {
+    name: 'Modern Purple',
+    bgGradient: ['#f5f3ff', '#ede9fe', '#f3e8ff'],
+    borderColor: '#a855c8',
+    innerBorderColor: '#c4b5fd',
+    weekColor: '#7c3aed',
+    textColor: '#3b1f63',
+    brandColor: '#6d28d9'
+  },
+  soft: {
+    name: 'Soft Peach',
+    bgGradient: ['#fff7ed', '#ffedd5', '#fed7aa'],
+    borderColor: '#f59e0b',
+    innerBorderColor: '#fbbf24',
+    weekColor: '#d97706',
+    textColor: '#78350f',
+    brandColor: '#b45309'
+  },
+  elegant: {
+    name: 'Elegant Rose',
+    bgGradient: ['#fdf2f8', '#fce7f3', '#fbcfe8'],
+    borderColor: '#ec4899',
+    innerBorderColor: '#f9a8d4',
+    weekColor: '#db2777',
+    textColor: '#831843',
+    brandColor: '#be185d'
+  },
+  calm: {
+    name: 'Calm Blue',
+    bgGradient: ['#eff6ff', '#dbeafe', '#bfdbfe'],
+    borderColor: '#3b82f6',
+    innerBorderColor: '#93c5fd',
+    weekColor: '#2563eb',
+    textColor: '#1e3a8a',
+    brandColor: '#1d4ed8'
+  }
+};
+
+let currentTheme = 'classic';
+
+function generateMilestoneCard(themeKey) {
+  if (themeKey) currentTheme = themeKey;
+  const theme = CARD_THEMES[currentTheme];
+  const week = document.getElementById('shareWeekInput')?.value || '20';
   const message = document.getElementById('shareMessageInput')?.value || `Week ${week} mein hun! 🌸`;
-  const emoji   = document.getElementById('shareEmojiInput')?.value || '🌸';
-  const canvas  = document.getElementById('milestoneCanvas');
+  const emoji = document.getElementById('shareEmojiInput')?.value || '🌸';
+  const canvas = document.getElementById('milestoneCanvas');
   if (!canvas) return;
-  const ctx     = canvas.getContext('2d');
-  canvas.width  = 800;
-  canvas.height = 800;
+  const ctx = canvas.getContext('2d');
+  canvas.width = 1080;  // Instagram/WhatsApp optimal size
+  canvas.height = 1080;
 
   // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, 800, 800);
-  grad.addColorStop(0, '#fdf6f0');
-  grad.addColorStop(0.5, '#fce8e8');
-  grad.addColorStop(1, '#fdf0e8');
+  const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+  grad.addColorStop(0, theme.bgGradient[0]);
+  grad.addColorStop(0.5, theme.bgGradient[1]);
+  grad.addColorStop(1, theme.bgGradient[2]);
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 800, 800);
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Decorative circles (background)
+  ctx.globalAlpha = 0.15;
+  ctx.fillStyle = theme.borderColor;
+  ctx.beginPath();
+  ctx.arc(100, 100, 150, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(980, 900, 180, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
   // Border
-  ctx.strokeStyle = '#e8a0a8';
-  ctx.lineWidth = 8;
-  ctx.roundRect(20, 20, 760, 760, 30);
+  ctx.strokeStyle = theme.borderColor;
+  ctx.lineWidth = 12;
+  roundRect(ctx, 30, 30, 1020, 1020, 40);
   ctx.stroke();
 
   // Inner border
-  ctx.strokeStyle = '#f5d5d8';
-  ctx.lineWidth = 3;
-  ctx.roundRect(40, 40, 720, 720, 20);
+  ctx.strokeStyle = theme.innerBorderColor;
+  ctx.lineWidth = 4;
+  roundRect(ctx, 55, 55, 970, 970, 30);
   ctx.stroke();
 
+  // Top decorative element
+  ctx.fillStyle = theme.borderColor;
+  ctx.globalAlpha = 0.1;
+  roundRect(ctx, 350, 120, 380, 140, 20);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
   // Emoji
-  ctx.font = '140px serif';
+  ctx.font = '180px serif';
   ctx.textAlign = 'center';
-  ctx.fillText(emoji, 400, 280);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, 540, 280);
 
-  // Week text
-  ctx.fillStyle = '#c97b7b';
-  ctx.font = 'bold 72px serif';
-  ctx.fillText(`Week ${week}`, 400, 390);
+  // Week badge background
+  ctx.fillStyle = theme.weekColor;
+  ctx.globalAlpha = 0.12;
+  roundRect(ctx, 280, 360, 520, 100, 50);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
-  // Divider
-  ctx.strokeStyle = '#e8a0a8';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(200, 420); ctx.lineTo(600, 420); ctx.stroke();
+  // "Week" label
+  ctx.fillStyle = theme.weekColor;
+  ctx.font = 'bold 45px "DM Sans", sans-serif';
+  ctx.fillText('WEEK', 540, 395);
 
-  // Message
-  ctx.fillStyle = '#4a2c2a';
-  ctx.font = '32px Arial';
-  // Word wrap
+  // Week number
+  ctx.font = 'bold 90px "Cormorant Garamond", serif';
+  ctx.fillStyle = theme.weekColor;
+  ctx.fillText(week, 540, 480);
+
+  // Decorative divider
+  ctx.strokeStyle = theme.borderColor;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(320, 550);
+  ctx.lineTo(760, 550);
+  ctx.stroke();
+  
+  // Small decorative dots
+  ctx.fillStyle = theme.borderColor;
+  ctx.beginPath();
+  ctx.arc(300, 550, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(780, 550, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Message - word wrap with better styling
+  ctx.fillStyle = theme.textColor;
+  ctx.font = '38px "DM Sans", sans-serif';
   const words = message.split(' ');
-  let line = '', y = 480;
+  let line = '', y = 640;
+  const maxWidth = 880;
+  const lineHeight = 56;
+  
   for (const word of words) {
     const test = line + word + ' ';
-    if (ctx.measureText(test).width > 660 && line !== '') {
-      ctx.fillText(line, 400, y); line = word + ' '; y += 44;
-    } else line = test;
+    if (ctx.measureText(test).width > maxWidth && line !== '') {
+      ctx.fillText(line.trim(), 540, y);
+      line = word + ' ';
+      y += lineHeight;
+    } else {
+      line = test;
+    }
   }
-  ctx.fillText(line, 400, y);
+  ctx.fillText(line.trim(), 540, y);
+
+  // Bottom decorative section
+  ctx.fillStyle = theme.borderColor;
+  ctx.globalAlpha = 0.08;
+  roundRect(ctx, 150, 830, 780, 120, 60);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
   // Branding
-  ctx.fillStyle = '#9a7070';
-  ctx.font = '22px Arial';
-  ctx.fillText('🌸 MamaCare — mamacare.gyanam.shop', 400, 740);
+  ctx.fillStyle = theme.brandColor;
+  ctx.font = 'bold 26px "DM Sans", sans-serif';
+  ctx.fillText('🌸 Mama Gyan', 540, 880);
+  ctx.font = '22px "DM Sans", sans-serif';
+  ctx.fillStyle = theme.brandColor;
+  ctx.globalAlpha = 0.7;
+  ctx.fillText('mamacare.gyanam.shop', 540, 915);
+  ctx.globalAlpha = 1;
 
   // Show preview
   canvas.style.display = 'block';
+  const cardPreviewLabel = document.getElementById('cardPreviewLabel');
+  if (cardPreviewLabel) cardPreviewLabel.style.display = 'block';
   document.getElementById('cardDownloadBtn').style.display = 'block';
+  
+  // Update theme selector active state
+  document.querySelectorAll('.theme-selector-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+  });
+  
+  // Scroll to preview
+  canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Helper for rounded rectangles
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.arcTo(x + width, y, x + width, y + radius, radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+  ctx.lineTo(x + radius, y + height);
+  ctx.arcTo(x, y + height, x, y + height - radius, radius);
+  ctx.lineTo(x, y + radius);
+  ctx.arcTo(x, y, x + radius, y, radius);
+  ctx.closePath();
 }
 
 function downloadMilestoneCard() {
@@ -402,13 +542,62 @@ function downloadMilestoneCard() {
 function shareMilestoneCard() {
   const canvas = document.getElementById('milestoneCanvas');
   if (!canvas) return;
+  const week = document.getElementById('shareWeekInput')?.value || '20';
+  const shareText = `🌸 Week ${week} of my pregnancy journey! Made with Mama Gyan 💗\n\nTrack your pregnancy too: mamacare.gyanam.shop`;
+  
   canvas.toBlob(blob => {
-    const file = new File([blob], 'mamacare-milestone.png', { type: 'image/png' });
+    const file = new File([blob], `mama-gyan-week-${week}.png`, { type: 'image/png' });
+    
+    // Try native share first (works on mobile)
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      navigator.share({ title: 'MamaCare Milestone!', files: [file] });
+      navigator.share({
+        title: `My Pregnancy Week ${week}`,
+        text: shareText,
+        files: [file]
+      }).catch(() => {
+        // Fallback to WhatsApp if share fails
+        shareToWhatsApp(blob, shareText);
+      });
     } else {
-      downloadMilestoneCard();
+      // Desktop or no share API - show options
+      showShareOptions(blob, shareText, week);
     }
+  });
+}
+
+function shareToWhatsApp(blob, text) {
+  // Convert blob to base64 for WhatsApp Web
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    const whatsappText = encodeURIComponent(text);
+    // Open WhatsApp with text (user can manually attach image)
+    const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
+    window.open(whatsappUrl, '_blank');
+    
+    // Also trigger download so user has the image ready
+    downloadMilestoneCard();
+  };
+  reader.readAsDataURL(blob);
+}
+
+function showShareOptions(blob, text, week) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:20px;padding:28px;max-width:400px;width:100%;position:relative;">
+      <button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#9a7070;">×</button>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#c97b7b;margin-bottom:12px;text-align:center;">Share Your Milestone 🌸</h3>
+      <p style="font-size:13px;color:#9a7070;text-align:center;margin-bottom:20px;">Download karke WhatsApp, Instagram, ya Facebook pe share karo!</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="SMART.downloadMilestoneCard();this.parentElement.parentElement.parentElement.remove();" style="background:linear-gradient(135deg,#e8a0a8,#f7c4a8);border:none;color:white;padding:14px;border-radius:50px;font-weight:600;cursor:pointer;font-size:15px;">⬇️ Download Image</button>
+        <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(text)}','_blank');this.parentElement.parentElement.parentElement.remove();" style="background:#25D366;border:none;color:white;padding:14px;border-radius:50px;font-weight:600;cursor:pointer;font-size:15px;">💬 Share on WhatsApp</button>
+        <button onclick="navigator.clipboard.writeText('${text.replace(/'/g, "\\'")}');alert('Text copied! Now download the image and post together 🌸');this.parentElement.parentElement.parentElement.remove();" style="background:#f0e0e0;border:none;color:#c97b7b;padding:14px;border-radius:50px;font-weight:600;cursor:pointer;font-size:15px;">📋 Copy Caption</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
   });
 }
 
@@ -602,36 +791,78 @@ function injectSmartPages() {
   </div>
 </div>
 
-<!-- SHARE CARDS -->
+<!-- SHARE CARDS (ENHANCED) -->
 <div class="page" id="page-share-cards">
-  <div style="padding:20px 0 8px"><div class="sec-label">Share</div><div class="sec-title">Milestone Cards 📸</div></div>
+  <div style="padding:20px 0 8px"><div class="sec-label">Share Your Journey</div><div class="sec-title">Milestone Cards 📸</div></div>
+  
+  <!-- Theme Selector -->
   <div class="card">
-    <div class="sec-label">Customize</div>
-    <div class="g2" style="margin-bottom:10px">
-      <div><label>Week Number</label><input type="number" id="shareWeekInput" value="20" min="1" max="40"/></div>
-      <div><label>Emoji</label><input type="text" id="shareEmojiInput" value="🌸" maxlength="4"/></div>
+    <div class="sec-label">Choose Theme</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-top:10px">
+      ${Object.entries(CARD_THEMES).map(([key, theme]) => `
+        <button class="theme-selector-btn ${key==='classic'?'active':''}" data-theme="${key}" onclick="SMART.generateMilestoneCard('${key}')" style="padding:12px;border-radius:12px;border:2px solid ${theme.borderColor};background:linear-gradient(135deg,${theme.bgGradient[0]},${theme.bgGradient[2]});cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:${theme.weekColor};transition:all 0.3s">
+          ${theme.name}
+        </button>
+      `).join('')}
     </div>
-    <div style="margin-bottom:14px"><label>Message</label><input type="text" id="shareMessageInput" placeholder="Week 20 mein hun! Baby kick kar raha hai 💗"/></div>
-    <button class="btn btn-p btn-sm" onclick="SMART.generateMilestoneCard()">✨ Generate Card</button>
   </div>
+  
+  <!-- Customize Section -->
+  <div class="card">
+    <div class="sec-label">Customize Your Card</div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><label>Week Number</label><input type="number" id="shareWeekInput" value="20" min="1" max="40" onchange="SMART.generateMilestoneCard()"/></div>
+      <div><label>Emoji</label><input type="text" id="shareEmojiInput" value="🌸" maxlength="4" onchange="SMART.generateMilestoneCard()" style="font-size:28px;text-align:center;padding:8px"/></div>
+    </div>
+    <div style="margin-bottom:14px"><label>Your Message (keep it short & sweet!)</label><textarea id="shareMessageInput" rows="2" placeholder="Week 20 mein hun! Baby kick kar raha hai 💗" style="resize:vertical" onchange="SMART.generateMilestoneCard()"></textarea></div>
+    <button class="btn btn-p" onclick="SMART.generateMilestoneCard()" style="width:100%">✨ Generate Card</button>
+  </div>
+  
+  <!-- Preview & Share -->
   <div class="card" style="text-align:center">
-    <canvas id="milestoneCanvas" style="display:none;max-width:100%;border-radius:16px;margin-bottom:14px"></canvas>
+    <div class="sec-label" id="cardPreviewLabel" style="display:none">Your Card Preview</div>
+    <canvas id="milestoneCanvas" style="display:none;max-width:100%;border-radius:16px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,0.15)"></canvas>
     <div id="cardDownloadBtn" style="display:none">
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-p" onclick="SMART.downloadMilestoneCard()">⬇️ Download</button>
-        <button class="btn btn-g" onclick="SMART.shareMilestoneCard()">📱 Share</button>
+        <button class="btn btn-p" onclick="SMART.shareMilestoneCard()" style="min-width:140px">📱 Share Now</button>
+        <button class="btn btn-g" onclick="SMART.downloadMilestoneCard()" style="min-width:140px">⬇️ Download</button>
       </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:12px">💡 Share on WhatsApp, Instagram, ya Facebook — log poochenge kahan se banaya! 🌸</p>
     </div>
   </div>
+  
+  <!-- Quick Templates -->
   <div class="card" style="background:rgba(232,160,168,.06)">
-    <div class="sec-title">Quick Templates</div>
-    <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="sec-title">Quick Templates — Tap to Use</div>
+    <div style="display:grid;gap:10px;margin-top:12px">
       ${[
-        ['20','🌸','Halfway there! Baby kicks feel kar rahi hun 💗'],
-        ['28','🌟','Teen-teesra mahina shuru! Almost there!'],
-        ['36','🥥','Full term approaching! Hospital bag ready hai 🏥'],
-        ['40','🎊','Due date! Baby se milne wali hun! 💗'],
-      ].map(([wk,em,msg]) => `<button class="btn btn-g btn-sm" style="text-align:left" onclick="document.getElementById('shareWeekInput').value='${wk}';document.getElementById('shareEmojiInput').value='${em}';document.getElementById('shareMessageInput').value='${msg}'">Week ${wk}: ${msg}</button>`).join('')}
+        ['12','🌱','First trimester khatam! Morning sickness slowly kam ho rahi hai 🌸'],
+        ['20','🎀','Halfway there! Gender reveal ho gaya — its a surprise! 💗'],
+        ['24','👶','Baby movements regular feel hoti hain ab. Best feeling ever! 💕'],
+        ['28','🌟','Third trimester shuru! Ab baby ka weight tez badhega 🥰'],
+        ['32','🎊','8 mahine pura! Hospital bag pack kar rahi hun 👶'],
+        ['36','💗','Full term approaching! Kisi bhi din baby aa sakta hai 🌸'],
+        ['38','🍼','Bas do hafte bache! Ready to meet my little one! 💝'],
+        ['40','🎉','Due date today! Baby aa jaao, we are waiting! 👶💗'],
+      ].map(([wk,em,msg]) => `
+        <button class="btn btn-g btn-sm" style="text-align:left;padding:12px 16px;display:flex;align-items:center;gap:10px;justify-content:flex-start" onclick="document.getElementById('shareWeekInput').value='${wk}';document.getElementById('shareEmojiInput').value='${em}';document.getElementById('shareMessageInput').value='${msg}';SMART.generateMilestoneCard()">
+          <span style="font-size:24px;flex-shrink:0">${em}</span>
+          <span style="flex:1;font-size:13px;line-height:1.4"><strong>Week ${wk}:</strong> ${msg}</span>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+  
+  <!-- Growth Tips -->
+  <div class="card" style="background:linear-gradient(135deg,rgba(106,184,154,.08),rgba(106,184,154,.05))">
+    <div class="sec-title">💡 Viral Growth Tips</div>
+    <div style="font-size:13px;line-height:1.8;color:var(--warm)">
+      ✅ <strong>Best time to post:</strong> Morning 8-10 AM ya evening 7-9 PM<br>
+      ✅ <strong>Weekly ritual:</strong> Har Sunday apna week update share karo<br>
+      ✅ <strong>Tag karein:</strong> Family & friends ko WhatsApp pe directly bhejo<br>
+      ✅ <strong>Story bhi lagao:</strong> Instagram story mein bhi share karo<br>
+      ✅ <strong>Compare karein:</strong> Previous weeks ke cards ke saath collage banao<br>
+      💬 <strong>Caption idea:</strong> "Tracking my pregnancy with Mama Gyan! Join me: mamacare.gyanam.shop"
     </div>
   </div>
 </div>
@@ -681,6 +912,7 @@ window.SMART = {
   sendSymptomAI,
   analyzeFood,
   startBirthPlanAI, bpAISelect, bpAIBack, generateBirthPlanFromAI, printAIBirthPlan,
-  generateMilestoneCard, downloadMilestoneCard, shareMilestoneCard,
+  generateMilestoneCard, downloadMilestoneCard, shareMilestoneCard, shareToWhatsApp, showShareOptions,
   loadDoctorPortal, linkDoctor, copyDoctorLink,
+  CARD_THEMES, currentTheme, roundRect
 };

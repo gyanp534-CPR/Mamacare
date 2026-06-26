@@ -373,8 +373,28 @@ const CARD_THEMES = {
 
 let currentTheme = 'classic';
 
+// Analytics helper
+function trackMilestoneEvent(eventName, properties = {}) {
+  // Supabase analytics
+  if (window.user && window.supa) {
+    window.supa.from('analytics_events').insert({
+      user_id: window.user.id,
+      event_name: eventName,
+      event_properties: properties,
+      created_at: new Date().toISOString()
+    }).then(() => {}).catch(() => {});
+  }
+  
+  // Console log for debugging
+  console.log('📊 Milestone Event:', eventName, properties);
+}
+
 function generateMilestoneCard(themeKey) {
-  if (themeKey) currentTheme = themeKey;
+  if (themeKey) {
+    currentTheme = themeKey;
+    // Track theme selection
+    trackMilestoneEvent('milestone_theme_selected', { theme_name: themeKey });
+  }
   const theme = CARD_THEMES[currentTheme];
   const week = document.getElementById('shareWeekInput')?.value || '20';
   const message = document.getElementById('shareMessageInput')?.value || `Week ${week} mein hun! 🌸`;
@@ -513,6 +533,15 @@ function generateMilestoneCard(themeKey) {
   
   // Scroll to preview
   canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  // Track card generation
+  const hasCustomMessage = !document.querySelector('.btn.btn-g.btn-sm')?.textContent?.includes(message);
+  trackMilestoneEvent('milestone_card_generated', {
+    theme: currentTheme,
+    week_number: week,
+    has_custom_message: hasCustomMessage,
+    emoji: emoji
+  });
 }
 
 // Helper for rounded rectangles
@@ -533,10 +562,17 @@ function roundRect(ctx, x, y, width, height, radius) {
 function downloadMilestoneCard() {
   const canvas = document.getElementById('milestoneCanvas');
   if (!canvas) return;
+  const week = document.getElementById('shareWeekInput')?.value || 'bump';
   const link = document.createElement('a');
-  link.download = `mamacare-week-${document.getElementById('shareWeekInput')?.value || 'bump'}.png`;
+  link.download = `mama-gyan-week-${week}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
+  
+  // Track download
+  trackMilestoneEvent('milestone_card_downloaded', {
+    theme: currentTheme,
+    week_number: week
+  });
 }
 
 function shareMilestoneCard() {
@@ -548,6 +584,13 @@ function shareMilestoneCard() {
   canvas.toBlob(blob => {
     const file = new File([blob], `mama-gyan-week-${week}.png`, { type: 'image/png' });
     
+    // Track share attempt
+    trackMilestoneEvent('milestone_card_share_clicked', {
+      theme: currentTheme,
+      week_number: week,
+      share_method: navigator.share ? 'native' : 'modal'
+    });
+    
     // Try native share first (works on mobile)
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       navigator.share({
@@ -556,7 +599,7 @@ function shareMilestoneCard() {
         files: [file]
       }).catch(() => {
         // Fallback to WhatsApp if share fails
-        shareToWhatsApp(blob, shareText);
+        shareToWhatsApp(blob, shareText, week);
       });
     } else {
       // Desktop or no share API - show options
@@ -565,7 +608,14 @@ function shareMilestoneCard() {
   });
 }
 
-function shareToWhatsApp(blob, text) {
+function shareToWhatsApp(blob, text, week) {
+  // Track WhatsApp share
+  trackMilestoneEvent('milestone_card_share_clicked', {
+    theme: currentTheme,
+    week_number: week || document.getElementById('shareWeekInput')?.value,
+    share_method: 'whatsapp'
+  });
+  
   // Convert blob to base64 for WhatsApp Web
   const reader = new FileReader();
   reader.onloadend = () => {

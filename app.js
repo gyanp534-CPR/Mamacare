@@ -761,7 +761,7 @@ function goTo(id) {
       ayurveda: () => { if(window.INDIA) window.INDIA.renderAyurvedaTri(1); },
       sympdiary: () => { if(window.INDIA) window.INDIA.loadSymptomTrend(); },
       doctor: () => { if(window.SMART) window.SMART.loadDoctorPortal(); },
-      contractions: () => { if(window.renderContractionHistory) window.renderContractionHistory(); },
+      contractions: () => { if(window.initContractionTimer) window.initContractionTimer(); },
     };
     
     if(loads[id]) loads[id]();
@@ -1502,8 +1502,27 @@ function renderJournal(){
     const photoHtml = e.photo_url
       ? `<img src="${e.photo_url}" style="width:100%;border-radius:10px;margin-top:8px;max-height:200px;object-fit:cover;" loading="lazy" />`
       : '';
-    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}${photoHtml}</div>`;
-  }).join('') : '<p style="text-align:center;color:var(--muted);font-size:13px;padding:18px">Koi entry nahi. Pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>';
+    
+    // Using Templates.listItem from app-templates.js
+    return Templates.listItem({
+      icon: moodIcon,
+      title: fmtDate(e.entry_date),
+      subtitle: e.content_text ? e.content_text.replace(/\n/g,'<br>') : '',
+      meta: photoHtml,
+      actions: `
+        ${e.week_number ? Templates.badge({ text: `W${e.week_number}` }) : ''}
+        ${Templates.iconButton({
+          icon: 'trash-2',
+          onClick: `MC.deleteJournalEntry('${e.id}')`,
+          title: 'Delete'
+        })}
+      `
+    });
+  }).join('') : Templates.emptyState({
+    icon: 'flower-2',
+    message: 'Koi entry nahi. Pehli yaad likho!'
+  });
+  
   const el=$('journalEntries'); if(el){ el.innerHTML=html; }
   const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }
   renderIcons();

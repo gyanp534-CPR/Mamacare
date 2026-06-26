@@ -19,6 +19,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 
+  <!-- Template Helper System -->
+  <script src="app-templates.js"></script>
+
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="apple-touch-icon" href="/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png" />
@@ -670,6 +673,156 @@
       </div>
     </main>
 
+    <main class="page" id="page-contractions">
+      <div class="card" style="text-align:center; background:linear-gradient(135deg,rgba(232,160,168,.08),rgba(247,196,168,.06));">
+        <div style="font-size:48px; margin-bottom:8px;">⏱️</div>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:1.8rem; margin-bottom:8px;">Contraction Timer</h2>
+        <p style="font-size:13.5px; color:var(--muted); line-height:1.6;">Track your contractions to know when it's time to go to the hospital. Follow the 5-1-1 rule: contractions 5 minutes apart, lasting 1 minute each, for 1 hour.</p>
+      </div>
+
+      <div class="card">
+        <div class="contraction-timer-display">
+          <div class="timer-circle" id="contractionCircle">
+            <div class="timer-value" id="contractionTimerDisplay">00:00</div>
+            <div class="timer-label" id="contractionTimerLabel">Press Start</div>
+          </div>
+        </div>
+        
+        <div class="contraction-controls">
+          <button class="btn btn-primary btn-lg" id="startContractionBtn">
+            <i data-lucide="play" class="app-icon-inline"></i> Start Contraction
+          </button>
+          <button class="btn btn-danger btn-lg" id="endContractionBtn" style="display:none;">
+            <i data-lucide="stop-circle" class="app-icon-inline"></i> End Contraction
+          </button>
+          <button class="btn btn-secondary btn-sm" id="resetContractionBtn" style="display:none;">
+            <i data-lucide="rotate-ccw" class="app-icon-inline"></i> Reset Timer
+          </button>
+        </div>
+
+        <div class="contraction-stats" id="contractionStats" style="display:none;">
+          <div class="stat-box">
+            <div class="stat-value" id="statLastDuration">-</div>
+            <div class="stat-label">Last Duration</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statAvgDuration">-</div>
+            <div class="stat-label">Avg Duration</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statFrequency">-</div>
+            <div class="stat-label">Frequency</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statCount">0</div>
+            <div class="stat-label">Total Count</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="alert511Card" style="display:none; background:linear-gradient(135deg,rgba(224,92,92,.1),rgba(232,160,168,.08)); border:2px solid var(--danger);">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <i data-lucide="alert-triangle" style="width:32px; height:32px; color:var(--danger);"></i>
+          <div>
+            <div style="font-size:1.2rem; font-weight:700; color:var(--danger); margin-bottom:4px;">5-1-1 Rule Alert!</div>
+            <div style="font-size:13px; color:var(--text-muted);">Your contractions match the 5-1-1 pattern</div>
+          </div>
+        </div>
+        <div style="font-size:14px; line-height:1.6; margin-bottom:16px;">
+          <strong>What this means:</strong> Contractions are 5 minutes apart, lasting 1 minute, for 1 hour. This usually means active labor is starting.
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-danger" onclick="showSection('sos')">
+            <i data-lucide="phone-call" class="app-icon-inline"></i> Call Doctor
+          </button>
+          <button class="btn btn-secondary" onclick="dismissAlert511()">
+            <i data-lucide="x" class="app-icon-inline"></i> Dismiss
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="sec-label">Contraction History</div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-g btn-sm" id="shareContractionBtn" onclick="shareContractionSummary()">
+              <i data-lucide="share-2" class="app-icon-inline"></i> Share
+            </button>
+            <button class="btn btn-g btn-sm" id="exportContractionBtn">
+              <i data-lucide="download" class="app-icon-inline"></i> Export
+            </button>
+          </div>
+        </div>
+        <div id="contractionHistory"></div>
+      </div>
+
+      <div class="card">
+        <div class="sec-label">Labor Stages Guide</div>
+        <div class="labor-stages">
+          <div class="labor-stage">
+            <div class="stage-header">
+              <span class="stage-num">1</span>
+              <span class="stage-title">Early Labor</span>
+            </div>
+            <div class="stage-desc">
+              <strong>Contractions:</strong> 5-30 minutes apart, 30-45 seconds long<br>
+              <strong>What to do:</strong> Stay home, rest, eat light, stay hydrated
+            </div>
+          </div>
+          <div class="labor-stage">
+            <div class="stage-header">
+              <span class="stage-num">2</span>
+              <span class="stage-title">Active Labor</span>
+            </div>
+            <div class="stage-desc">
+              <strong>Contractions:</strong> 3-5 minutes apart, 45-60 seconds long<br>
+              <strong>What to do:</strong> Go to hospital, practice breathing, use pain relief
+            </div>
+          </div>
+          <div class="labor-stage">
+            <div class="stage-header">
+              <span class="stage-num">3</span>
+              <span class="stage-title">Transition</span>
+            </div>
+            <div class="stage-desc">
+              <strong>Contractions:</strong> 2-3 minutes apart, 60-90 seconds long<br>
+              <strong>What to do:</strong> Focus on breathing, you're almost there!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-label">When to Call Your Doctor</div>
+        <div class="warning-list">
+          <div class="warning-item">
+            <i data-lucide="check-circle" style="color:var(--green);"></i>
+            <span>Regular contractions 5 minutes apart for 1 hour</span>
+          </div>
+          <div class="warning-item">
+            <i data-lucide="check-circle" style="color:var(--green);"></i>
+            <span>Water breaks (clear, pink, or greenish fluid)</span>
+          </div>
+          <div class="warning-item">
+            <i data-lucide="check-circle" style="color:var(--green);"></i>
+            <span>Severe pain that doesn't go away between contractions</span>
+          </div>
+          <div class="warning-item">
+            <i data-lucide="check-circle" style="color:var(--green);"></i>
+            <span>Bleeding (more than light spotting)</span>
+          </div>
+          <div class="warning-item">
+            <i data-lucide="check-circle" style="color:var(--green);"></i>
+            <span>Baby's movements decrease significantly</span>
+          </div>
+          <div class="warning-item">
+            <i data-lucide="check-circle" style="color:var(--green);"></i>
+            <span>Severe headache, vision changes, or swelling</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
     <main class="page" id="page-yoga">
       <div class="card">
         <div class="sec-title">Prenatal Yoga & Exercise</div>
@@ -728,6 +881,10 @@
           <div class="mi-icon"><i data-lucide="thermometer"></i></div>
           <div class="mi-label">Symptoms</div>
         </div>
+        <div class="more-item" data-page="contractions" style="background:rgba(232,160,168,.08); border-color:var(--rose);">
+          <div class="mi-icon"><i data-lucide="timer" style="color:var(--rose);"></i></div>
+          <div class="mi-label">Contractions</div>
+        </div>
         <div class="more-item" data-page="sos">
           <div class="mi-icon" style="color:var(--danger);"><i data-lucide="alert-triangle"></i></div>
           <div class="mi-label">SOS</div>
@@ -781,6 +938,9 @@
 
   <!-- MamaCare v8.0 — Photo Storage Module (must load before bundle) -->
   <script src="app-photo-storage.js"></script>
+  
+  <!-- MamaCare v8.1 — Contraction Timer Module -->
+  <script src="app-contractions.js"></script>
   
   <!-- MamaCare v8.0 — Bundled Scripts -->
   <script src="bundle.js"></script>

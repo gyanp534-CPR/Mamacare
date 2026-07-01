@@ -450,3 +450,42 @@ create policy "mood_logs_own" on public.mood_logs
 -- Journal photos bucket (run in Supabase Storage UI or via API)
 -- Storage bucket: 'user-photos' (public read, authenticated write)
 -- Storage bucket: 'journal-photos' (public read, authenticated write)
+
+
+-- Weekly Email Digest Preferences
+alter table public.user_profile
+  add column if not exists email_digest_enabled boolean default true,
+  add column if not exists digest_day text default 'sunday',
+  add column if not exists digest_time text default '09:00';
+
+-- Breastfeeding Tracking
+create table if not exists public.breastfeeding_logs (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  session_date date not null,
+  session_time time not null,
+  breast_side text check (breast_side in ('left', 'right', 'both')) not null,
+  duration_minutes integer not null,
+  latch_quality text check (latch_quality in ('good', 'okay', 'poor')),
+  notes text,
+  created_at timestamp with time zone default now(),
+  unique(user_id, session_date, session_time)
+);
+
+create index if not exists idx_breastfeeding_user_date 
+  on public.breastfeeding_logs(user_id, session_date desc);
+
+-- RLS for breastfeeding
+alter table public.breastfeeding_logs enable row level security;
+
+create policy "Users can view own breastfeeding logs"
+  on public.breastfeeding_logs for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own breastfeeding logs"
+  on public.breastfeeding_logs for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own breastfeeding logs"
+  on public.breastfeeding_logs for update
+  using (auth.uid() = user_id);

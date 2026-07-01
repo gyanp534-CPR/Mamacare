@@ -646,6 +646,10 @@ async function onLogin(u) {
   if (window.INDIA)    window.INDIA.initIndia();
   if (window.SMART)    window.SMART.initSmart();
   
+  // Initialize new features
+  if (window.initASHAChatbot) window.initASHAChatbot();
+  if (window.initBreastfeedingTracker) window.initBreastfeedingTracker();
+  
   renderIcons();
 }
 

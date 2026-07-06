@@ -4,6 +4,39 @@
  * 
  * Free Tier: 25 GB storage + CDN
  * Setup: cloudinary.com → Settings → Upload → Add unsigned preset
+ * 
+ * ⚠️ CRITICAL SECURITY WARNING ⚠️
+ * ═══════════════════════════════════════════════════════════════
+ * This module uses UNSIGNED Cloudinary uploads, which means:
+ * 
+ * 1. ANYONE with this code can upload to your Cloudinary account
+ * 2. Cloud name and preset are PUBLIC in the JavaScript bundle
+ * 3. Malicious actors could upload unlimited files until you hit 25 GB limit
+ * 
+ * REQUIRED CLOUDINARY DASHBOARD RESTRICTIONS:
+ * ═══════════════════════════════════════════════════════════════
+ * Go to: Cloudinary Dashboard → Settings → Upload → Your Preset → Edit
+ * 
+ * Set these restrictions:
+ * ✅ Allowed formats: jpg, jpeg, png, webp (NO exe, zip, pdf)
+ * ✅ Max file size: 5 MB (enforced server-side)
+ * ✅ Max image dimensions: 2048x2048
+ * ✅ Folder: mamacare-journals (restrict uploads to this folder only)
+ * ✅ Resource type: image (NOT raw or video)
+ * ✅ Overwrite: false (prevent file replacement attacks)
+ * ✅ Unique filename: true (prevent predictable URLs)
+ * 
+ * RECOMMENDED: Signed Uploads (Production)
+ * ═══════════════════════════════════════════════════════════════
+ * For production, replace unsigned uploads with signed uploads via
+ * Supabase Edge Function to hide API credentials and prevent abuse:
+ * 
+ * 1. Create supabase/functions/cloudinary-sign/index.ts
+ * 2. Generate signature server-side using CLOUDINARY_API_SECRET
+ * 3. Pass signature + timestamp to frontend
+ * 4. Use signed upload endpoint
+ * 
+ * This is a known security tradeoff for MVP speed vs. production security.
  */
 
 // ═══════════════════════════════════════════════════════════
@@ -11,10 +44,12 @@
 // ═══════════════════════════════════════════════════════════
 
 // Cloudinary Configuration
-// Direct browser uploads using unsigned preset (secure for public apps)
+// ⚠️ WARNING: These credentials are PUBLIC in browser JS bundle
+// Anyone can upload to this account until free tier limit (25 GB)
+// See security restrictions above for mitigation steps
 const CLOUDINARY_CONFIG = {
-  cloudName: 'dpaihqxq3',           // Your Cloudinary cloud name
-  uploadPreset: 'mamacare_unsigned' // Unsigned preset (create in dashboard)
+  cloudName: 'dpaihqxq3',           // ⚠️ PUBLIC - visible in network tab
+  uploadPreset: 'mamacare_unsigned' // ⚠️ PUBLIC - no authentication required
 };
 
 // Feature flag (disable if Cloudinary not configured)
@@ -36,16 +71,27 @@ window.uploadToCloudinary = async function(file, metadata = {}) {
     throw new Error('Cloudinary not configured');
   }
 
-  // Validate file
+  // ── SECURITY VALIDATION ────────────────────────────────────
+  // Validate file type (client-side only - Cloudinary enforces server-side)
   if (!file || !file.type.startsWith('image/')) {
     throw new Error('Invalid image file');
   }
 
-  // Max 5 MB for free tier efficiency
+  // Whitelist allowed formats (prevent .exe, .zip, .js uploads)
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type.toLowerCase())) {
+    throw new Error(`Format not allowed. Use: JPG, PNG, or WebP`);
+  }
+
+  // Max 5 MB (client-side check - Cloudinary preset MUST also enforce this)
   const maxSize = 5 * 1024 * 1024;
   if (file.size > maxSize) {
     throw new Error('Image too large (max 5 MB)');
   }
+
+  // CRITICAL: These checks are client-side only and can be bypassed
+  // Cloudinary Dashboard preset MUST enforce these restrictions server-side
+  // See security warnings at top of file for configuration instructions
 
   try {
     // Prepare form data

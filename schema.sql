@@ -162,6 +162,17 @@ create table if not exists public.kick_logs (
   unique(user_id, session_date)
 );
 
+-- ── CONTRACTION SESSIONS ───────────────────
+create table if not exists public.contraction_sessions (
+  id bigserial primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  session_date date not null,
+  contractions jsonb not null,
+  last_end_time bigint,
+  updated_at timestamptz default now(),
+  unique(user_id, session_date)
+);
+
 -- ═══════════════════════════════════════════
 -- ROW LEVEL SECURITY — Users see only their data
 -- ═══════════════════════════════════════════
@@ -179,6 +190,7 @@ alter table public.birth_plan enable row level security;
 alter table public.appointments enable row level security;
 alter table public.mood_logs enable row level security;
 alter table public.kick_logs enable row level security;
+alter table public.contraction_sessions enable row level security;
 
 -- RLS Policies (select, insert, update, delete)
 do $$
@@ -187,7 +199,8 @@ declare
   tables text[] := array[
     'weight_logs','sleep_logs','food_logs','water_logs',
     'medicines','medicine_logs','journal_entries','saved_names',
-    'hospital_bag','birth_plan','appointments','mood_logs','kick_logs'
+    'hospital_bag','birth_plan','appointments','mood_logs','kick_logs',
+    'contraction_sessions'
   ];
 begin
   foreach t in array tables loop

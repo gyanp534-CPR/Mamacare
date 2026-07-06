@@ -374,7 +374,7 @@
   }
 
   /**
-   * Save contractions to localStorage
+   * Save contractions to localStorage AND Supabase
    */
   function saveContractions() {
     try {
@@ -383,14 +383,67 @@
         lastEndTime: CONTRACTION.lastEndTime
       }));
     } catch (e) {
-      console.error('Failed to save contractions:', e);
+      console.error('Failed to save contractions to localStorage:', e);
+    }
+    
+    // CRITICAL: Also sync to Supabase for cross-device access and data safety
+    if (window.user && window.supa && CONTRACTION.contractions.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      window.supa.from('contraction_sessions').upsert({
+        user_id: window.user.id,
+        session_date: today,
+        contractions: JSON.stringify(CONTRACTION.contractions),
+        last_end_time: CONTRACTION.lastEndTime,
+        updated_at: new Date().toISOString()
+      }, { 
+        onConflict: 'user_id,session_date' 
+      }).then(() => {
+        console.log('✅ Contractions synced to Supabase');
+      }).catch(err => {
+        console.error('❌ Failed to sync contractions to Supabase:', err);
+      });
     }
   }
 
   /**
-   * Load contractions from localStorage
+   * Load contractions from Supabase first, then fallback to localStorage
    */
-  function loadContractions() {
+  async function loadContractions() {
+    // Try loading from Supabase first (cross-device sync)
+    if (window.user && window.supa) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const { data, error } = await window.supa
+          .from('contraction_sessions')
+          .select('contractions, last_end_time')
+          .eq('user_id', window.user.id)
+          .eq('session_date', today)
+          .maybeSingle();
+        
+        if (!error && data) {
+          CONTRACTION.contractions = JSON.parse(data.contractions || '[]');
+          CONTRACTION.lastEndTime = data.last_end_time || null;
+          
+          // Also save to localStorage for offline access
+          localStorage.setItem('mamacare_contractions', JSON.stringify({
+            contractions: CONTRACTION.contractions,
+            lastEndTime: CONTRACTION.lastEndTime
+          }));
+          
+          console.log('✅ Loaded contractions from Supabase');
+          
+          if (CONTRACTION.contractions.length > 0) {
+            $('#contractionStats').style.display = 'grid';
+            updateStats();
+          }
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to load from Supabase, trying localStorage:', e);
+      }
+    }
+    
+    // Fallback to localStorage
     try {
       const saved = localStorage.getItem('mamacare_contractions');
       if (saved) {

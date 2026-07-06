@@ -1,6 +1,315 @@
 // MamaCare v8.0 — Bundled App
-// Combined from 14 source files
-// Build: 2026-06-13T06:03:47.165Z
+// Combined from 20 source files
+// Build: 2026-07-06T05:25:34.886Z
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-templates.js
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * MamaCare — Template Helper System
+ * Replaces massive HTML string literals with maintainable functions
+ * 
+ * Benefits:
+ * - Cleaner code (no inline styles in JS strings)
+ * - Easier to modify (designers can work with HTML/CSS)
+ * - Reusable components
+ * - Better syntax highlighting
+ */
+
+// ═══════════════════════════════════════════════════════════
+// UTILITY FUNCTIONS
+// ═══════════════════════════════════════════════════════════
+
+const html = {
+  /**
+   * Escape HTML to prevent XSS (backup to DOMPurify)
+   */
+  escape: (str) => {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  },
+
+  /**
+   * Sanitize and set HTML (uses DOMPurify if available)
+   */
+  safe: (htmlString) => {
+    return window.DOMPurify ? DOMPurify.sanitize(htmlString) : htmlString;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// COMPONENT TEMPLATES
+// ═══════════════════════════════════════════════════════════
+
+const Templates = {
+  
+  /**
+   * Card Component
+   */
+  card: ({ title, label, content, className = '' }) => `
+    <div class="card ${className}">
+      ${label ? `<div class="sec-label">${html.escape(label)}</div>` : ''}
+      ${title ? `<div class="sec-title">${html.escape(title)}</div>` : ''}
+      ${content}
+    </div>
+  `,
+
+  /**
+   * Stat Card (3-column grid)
+   */
+  statCard: ({ icon, label, value, color = 'var(--accent)' }) => `
+    <div style="text-align:center;padding:12px;background:rgba(232,160,168,0.06);border-radius:12px;border:1px solid var(--blush)">
+      <i data-lucide="${icon}" style="width:20px;height:20px;color:${color};margin-bottom:6px"></i>
+      <div style="font-size:22px;font-weight:700;color:${color};margin-bottom:2px">${html.escape(value)}</div>
+      <div style="font-size:11.5px;color:var(--muted);font-weight:500">${html.escape(label)}</div>
+    </div>
+  `,
+
+  /**
+   * Empty State
+   */
+  emptyState: ({ icon = 'flower-2', message, actionText, actionClick }) => `
+    <div style="text-align:center;padding:32px 20px;color:var(--muted)">
+      <i data-lucide="${icon}" style="width:48px;height:48px;margin-bottom:12px;opacity:0.3"></i>
+      <p style="font-size:13px;margin-bottom:16px">${html.escape(message)}</p>
+      ${actionText ? `<button class="btn btn-g btn-sm" onclick="${actionClick}">${html.escape(actionText)}</button>` : ''}
+    </div>
+  `,
+
+  /**
+   * List Item (generic)
+   */
+  listItem: ({ icon, title, subtitle, meta, actions, className = '' }) => `
+    <div class="${className}" style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            ${icon ? `<i data-lucide="${icon}" style="width:18px;height:18px;color:var(--accent)"></i>` : ''}
+            <span style="font-size:14px;font-weight:600;color:var(--warm)">${title}</span>
+          </div>
+          ${subtitle ? `<p style="font-size:13px;line-height:1.6;color:var(--muted);margin:4px 0">${subtitle}</p>` : ''}
+          ${meta ? `<div style="font-size:12px;color:var(--muted);margin-top:6px">${meta}</div>` : ''}
+        </div>
+        ${actions ? `<div style="display:flex;gap:8px;align-items:center">${actions}</div>` : ''}
+      </div>
+    </div>
+  `,
+
+  /**
+   * Feature Grid Item (dashboard)
+   */
+  featureItem: ({ icon, label, page, color, bgColor }) => `
+    <div class="feature-item" data-page="${page}" ${bgColor ? `style="background:${bgColor};border-color:${color}"` : ''}>
+      <div class="mi-icon">
+        <i data-lucide="${icon}" ${color ? `style="color:${color}"` : ''}></i>
+      </div>
+      <div class="mi-label" ${color ? `style="color:${color}"` : ''}>${html.escape(label)}</div>
+    </div>
+  `,
+
+  /**
+   * Timeline Progress Bar
+   */
+  progressBar: ({ percent, color = 'var(--accent)' }) => `
+    <div class="timeline-bar">
+      <div class="timeline-fill" style="width:${percent}%;background:${color}"></div>
+    </div>
+    <div style="text-align:right;font-size:12.5px;font-weight:700;color:${color};margin-top:4px">
+      ${Math.round(percent)}%
+    </div>
+  `,
+
+  /**
+   * Tab Button
+   */
+  tabButton: ({ label, active = false, onClick, icon }) => `
+    <button class="tab-btn ${active ? 'active' : ''}" onclick="${onClick}">
+      ${icon ? `<i data-lucide="${icon}" class="app-icon-inline"></i>` : ''}
+      ${html.escape(label)}
+    </button>
+  `,
+
+  /**
+   * Badge/Pill
+   */
+  badge: ({ text, color = 'var(--accent)', bg = 'var(--blush)' }) => `
+    <span style="font-size:11px;background:${bg};color:${color};padding:2px 9px;border-radius:50px;font-weight:500">
+      ${html.escape(text)}
+    </span>
+  `,
+
+  /**
+   * Icon Button
+   */
+  iconButton: ({ icon, onClick, title = '', color = 'var(--muted)' }) => `
+    <button onclick="${onClick}" title="${html.escape(title)}" 
+            style="background:none;border:none;color:${color};cursor:pointer;padding:4px">
+      <i data-lucide="${icon}" class="app-icon-inline"></i>
+    </button>
+  `,
+
+  /**
+   * Hero Section (with gradient)
+   */
+  hero: ({ emoji, title, subtitle, action }) => `
+    <div style="text-align:center;padding:28px 20px;background:linear-gradient(135deg,rgba(232,160,168,.12),rgba(247,196,168,.1));border-radius:20px;margin-bottom:20px">
+      ${emoji ? `<div style="font-size:48px;margin-bottom:12px">${emoji}</div>` : ''}
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.7rem,4.5vw,2.2rem);font-weight:400;color:var(--warm);margin-bottom:8px">
+        ${title}
+      </h2>
+      ${subtitle ? `<p style="font-size:14px;color:var(--muted);line-height:1.6">${subtitle}</p>` : ''}
+      ${action ? action : ''}
+    </div>
+  `,
+
+  /**
+   * Input Group
+   */
+  inputGroup: ({ label, id, type = 'text', placeholder = '', value = '', required = false }) => `
+    <div>
+      ${label ? `<label for="${id}">${html.escape(label)}${required ? ' <span style="color:var(--danger)">*</span>' : ''}</label>` : ''}
+      <input type="${type}" id="${id}" placeholder="${html.escape(placeholder)}" ${value ? `value="${html.escape(value)}"` : ''} ${required ? 'required' : ''}>
+    </div>
+  `,
+
+  /**
+   * Select Group
+   */
+  selectGroup: ({ label, id, options, selected = '' }) => `
+    <div>
+      ${label ? `<label for="${id}">${html.escape(label)}</label>` : ''}
+      <select id="${id}">
+        ${options.map(opt => `
+          <option value="${html.escape(opt.value)}" ${opt.value === selected ? 'selected' : ''}>
+            ${html.escape(opt.label)}
+          </option>
+        `).join('')}
+      </select>
+    </div>
+  `,
+
+  /**
+   * Chart Container
+   */
+  chartContainer: ({ id, height = 180 }) => `
+    <div style="position:relative;height:${height}px;margin:16px 0">
+      <canvas id="${id}" height="${height}"></canvas>
+    </div>
+  `,
+
+  /**
+   * Alert/Flash Message
+   */
+  alert: ({ type = 'info', message, icon }) => {
+    const colors = {
+      success: { bg: '#e8f5e9', color: '#2e7d32', icon: 'check-circle' },
+      error: { bg: '#ffebee', color: '#c62828', icon: 'alert-circle' },
+      warning: { bg: '#fff3e0', color: '#e65100', icon: 'alert-triangle' },
+      info: { bg: '#e3f2fd', color: '#1565c0', icon: 'info' }
+    };
+    const theme = colors[type] || colors.info;
+    return `
+      <div style="background:${theme.bg};color:${theme.color};padding:12px 16px;border-radius:12px;display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <i data-lucide="${icon || theme.icon}" style="width:20px;height:20px;flex-shrink:0"></i>
+        <div style="flex:1;font-size:13px;line-height:1.5">${message}</div>
+      </div>
+    `;
+  },
+
+  /**
+   * Modal/Dialog Structure
+   */
+  modal: ({ title, content, actions, closeButton = true }) => `
+    <div class="modal-overlay" onclick="this.remove()">
+      <div class="modal-content" onclick="event.stopPropagation()" style="background:white;border-radius:20px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h3 style="font-size:1.3rem;color:var(--warm);margin:0">${html.escape(title)}</h3>
+          ${closeButton ? `<button onclick="this.closest('.modal-overlay').remove()" style="background:none;border:none;cursor:pointer;color:var(--muted)"><i data-lucide="x" style="width:24px;height:24px"></i></button>` : ''}
+        </div>
+        <div class="modal-body">
+          ${content}
+        </div>
+        ${actions ? `<div class="modal-actions" style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">${actions}</div>` : ''}
+      </div>
+    </div>
+  `
+};
+
+// ═══════════════════════════════════════════════════════════
+// LAYOUT HELPERS
+// ═══════════════════════════════════════════════════════════
+
+const Layout = {
+  /**
+   * 2-column grid
+   */
+  grid2: (items) => `
+    <div class="g2">
+      ${items.join('')}
+    </div>
+  `,
+
+  /**
+   * 3-column grid
+   */
+  grid3: (items) => `
+    <div class="g3">
+      ${items.join('')}
+    </div>
+  `,
+
+  /**
+   * Feature grid (4 columns)
+   */
+  featureGrid: (items) => `
+    <div class="feature-grid db-grid-4">
+      ${items.join('')}
+    </div>
+  `,
+
+  /**
+   * Tab row
+   */
+  tabRow: (tabs) => `
+    <div class="tab-row">
+      ${tabs.join('')}
+    </div>
+  `,
+
+  /**
+   * Section with header
+   */
+  section: ({ label, title, content, className = '' }) => `
+    <div class="dashboard-section ${className}">
+      ${label || title ? `
+        <div class="section-header">
+          ${label ? `<div class="sec-label">${html.escape(label)}</div>` : ''}
+          ${title ? `<div class="sec-title">${html.escape(title)}</div>` : ''}
+        </div>
+      ` : ''}
+      ${content}
+    </div>
+  `
+};
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT (Make available globally)
+// ═══════════════════════════════════════════════════════════
+
+window.Templates = Templates;
+window.Layout = Layout;
+window.html = html;
+
+console.log('📦 Template System loaded');
+console.log('  Components:', Object.keys(Templates).length);
+console.log('  Layouts:', Object.keys(Layout).length);
 
 
 // ═══════════════════════════════════════════════════════════
@@ -11,6 +320,27 @@
  * MamaCare v8.0 — app.js (FULLY CONNECTED & STABLE)
  * Fixes: Centralized Event Listeners, Stabilized Routing, Failsafe DB
  */
+// ══════════════════════════════════════
+// XSS PROTECTION: HTML ESCAPING
+// ══════════════════════════════════════
+/**
+ * Escape HTML to prevent XSS attacks
+ * Use this for ALL user-entered content before inserting into DOM
+ */
+window.escapeHTML = function(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\//g, '&#x2F;');
+};
+
+// Alias for convenience
+const escapeHTML = window.escapeHTML;
+
 // ══════════════════════════════════════
 // SUPABASE CONFIG (WITH FAILSAFE)
 // ══════════════════════════════════════
@@ -653,6 +983,10 @@ async function onLogin(u) {
   if (window.INDIA)    window.INDIA.initIndia();
   if (window.SMART)    window.SMART.initSmart();
   
+  // Initialize new features
+  if (window.initASHAChatbot) window.initASHAChatbot();
+  if (window.initBreastfeedingTracker) window.initBreastfeedingTracker();
+  
   renderIcons();
 }
 
@@ -768,7 +1102,7 @@ function goTo(id) {
       ayurveda: () => { if(window.INDIA) window.INDIA.renderAyurvedaTri(1); },
       sympdiary: () => { if(window.INDIA) window.INDIA.loadSymptomTrend(); },
       doctor: () => { if(window.SMART) window.SMART.loadDoctorPortal(); },
-      contractions: () => { if(window.renderContractionHistory) window.renderContractionHistory(); },
+      contractions: () => { if(window.initContractionTimer) window.initContractionTimer(); },
     };
     
     if(loads[id]) loads[id]();
@@ -1509,8 +1843,27 @@ function renderJournal(){
     const photoHtml = e.photo_url
       ? `<img src="${e.photo_url}" style="width:100%;border-radius:10px;margin-top:8px;max-height:200px;object-fit:cover;" loading="lazy" />`
       : '';
-    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}${photoHtml}</div>`;
-  }).join('') : '<p style="text-align:center;color:var(--muted);font-size:13px;padding:18px">Koi entry nahi. Pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>';
+    
+    // Using Templates.listItem from app-templates.js
+    return Templates.listItem({
+      icon: moodIcon,
+      title: fmtDate(e.entry_date),
+      subtitle: e.content_text ? e.content_text.replace(/\n/g,'<br>') : '',
+      meta: photoHtml,
+      actions: `
+        ${e.week_number ? Templates.badge({ text: `W${e.week_number}` }) : ''}
+        ${Templates.iconButton({
+          icon: 'trash-2',
+          onClick: `MC.deleteJournalEntry('${e.id}')`,
+          title: 'Delete'
+        })}
+      `
+    });
+  }).join('') : Templates.emptyState({
+    icon: 'flower-2',
+    message: 'Koi entry nahi. Pehli yaad likho!'
+  });
+  
   const el=$('journalEntries'); if(el){ el.innerHTML=html; }
   const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }
   renderIcons();
@@ -1846,7 +2199,7 @@ function renderAppointments(){
   const el=$('apptList');if(!el)return;
   const upcoming=apptList.filter(a=>!a.is_completed);const done=apptList.filter(a=>a.is_completed);
   if(!apptList.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:14px">Koi appointment nahi. Upar se add karein!</p>';return;}
-  el.innerHTML=[...upcoming,...done].map(a=>{const d=new Date(a.appt_date);return`<div class="appt-item" style="opacity:${a.is_completed?'.6':'1'}"><div class="appt-date-box" style="${a.is_completed?'background:var(--blush); color:var(--muted)':''}"><div class="appt-day">${d.getDate()}</div><div class="appt-mon">${d.toLocaleDateString('en-IN',{month:'short'})}</div></div><div class="appt-info"><div class="appt-title" style="${a.is_completed?'text-decoration:line-through':''}">${a.title}</div><div class="appt-sub">${[a.doctor_name,a.hospital,a.appt_time].filter(Boolean).join(' • ')}</div>${a.notes?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${a.notes}</div>`:''}</div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><button onclick="MC.toggleApptDone('${a.id}')" style="padding:5px 11px;border-radius:50px;font-size:11.5px;cursor:pointer;border:1.5px solid ${a.is_completed?'var(--green)':'var(--blush)'};background:${a.is_completed?'var(--green)':'white'};color:${a.is_completed?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${a.is_completed?'<i data-lucide="check" class="app-icon-inline"></i>':'Done?'}</button><button onclick="MC.deleteAppt('${a.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`;}).join('');
+  el.innerHTML=[...upcoming,...done].map(a=>{const d=new Date(a.appt_date);return`<div class="appt-item" style="opacity:${a.is_completed?'.6':'1'}"><div class="appt-date-box" style="${a.is_completed?'background:var(--blush); color:var(--muted)':''}"><div class="appt-day">${d.getDate()}</div><div class="appt-mon">${d.toLocaleDateString('en-IN',{month:'short'})}</div></div><div class="appt-info"><div class="appt-title" style="${a.is_completed?'text-decoration:line-through':''}">${escapeHTML(a.title)}</div><div class="appt-sub">${[escapeHTML(a.doctor_name),escapeHTML(a.hospital),a.appt_time].filter(Boolean).join(' • ')}</div>${a.notes?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${escapeHTML(a.notes)}</div>`:''}</div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><button onclick="MC.toggleApptDone('${a.id}')" style="padding:5px 11px;border-radius:50px;font-size:11.5px;cursor:pointer;border:1.5px solid ${a.is_completed?'var(--green)':'var(--blush)'};background:${a.is_completed?'var(--green)':'white'};color:${a.is_completed?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${a.is_completed?'<i data-lucide="check" class="app-icon-inline"></i>':'Done?'}</button><button onclick="MC.deleteAppt('${a.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`;}).join('');
   renderIcons();
 }
 
@@ -2025,7 +2378,7 @@ async function delEC(i){myContacts.splice(i,1);if(user && supa)await supa.from('
 
 function renderContacts(){
   const el=$('customContacts');if(!el)return;
-  el.innerHTML=myContacts.length?myContacts.map((c,i)=>`<div class="sos-contact"><div><div class="sname"><i data-lucide="user" class="app-icon-inline"></i> ${c.name} <span style="font-size:11px;color:var(--muted)">(${c.relation})</span></div><div class="snum">${c.phone}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${c.phone}" style="padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i></a><button onclick="MC.delEC(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:12.5px;color:var(--muted);text-align:center;padding:8px">Koi personal contact nahi.</p>';
+  el.innerHTML=myContacts.length?myContacts.map((c,i)=>`<div class="sos-contact"><div><div class="sname"><i data-lucide="user" class="app-icon-inline"></i> ${escapeHTML(c.name)} <span style="font-size:11px;color:var(--muted)">(${escapeHTML(c.relation)})</span></div><div class="snum">${escapeHTML(c.phone)}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${escapeHTML(c.phone)}" style="padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i></a><button onclick="MC.delEC(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:12.5px;color:var(--muted);text-align:center;padding:8px">Koi personal contact nahi.</p>';
   renderIcons();
 }
 
@@ -9554,96 +9907,335 @@ function checkDoctorView() {
 checkDoctorView();
 
 // ════════════════════════════════════════
-// 6. MILESTONE SHARE CARDS
+// 6. MILESTONE SHARE CARDS (ENHANCED)
 // ════════════════════════════════════════
-function generateMilestoneCard() {
-  const week    = document.getElementById('shareWeekInput')?.value || '20';
+
+// Card templates with predefined styles
+const CARD_THEMES = {
+  classic: {
+    name: 'Classic Pink',
+    bgGradient: ['#fdf6f0', '#fce8e8', '#fdf0e8'],
+    borderColor: '#e8a0a8',
+    innerBorderColor: '#f5d5d8',
+    weekColor: '#c97b7b',
+    textColor: '#4a2c2a',
+    brandColor: '#9a7070'
+  },
+  modern: {
+    name: 'Modern Purple',
+    bgGradient: ['#f5f3ff', '#ede9fe', '#f3e8ff'],
+    borderColor: '#a855c8',
+    innerBorderColor: '#c4b5fd',
+    weekColor: '#7c3aed',
+    textColor: '#3b1f63',
+    brandColor: '#6d28d9'
+  },
+  soft: {
+    name: 'Soft Peach',
+    bgGradient: ['#fff7ed', '#ffedd5', '#fed7aa'],
+    borderColor: '#f59e0b',
+    innerBorderColor: '#fbbf24',
+    weekColor: '#d97706',
+    textColor: '#78350f',
+    brandColor: '#b45309'
+  },
+  elegant: {
+    name: 'Elegant Rose',
+    bgGradient: ['#fdf2f8', '#fce7f3', '#fbcfe8'],
+    borderColor: '#ec4899',
+    innerBorderColor: '#f9a8d4',
+    weekColor: '#db2777',
+    textColor: '#831843',
+    brandColor: '#be185d'
+  },
+  calm: {
+    name: 'Calm Blue',
+    bgGradient: ['#eff6ff', '#dbeafe', '#bfdbfe'],
+    borderColor: '#3b82f6',
+    innerBorderColor: '#93c5fd',
+    weekColor: '#2563eb',
+    textColor: '#1e3a8a',
+    brandColor: '#1d4ed8'
+  }
+};
+
+let currentTheme = 'classic';
+
+// Analytics helper
+function trackMilestoneEvent(eventName, properties = {}) {
+  // Supabase analytics
+  if (window.user && window.supa) {
+    window.supa.from('analytics_events').insert({
+      user_id: window.user.id,
+      event_name: eventName,
+      event_properties: properties,
+      created_at: new Date().toISOString()
+    }).then(() => {}).catch(() => {});
+  }
+  
+  // Console log for debugging
+  console.log('📊 Milestone Event:', eventName, properties);
+}
+
+function generateMilestoneCard(themeKey) {
+  if (themeKey) {
+    currentTheme = themeKey;
+    // Track theme selection
+    trackMilestoneEvent('milestone_theme_selected', { theme_name: themeKey });
+  }
+  const theme = CARD_THEMES[currentTheme];
+  const week = document.getElementById('shareWeekInput')?.value || '20';
   const message = document.getElementById('shareMessageInput')?.value || `Week ${week} mein hun! 🌸`;
-  const emoji   = document.getElementById('shareEmojiInput')?.value || '🌸';
-  const canvas  = document.getElementById('milestoneCanvas');
+  const emoji = document.getElementById('shareEmojiInput')?.value || '🌸';
+  const canvas = document.getElementById('milestoneCanvas');
   if (!canvas) return;
-  const ctx     = canvas.getContext('2d');
-  canvas.width  = 800;
-  canvas.height = 800;
+  const ctx = canvas.getContext('2d');
+  canvas.width = 1080;  // Instagram/WhatsApp optimal size
+  canvas.height = 1080;
 
   // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, 800, 800);
-  grad.addColorStop(0, '#fdf6f0');
-  grad.addColorStop(0.5, '#fce8e8');
-  grad.addColorStop(1, '#fdf0e8');
+  const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+  grad.addColorStop(0, theme.bgGradient[0]);
+  grad.addColorStop(0.5, theme.bgGradient[1]);
+  grad.addColorStop(1, theme.bgGradient[2]);
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 800, 800);
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Decorative circles (background)
+  ctx.globalAlpha = 0.15;
+  ctx.fillStyle = theme.borderColor;
+  ctx.beginPath();
+  ctx.arc(100, 100, 150, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(980, 900, 180, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
   // Border
-  ctx.strokeStyle = '#e8a0a8';
-  ctx.lineWidth = 8;
-  ctx.roundRect(20, 20, 760, 760, 30);
+  ctx.strokeStyle = theme.borderColor;
+  ctx.lineWidth = 12;
+  roundRect(ctx, 30, 30, 1020, 1020, 40);
   ctx.stroke();
 
   // Inner border
-  ctx.strokeStyle = '#f5d5d8';
-  ctx.lineWidth = 3;
-  ctx.roundRect(40, 40, 720, 720, 20);
+  ctx.strokeStyle = theme.innerBorderColor;
+  ctx.lineWidth = 4;
+  roundRect(ctx, 55, 55, 970, 970, 30);
   ctx.stroke();
 
+  // Top decorative element
+  ctx.fillStyle = theme.borderColor;
+  ctx.globalAlpha = 0.1;
+  roundRect(ctx, 350, 120, 380, 140, 20);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
   // Emoji
-  ctx.font = '140px serif';
+  ctx.font = '180px serif';
   ctx.textAlign = 'center';
-  ctx.fillText(emoji, 400, 280);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, 540, 280);
 
-  // Week text
-  ctx.fillStyle = '#c97b7b';
-  ctx.font = 'bold 72px serif';
-  ctx.fillText(`Week ${week}`, 400, 390);
+  // Week badge background
+  ctx.fillStyle = theme.weekColor;
+  ctx.globalAlpha = 0.12;
+  roundRect(ctx, 280, 360, 520, 100, 50);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
-  // Divider
-  ctx.strokeStyle = '#e8a0a8';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(200, 420); ctx.lineTo(600, 420); ctx.stroke();
+  // "Week" label
+  ctx.fillStyle = theme.weekColor;
+  ctx.font = 'bold 45px "DM Sans", sans-serif';
+  ctx.fillText('WEEK', 540, 395);
 
-  // Message
-  ctx.fillStyle = '#4a2c2a';
-  ctx.font = '32px Arial';
-  // Word wrap
+  // Week number
+  ctx.font = 'bold 90px "Cormorant Garamond", serif';
+  ctx.fillStyle = theme.weekColor;
+  ctx.fillText(week, 540, 480);
+
+  // Decorative divider
+  ctx.strokeStyle = theme.borderColor;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(320, 550);
+  ctx.lineTo(760, 550);
+  ctx.stroke();
+  
+  // Small decorative dots
+  ctx.fillStyle = theme.borderColor;
+  ctx.beginPath();
+  ctx.arc(300, 550, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(780, 550, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Message - word wrap with better styling
+  ctx.fillStyle = theme.textColor;
+  ctx.font = '38px "DM Sans", sans-serif';
   const words = message.split(' ');
-  let line = '', y = 480;
+  let line = '', y = 640;
+  const maxWidth = 880;
+  const lineHeight = 56;
+  
   for (const word of words) {
     const test = line + word + ' ';
-    if (ctx.measureText(test).width > 660 && line !== '') {
-      ctx.fillText(line, 400, y); line = word + ' '; y += 44;
-    } else line = test;
+    if (ctx.measureText(test).width > maxWidth && line !== '') {
+      ctx.fillText(line.trim(), 540, y);
+      line = word + ' ';
+      y += lineHeight;
+    } else {
+      line = test;
+    }
   }
-  ctx.fillText(line, 400, y);
+  ctx.fillText(line.trim(), 540, y);
+
+  // Bottom decorative section
+  ctx.fillStyle = theme.borderColor;
+  ctx.globalAlpha = 0.08;
+  roundRect(ctx, 150, 830, 780, 120, 60);
+  ctx.fill();
+  ctx.globalAlpha = 1;
 
   // Branding
-  ctx.fillStyle = '#9a7070';
-  ctx.font = '22px Arial';
-  ctx.fillText('🌸 MamaCare — mamacare.gyanam.shop', 400, 740);
+  ctx.fillStyle = theme.brandColor;
+  ctx.font = 'bold 26px "DM Sans", sans-serif';
+  ctx.fillText('🌸 Mama Gyan', 540, 880);
+  ctx.font = '22px "DM Sans", sans-serif';
+  ctx.fillStyle = theme.brandColor;
+  ctx.globalAlpha = 0.7;
+  ctx.fillText('mamacare.gyanam.shop', 540, 915);
+  ctx.globalAlpha = 1;
 
   // Show preview
   canvas.style.display = 'block';
+  const cardPreviewLabel = document.getElementById('cardPreviewLabel');
+  if (cardPreviewLabel) cardPreviewLabel.style.display = 'block';
   document.getElementById('cardDownloadBtn').style.display = 'block';
+  
+  // Update theme selector active state
+  document.querySelectorAll('.theme-selector-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+  });
+  
+  // Scroll to preview
+  canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  // Track card generation
+  const hasCustomMessage = !document.querySelector('.btn.btn-g.btn-sm')?.textContent?.includes(message);
+  trackMilestoneEvent('milestone_card_generated', {
+    theme: currentTheme,
+    week_number: week,
+    has_custom_message: hasCustomMessage,
+    emoji: emoji
+  });
+}
+
+// Helper for rounded rectangles
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.arcTo(x + width, y, x + width, y + radius, radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+  ctx.lineTo(x + radius, y + height);
+  ctx.arcTo(x, y + height, x, y + height - radius, radius);
+  ctx.lineTo(x, y + radius);
+  ctx.arcTo(x, y, x + radius, y, radius);
+  ctx.closePath();
 }
 
 function downloadMilestoneCard() {
   const canvas = document.getElementById('milestoneCanvas');
   if (!canvas) return;
+  const week = document.getElementById('shareWeekInput')?.value || 'bump';
   const link = document.createElement('a');
-  link.download = `mamacare-week-${document.getElementById('shareWeekInput')?.value || 'bump'}.png`;
+  link.download = `mama-gyan-week-${week}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
+  
+  // Track download
+  trackMilestoneEvent('milestone_card_downloaded', {
+    theme: currentTheme,
+    week_number: week
+  });
 }
 
 function shareMilestoneCard() {
   const canvas = document.getElementById('milestoneCanvas');
   if (!canvas) return;
+  const week = document.getElementById('shareWeekInput')?.value || '20';
+  const shareText = `🌸 Week ${week} of my pregnancy journey! Made with Mama Gyan 💗\n\nTrack your pregnancy too: mamacare.gyanam.shop`;
+  
   canvas.toBlob(blob => {
-    const file = new File([blob], 'mamacare-milestone.png', { type: 'image/png' });
+    const file = new File([blob], `mama-gyan-week-${week}.png`, { type: 'image/png' });
+    
+    // Track share attempt
+    trackMilestoneEvent('milestone_card_share_clicked', {
+      theme: currentTheme,
+      week_number: week,
+      share_method: navigator.share ? 'native' : 'modal'
+    });
+    
+    // Try native share first (works on mobile)
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      navigator.share({ title: 'MamaCare Milestone!', files: [file] });
+      navigator.share({
+        title: `My Pregnancy Week ${week}`,
+        text: shareText,
+        files: [file]
+      }).catch(() => {
+        // Fallback to WhatsApp if share fails
+        shareToWhatsApp(blob, shareText, week);
+      });
     } else {
-      downloadMilestoneCard();
+      // Desktop or no share API - show options
+      showShareOptions(blob, shareText, week);
     }
+  });
+}
+
+function shareToWhatsApp(blob, text, week) {
+  // Track WhatsApp share
+  trackMilestoneEvent('milestone_card_share_clicked', {
+    theme: currentTheme,
+    week_number: week || document.getElementById('shareWeekInput')?.value,
+    share_method: 'whatsapp'
+  });
+  
+  // Convert blob to base64 for WhatsApp Web
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    const whatsappText = encodeURIComponent(text);
+    // Open WhatsApp with text (user can manually attach image)
+    const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
+    window.open(whatsappUrl, '_blank');
+    
+    // Also trigger download so user has the image ready
+    downloadMilestoneCard();
+  };
+  reader.readAsDataURL(blob);
+}
+
+function showShareOptions(blob, text, week) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:20px;padding:28px;max-width:400px;width:100%;position:relative;">
+      <button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#9a7070;">×</button>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#c97b7b;margin-bottom:12px;text-align:center;">Share Your Milestone 🌸</h3>
+      <p style="font-size:13px;color:#9a7070;text-align:center;margin-bottom:20px;">Download karke WhatsApp, Instagram, ya Facebook pe share karo!</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="SMART.downloadMilestoneCard();this.parentElement.parentElement.parentElement.remove();" style="background:linear-gradient(135deg,#e8a0a8,#f7c4a8);border:none;color:white;padding:14px;border-radius:50px;font-weight:600;cursor:pointer;font-size:15px;">⬇️ Download Image</button>
+        <button onclick="window.open('https://wa.me/?text=${encodeURIComponent(text)}','_blank');this.parentElement.parentElement.parentElement.remove();" style="background:#25D366;border:none;color:white;padding:14px;border-radius:50px;font-weight:600;cursor:pointer;font-size:15px;">💬 Share on WhatsApp</button>
+        <button onclick="navigator.clipboard.writeText('${text.replace(/'/g, "\\'")}');alert('Text copied! Now download the image and post together 🌸');this.parentElement.parentElement.parentElement.remove();" style="background:#f0e0e0;border:none;color:#c97b7b;padding:14px;border-radius:50px;font-weight:600;cursor:pointer;font-size:15px;">📋 Copy Caption</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
   });
 }
 
@@ -9777,6 +10369,16 @@ document.addEventListener('DOMContentLoaded', () => {
 function injectSmartPages() {
   if (document.getElementById('page-symptom-ai')) return;
   const footer = document.querySelector('footer');
+  
+  // Define CARD_THEMES in global scope for use in template
+  const themesHtml = `
+    <button class="theme-selector-btn active" data-theme="classic" onclick="SMART.generateMilestoneCard('classic')" style="padding:12px;border-radius:12px;border:2px solid #e8a0a8;background:linear-gradient(135deg,#fdf6f0,#fdf0e8);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#c97b7b;transition:all 0.3s">Classic Pink</button>
+    <button class="theme-selector-btn" data-theme="modern" onclick="SMART.generateMilestoneCard('modern')" style="padding:12px;border-radius:12px;border:2px solid #a855c8;background:linear-gradient(135deg,#f5f3ff,#f3e8ff);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#7c3aed;transition:all 0.3s">Modern Purple</button>
+    <button class="theme-selector-btn" data-theme="soft" onclick="SMART.generateMilestoneCard('soft')" style="padding:12px;border-radius:12px;border:2px solid #f59e0b;background:linear-gradient(135deg,#fff7ed,#fed7aa);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#d97706;transition:all 0.3s">Soft Peach</button>
+    <button class="theme-selector-btn" data-theme="elegant" onclick="SMART.generateMilestoneCard('elegant')" style="padding:12px;border-radius:12px;border:2px solid #ec4899;background:linear-gradient(135deg,#fdf2f8,#fbcfe8);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#db2777;transition:all 0.3s">Elegant Rose</button>
+    <button class="theme-selector-btn" data-theme="calm" onclick="SMART.generateMilestoneCard('calm')" style="padding:12px;border-radius:12px;border:2px solid #3b82f6;background:linear-gradient(135deg,#eff6ff,#bfdbfe);cursor:pointer;text-align:center;font-size:11px;font-weight:600;color:#2563eb;transition:all 0.3s">Calm Blue</button>
+  `;
+  
   const html = `
 <!-- SYMPTOM AI -->
 <div class="page" id="page-symptom-ai">
@@ -9837,36 +10439,74 @@ function injectSmartPages() {
   </div>
 </div>
 
-<!-- SHARE CARDS -->
+<!-- SHARE CARDS (ENHANCED) -->
 <div class="page" id="page-share-cards">
-  <div style="padding:20px 0 8px"><div class="sec-label">Share</div><div class="sec-title">Milestone Cards 📸</div></div>
+  <div style="padding:20px 0 8px"><div class="sec-label">Share Your Journey</div><div class="sec-title">Milestone Cards 📸</div></div>
+  
+  <!-- Theme Selector -->
   <div class="card">
-    <div class="sec-label">Customize</div>
-    <div class="g2" style="margin-bottom:10px">
-      <div><label>Week Number</label><input type="number" id="shareWeekInput" value="20" min="1" max="40"/></div>
-      <div><label>Emoji</label><input type="text" id="shareEmojiInput" value="🌸" maxlength="4"/></div>
+    <div class="sec-label">Choose Theme</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-top:10px">
+      ${themesHtml}
     </div>
-    <div style="margin-bottom:14px"><label>Message</label><input type="text" id="shareMessageInput" placeholder="Week 20 mein hun! Baby kick kar raha hai 💗"/></div>
-    <button class="btn btn-p btn-sm" onclick="SMART.generateMilestoneCard()">✨ Generate Card</button>
   </div>
+  
+  <!-- Customize Section -->
+  <div class="card">
+    <div class="sec-label">Customize Your Card</div>
+    <div class="g2" style="margin-bottom:10px">
+      <div><label>Week Number</label><input type="number" id="shareWeekInput" value="20" min="1" max="40" onchange="SMART.generateMilestoneCard()"/></div>
+      <div><label>Emoji</label><input type="text" id="shareEmojiInput" value="🌸" maxlength="4" onchange="SMART.generateMilestoneCard()" style="font-size:28px;text-align:center;padding:8px"/></div>
+    </div>
+    <div style="margin-bottom:14px"><label>Your Message (keep it short & sweet!)</label><textarea id="shareMessageInput" rows="2" placeholder="Week 20 mein hun! Baby kick kar raha hai 💗" style="resize:vertical" onchange="SMART.generateMilestoneCard()"></textarea></div>
+    <button class="btn btn-p" onclick="SMART.generateMilestoneCard()" style="width:100%">✨ Generate Card</button>
+  </div>
+  
+  <!-- Preview & Share -->
   <div class="card" style="text-align:center">
-    <canvas id="milestoneCanvas" style="display:none;max-width:100%;border-radius:16px;margin-bottom:14px"></canvas>
+    <div class="sec-label" id="cardPreviewLabel" style="display:none">Your Card Preview</div>
+    <canvas id="milestoneCanvas" style="display:none;max-width:100%;border-radius:16px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,0.15)"></canvas>
     <div id="cardDownloadBtn" style="display:none">
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-p" onclick="SMART.downloadMilestoneCard()">⬇️ Download</button>
-        <button class="btn btn-g" onclick="SMART.shareMilestoneCard()">📱 Share</button>
+        <button class="btn btn-p" onclick="SMART.shareMilestoneCard()" style="min-width:140px">📱 Share Now</button>
+        <button class="btn btn-g" onclick="SMART.downloadMilestoneCard()" style="min-width:140px">⬇️ Download</button>
       </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:12px">💡 Share on WhatsApp, Instagram, ya Facebook — log poochenge kahan se banaya! 🌸</p>
     </div>
   </div>
+  
+  <!-- Quick Templates -->
   <div class="card" style="background:rgba(232,160,168,.06)">
-    <div class="sec-title">Quick Templates</div>
-    <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="sec-title">Quick Templates — Tap to Use</div>
+    <div style="display:grid;gap:10px;margin-top:12px">
       ${[
-        ['20','🌸','Halfway there! Baby kicks feel kar rahi hun 💗'],
-        ['28','🌟','Teen-teesra mahina shuru! Almost there!'],
-        ['36','🥥','Full term approaching! Hospital bag ready hai 🏥'],
-        ['40','🎊','Due date! Baby se milne wali hun! 💗'],
-      ].map(([wk,em,msg]) => `<button class="btn btn-g btn-sm" style="text-align:left" onclick="document.getElementById('shareWeekInput').value='${wk}';document.getElementById('shareEmojiInput').value='${em}';document.getElementById('shareMessageInput').value='${msg}'">Week ${wk}: ${msg}</button>`).join('')}
+        ['12','🌱','First trimester khatam! Morning sickness slowly kam ho rahi hai 🌸'],
+        ['20','🎀','Halfway there! Gender reveal ho gaya — its a surprise! 💗'],
+        ['24','👶','Baby movements regular feel hoti hain ab. Best feeling ever! 💕'],
+        ['28','🌟','Third trimester shuru! Ab baby ka weight tez badhega 🥰'],
+        ['32','🎊','8 mahine pura! Hospital bag pack kar rahi hun 👶'],
+        ['36','💗','Full term approaching! Kisi bhi din baby aa sakta hai 🌸'],
+        ['38','🍼','Bas do hafte bache! Ready to meet my little one! 💝'],
+        ['40','🎉','Due date today! Baby aa jaao, we are waiting! 👶💗'],
+      ].map(([wk,em,msg]) => `
+        <button class="btn btn-g btn-sm" style="text-align:left;padding:12px 16px;display:flex;align-items:center;gap:10px;justify-content:flex-start" onclick="document.getElementById('shareWeekInput').value='${wk}';document.getElementById('shareEmojiInput').value='${em}';document.getElementById('shareMessageInput').value='${msg}';SMART.generateMilestoneCard()">
+          <span style="font-size:24px;flex-shrink:0">${em}</span>
+          <span style="flex:1;font-size:13px;line-height:1.4"><strong>Week ${wk}:</strong> ${msg}</span>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+  
+  <!-- Growth Tips -->
+  <div class="card" style="background:linear-gradient(135deg,rgba(106,184,154,.08),rgba(106,184,154,.05))">
+    <div class="sec-title">💡 Viral Growth Tips</div>
+    <div style="font-size:13px;line-height:1.8;color:var(--warm)">
+      ✅ <strong>Best time to post:</strong> Morning 8-10 AM ya evening 7-9 PM<br>
+      ✅ <strong>Weekly ritual:</strong> Har Sunday apna week update share karo<br>
+      ✅ <strong>Tag karein:</strong> Family & friends ko WhatsApp pe directly bhejo<br>
+      ✅ <strong>Story bhi lagao:</strong> Instagram story mein bhi share karo<br>
+      ✅ <strong>Compare karein:</strong> Previous weeks ke cards ke saath collage banao<br>
+      💬 <strong>Caption idea:</strong> "Tracking my pregnancy with Mama Gyan! Join me: mamacare.gyanam.shop"
     </div>
   </div>
 </div>
@@ -9916,8 +10556,9 @@ window.SMART = {
   sendSymptomAI,
   analyzeFood,
   startBirthPlanAI, bpAISelect, bpAIBack, generateBirthPlanFromAI, printAIBirthPlan,
-  generateMilestoneCard, downloadMilestoneCard, shareMilestoneCard,
+  generateMilestoneCard, downloadMilestoneCard, shareMilestoneCard, shareToWhatsApp, showShareOptions,
   loadDoctorPortal, linkDoctor, copyDoctorLink,
+  CARD_THEMES, currentTheme, roundRect
 };
 
 
@@ -11037,4 +11678,2333 @@ window.ENHANCEMENTS = {
   saveMoodNote,
   rotateAffirmation,
 };
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-photo-storage.js
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * MamaCare — Photo Storage Module
+ * Cloudinary integration for journal photo backup
+ * 
+ * Free Tier: 25 GB storage + CDN
+ * Setup: cloudinary.com → Settings → Upload → Add unsigned preset
+ * 
+ * ⚠️ CRITICAL SECURITY WARNING ⚠️
+ * ═══════════════════════════════════════════════════════════════
+ * This module uses UNSIGNED Cloudinary uploads, which means:
+ * 
+ * 1. ANYONE with this code can upload to your Cloudinary account
+ * 2. Cloud name and preset are PUBLIC in the JavaScript bundle
+ * 3. Malicious actors could upload unlimited files until you hit 25 GB limit
+ * 
+ * REQUIRED CLOUDINARY DASHBOARD RESTRICTIONS:
+ * ═══════════════════════════════════════════════════════════════
+ * Go to: Cloudinary Dashboard → Settings → Upload → Your Preset → Edit
+ * 
+ * Set these restrictions:
+ * ✅ Allowed formats: jpg, jpeg, png, webp (NO exe, zip, pdf)
+ * ✅ Max file size: 5 MB (enforced server-side)
+ * ✅ Max image dimensions: 2048x2048
+ * ✅ Folder: mamacare-journals (restrict uploads to this folder only)
+ * ✅ Resource type: image (NOT raw or video)
+ * ✅ Overwrite: false (prevent file replacement attacks)
+ * ✅ Unique filename: true (prevent predictable URLs)
+ * 
+ * RECOMMENDED: Signed Uploads (Production)
+ * ═══════════════════════════════════════════════════════════════
+ * For production, replace unsigned uploads with signed uploads via
+ * Supabase Edge Function to hide API credentials and prevent abuse:
+ * 
+ * 1. Create supabase/functions/cloudinary-sign/index.ts
+ * 2. Generate signature server-side using CLOUDINARY_API_SECRET
+ * 3. Pass signature + timestamp to frontend
+ * 4. Use signed upload endpoint
+ * 
+ * This is a known security tradeoff for MVP speed vs. production security.
+ */
+
+// ═══════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════
+
+// Cloudinary Configuration
+// ⚠️ WARNING: These credentials are PUBLIC in browser JS bundle
+// Anyone can upload to this account until free tier limit (25 GB)
+// See security restrictions above for mitigation steps
+const CLOUDINARY_CONFIG = {
+  cloudName: 'dpaihqxq3',           // ⚠️ PUBLIC - visible in network tab
+  uploadPreset: 'mamacare_unsigned' // ⚠️ PUBLIC - no authentication required
+};
+
+// Feature flag (disable if Cloudinary not configured)
+const CLOUD_STORAGE_ENABLED = 
+  CLOUDINARY_CONFIG.cloudName !== 'YOUR_CLOUD_NAME';
+
+// ═══════════════════════════════════════════════════════════
+// CLOUDINARY UPLOAD
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Upload photo to Cloudinary
+ * @param {File} file - Photo file from input
+ * @param {Object} metadata - User metadata (userId, week, date)
+ * @returns {Promise<Object>} - { url, publicId, provider }
+ */
+window.uploadToCloudinary = async function(file, metadata = {}) {
+  if (!CLOUD_STORAGE_ENABLED) {
+    throw new Error('Cloudinary not configured');
+  }
+
+  // ── SECURITY VALIDATION ────────────────────────────────────
+  // Validate file type (client-side only - Cloudinary enforces server-side)
+  if (!file || !file.type.startsWith('image/')) {
+    throw new Error('Invalid image file');
+  }
+
+  // Whitelist allowed formats (prevent .exe, .zip, .js uploads)
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type.toLowerCase())) {
+    throw new Error(`Format not allowed. Use: JPG, PNG, or WebP`);
+  }
+
+  // Max 5 MB (client-side check - Cloudinary preset MUST also enforce this)
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    throw new Error('Image too large (max 5 MB)');
+  }
+
+  // CRITICAL: These checks are client-side only and can be bypassed
+  // Cloudinary Dashboard preset MUST enforce these restrictions server-side
+  // See security warnings at top of file for configuration instructions
+
+  try {
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
+    formData.append('folder', 'mamacare-journals');
+    
+    // Add metadata as context
+    if (metadata.userId) {
+      formData.append('context', `user_id=${metadata.userId}|week=${metadata.week || 'bump'}|date=${metadata.date || todayStr()}`);
+    }
+
+    // Upload to Cloudinary
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
+    
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Upload failed');
+    }
+
+    const data = await response.json();
+
+    return {
+      url: data.secure_url,      // HTTPS CDN URL
+      publicId: data.public_id,  // For deletion if needed
+      provider: 'cloudinary',
+      thumbnail: data.secure_url.replace('/upload/', '/upload/w_200,h_200,c_fill/'), // 200x200 thumbnail
+      width: data.width,
+      height: data.height,
+      format: data.format,
+      bytes: data.bytes
+    };
+
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    throw error;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// SUPABASE FALLBACK
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Upload to Supabase Storage (fallback)
+ * @param {File} file - Photo file
+ * @param {Object} metadata - User metadata
+ * @returns {Promise<Object>} - { url, provider }
+ */
+window.uploadToSupabase = async function(file, metadata = {}) {
+  if (!supa) throw new Error('Supabase not initialized');
+  if (!user) throw new Error('User not authenticated');
+
+  const fileName = `${user.id}/${metadata.date || todayStr()}-w${metadata.week || 'bump'}.jpg`;
+  
+  const { data, error } = await supa.storage
+    .from('journal-photos')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false // Don't overwrite existing
+    });
+
+  if (error) throw error;
+
+  // Get public URL
+  const { data: { publicUrl } } = supa.storage
+    .from('journal-photos')
+    .getPublicUrl(fileName);
+
+  return {
+    url: publicUrl,
+    provider: 'supabase',
+    fileName: fileName
+  };
+};
+
+// ═══════════════════════════════════════════════════════════
+// LOCAL DOWNLOAD (Last Resort)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Download photo to device (fallback)
+ * @param {File} file - Photo file
+ * @param {Object} metadata - User metadata
+ */
+window.downloadLocally = function(file, metadata = {}) {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mamacare-w${metadata.week || 'bump'}-${metadata.date || todayStr()}.jpg`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+// ═══════════════════════════════════════════════════════════
+// SMART UPLOAD (Main Function)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Smart photo upload with cascading fallbacks
+ * Tries: Cloudinary → Supabase → Local Download
+ * 
+ * @param {File} file - Photo file from input
+ * @param {Object} metadata - { userId, week, date }
+ * @returns {Promise<Object>} - { url, provider, ...details }
+ */
+window.smartPhotoUpload = async function(file, metadata = {}) {
+  // Ensure metadata
+  metadata.userId = metadata.userId || (user ? user.id : 'anonymous');
+  metadata.week = metadata.week || (window.currentWeek || null);
+  metadata.date = metadata.date || todayStr();
+
+  // Try Cloudinary first (25 GB free)
+  if (CLOUD_STORAGE_ENABLED) {
+    try {
+      const result = await uploadToCloudinary(file, metadata);
+      console.log('✅ Uploaded to Cloudinary:', result.url);
+      return result;
+    } catch (err) {
+      console.warn('⚠️ Cloudinary upload failed:', err.message);
+      flash('photo-upload-warn', 'Cloud backup unavailable, trying alternative...');
+    }
+  }
+
+  // Fallback to Supabase (1 GB free)
+  if (supa && user) {
+    try {
+      const result = await uploadToSupabase(file, metadata);
+      console.log('✅ Uploaded to Supabase:', result.url);
+      flash('photo-upload-success', 'Photo backed up successfully!');
+      return result;
+    } catch (err) {
+      console.warn('⚠️ Supabase upload failed:', err.message);
+      flash('photo-upload-error', 'Cloud backup failed. Saving to device only.');
+    }
+  }
+
+  // Last resort: Local download
+  downloadLocally(file, metadata);
+  console.log('📱 Photo saved to device only (no cloud backup)');
+  
+  return {
+    url: null,
+    provider: 'local',
+    localOnly: true
+  };
+};
+
+// ═══════════════════════════════════════════════════════════
+// COMPRESSION (Optional)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Compress image before upload (reduces bandwidth)
+ * @param {File} file - Original file
+ * @param {number} maxWidth - Max width (default 1200px)
+ * @param {number} quality - JPEG quality (default 0.85)
+ * @returns {Promise<Blob>} - Compressed blob
+ */
+window.compressImage = function(file, maxWidth = 1200, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      const img = new Image();
+      
+      img.onload = () => {
+        // Calculate dimensions
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to blob
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Compression failed'));
+          }
+        }, 'image/jpeg', quality);
+      };
+
+      img.onerror = () => reject(new Error('Image load failed'));
+      img.src = e.target.result;
+    };
+
+    reader.onerror = () => reject(new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+};
+
+// ═══════════════════════════════════════════════════════════
+// USAGE TRACKING (Free Tier Monitoring)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Track upload stats in localStorage
+ * Helps monitor free tier usage
+ */
+window.trackPhotoUpload = function(provider, bytes) {
+  const key = 'photo_upload_stats';
+  const stats = JSON.parse(localStorage.getItem(key) || '{}');
+  
+  const today = todayStr();
+  if (!stats[today]) stats[today] = { cloudinary: 0, supabase: 0, local: 0, bytes: 0 };
+  
+  stats[today][provider] = (stats[today][provider] || 0) + 1;
+  stats[today].bytes = (stats[today].bytes || 0) + bytes;
+  
+  // Keep only last 30 days
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+  Object.keys(stats).forEach(date => {
+    if (new Date(date) < cutoff) delete stats[date];
+  });
+  
+  localStorage.setItem(key, JSON.stringify(stats));
+};
+
+// ═══════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════
+
+console.log('📸 Photo Storage Module loaded');
+console.log('  Cloudinary:', CLOUD_STORAGE_ENABLED ? '✅ Enabled' : '⚠️ Not configured');
+console.log('  Supabase:', typeof supa !== 'undefined' ? '✅ Available' : '⚠️ Not available');
+
+if (!CLOUD_STORAGE_ENABLED) {
+  console.warn('⚠️ Cloudinary not configured!');
+  console.log('  1. Sign up at https://cloudinary.com (free)');
+  console.log('  2. Get cloud_name from Dashboard');
+  console.log('  3. Create unsigned upload preset: Settings → Upload → Add preset');
+  console.log('  4. Update CLOUDINARY_CONFIG in app-photo-storage.js');
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-contractions.js
+// ═══════════════════════════════════════════════════════════
+
+// @ts-nocheck
+/**
+ * MamaCare — Contraction Timer Module
+ * Tracks labor contractions with 5-1-1 rule alerts
+ */
+
+(function() {
+  const CONTRACTION = {
+    isRunning: false,
+    startTime: null,
+    elapsedTime: 0,
+    timerInterval: null,
+    contractions: [], // Array of {start, end, duration, frequency}
+    lastEndTime: null
+  };
+
+  /**
+   * Initialize contraction timer
+   */
+  window.initContractionTimer = function() {
+    loadContractions();
+    renderContractionHistory();
+    
+    // Set up event listeners
+    $('#startContractionBtn')?.addEventListener('click', startContraction);
+    $('#endContractionBtn')?.addEventListener('click', endContraction);
+    $('#resetContractionBtn')?.addEventListener('click', resetContractionTimer);
+    $('#exportContractionBtn')?.addEventListener('click', exportContractions);
+  };
+
+  /**
+   * Start timing a contraction
+   */
+  function startContraction() {
+    if (CONTRACTION.isRunning) return;
+
+    CONTRACTION.isRunning = true;
+    CONTRACTION.startTime = Date.now();
+    CONTRACTION.elapsedTime = 0;
+
+    // Update UI
+    $('#startContractionBtn').style.display = 'none';
+    $('#endContractionBtn').style.display = 'block';
+    $('#resetContractionBtn').style.display = 'block';
+    $('#contractionTimerLabel').textContent = 'Contracting...';
+    
+    // Add pulsing animation
+    $('#contractionCircle').classList.add('timer-active');
+
+    // Start timer display
+    CONTRACTION.timerInterval = setInterval(updateTimerDisplay, 100);
+  }
+
+  /**
+   * End the current contraction
+   */
+  function endContraction() {
+    if (!CONTRACTION.isRunning) return;
+
+    CONTRACTION.isRunning = false;
+    clearInterval(CONTRACTION.timerInterval);
+
+    const endTime = Date.now();
+    const duration = Math.round((endTime - CONTRACTION.startTime) / 1000); // in seconds
+    const frequency = CONTRACTION.lastEndTime 
+      ? Math.round((CONTRACTION.startTime - CONTRACTION.lastEndTime) / 1000 / 60) // in minutes
+      : null;
+
+    // Save contraction
+    const contraction = {
+      id: Date.now(),
+      start: CONTRACTION.startTime,
+      end: endTime,
+      duration: duration,
+      frequency: frequency,
+      date: new Date(CONTRACTION.startTime).toISOString()
+    };
+
+    CONTRACTION.contractions.unshift(contraction);
+    CONTRACTION.lastEndTime = endTime;
+
+    // Save to localStorage
+    saveContractions();
+
+    // Update UI
+    $('#startContractionBtn').style.display = 'block';
+    $('#endContractionBtn').style.display = 'none';
+    $('#contractionCircle').classList.remove('timer-active');
+    $('#contractionTimerLabel').textContent = 'Contraction Ended';
+    
+    // Show stats
+    $('#contractionStats').style.display = 'grid';
+    updateStats();
+    renderContractionHistory();
+
+    // Check for 5-1-1 rule
+    check511Rule();
+
+    // Reset for next contraction
+    setTimeout(() => {
+      $('#contractionTimerDisplay').textContent = '00:00';
+      $('#contractionTimerLabel').textContent = 'Press Start';
+    }, 2000);
+  }
+
+  /**
+   * Reset the timer (clears current timing only, not history)
+   */
+  function resetContractionTimer() {
+    if (CONTRACTION.isRunning) {
+      clearInterval(CONTRACTION.timerInterval);
+      CONTRACTION.isRunning = false;
+    }
+
+    CONTRACTION.startTime = null;
+    CONTRACTION.elapsedTime = 0;
+
+    $('#contractionTimerDisplay').textContent = '00:00';
+    $('#contractionTimerLabel').textContent = 'Press Start';
+    $('#startContractionBtn').style.display = 'block';
+    $('#endContractionBtn').style.display = 'none';
+    $('#resetContractionBtn').style.display = 'none';
+    $('#contractionCircle').classList.remove('timer-active');
+  }
+
+  /**
+   * Update timer display
+   */
+  function updateTimerDisplay() {
+    const elapsed = Date.now() - CONTRACTION.startTime;
+    const seconds = Math.floor(elapsed / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    $('#contractionTimerDisplay').textContent = 
+      `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+
+  /**
+   * Update statistics
+   */
+  function updateStats() {
+    const recent = CONTRACTION.contractions.slice(0, 10); // Last 10 contractions
+    
+    if (recent.length === 0) return;
+
+    // Last duration
+    const lastDuration = formatDuration(recent[0].duration);
+    $('#statLastDuration').textContent = lastDuration;
+
+    // Average duration
+    const avgDuration = recent.reduce((sum, c) => sum + c.duration, 0) / recent.length;
+    $('#statAvgDuration').textContent = formatDuration(Math.round(avgDuration));
+
+    // Frequency (avg time between contractions)
+    const withFreq = recent.filter(c => c.frequency !== null);
+    if (withFreq.length > 0) {
+      const avgFreq = withFreq.reduce((sum, c) => sum + c.frequency, 0) / withFreq.length;
+      $('#statFrequency').textContent = `${Math.round(avgFreq)} min`;
+    } else {
+      $('#statFrequency').textContent = '-';
+    }
+
+    // Total count today
+    const today = new Date().toDateString();
+    const todayCount = CONTRACTION.contractions.filter(c => 
+      new Date(c.start).toDateString() === today
+    ).length;
+    $('#statCount').textContent = todayCount;
+  }
+
+  /**
+   * Check for 5-1-1 rule (5 min apart, 1 min long, for 1 hour)
+   */
+  function check511Rule() {
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    const recentContractions = CONTRACTION.contractions.filter(c => c.start > oneHourAgo);
+
+    if (recentContractions.length < 6) return; // Need at least 6 contractions in an hour
+
+    // Check if all recent contractions meet criteria
+    const meets511 = recentContractions.every(c => {
+      // Duration: 45-90 seconds (giving some tolerance around 60)
+      const durationOk = c.duration >= 45 && c.duration <= 90;
+      
+      // Frequency: 3-7 minutes apart (giving tolerance around 5)
+      const freqOk = c.frequency !== null && c.frequency >= 3 && c.frequency <= 7;
+      
+      return durationOk && freqOk;
+    });
+
+    if (meets511) {
+      const alertCard = $('#alert511Card');
+      if (alertCard) alertCard.style.display = 'block';
+      
+      // Vibrate if supported
+      if ('vibrate' in navigator) {
+        navigator.vibrate([200, 100, 200, 100, 200]);
+      }
+
+      // Show notification if permission granted
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('MamaCare Alert', {
+          body: '5-1-1 Rule Alert! Your contractions match the labor pattern. Consider calling your doctor.',
+          icon: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
+          badge: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/180.png',
+          tag: '511-alert'
+        });
+      }
+    }
+  }
+
+  /**
+   * Dismiss 5-1-1 alert
+   */
+  window.dismissAlert511 = function() {
+    const alertCard = $('#alert511Card');
+    if (alertCard) alertCard.style.display = 'none';
+  };
+
+  /**
+   * Navigate to a section (for use in HTML onclick)
+   */
+  window.showSection = function(sectionName) {
+    if (window.goTo) {
+      window.goTo(sectionName);
+    } else {
+      console.error('Navigation function not available');
+    }
+  };
+
+  /**
+   * Render contraction history
+   */
+  function renderContractionHistory() {
+    const container = $('#contractionHistory');
+    if (!container) return;
+
+    if (CONTRACTION.contractions.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:40px 20px; color:var(--muted);">
+          <i data-lucide="timer" style="width:48px; height:48px; opacity:0.3; margin-bottom:12px;"></i>
+          <p style="font-size:14px;">No contractions tracked yet</p>
+          <p style="font-size:13px; margin-top:8px;">Start timing when you feel a contraction</p>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
+
+    // Group by date
+    const byDate = {};
+    CONTRACTION.contractions.forEach(c => {
+      const dateStr = new Date(c.start).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+      });
+      if (!byDate[dateStr]) byDate[dateStr] = [];
+      byDate[dateStr].push(c);
+    });
+
+    let html = '';
+    for (const [date, contractions] of Object.entries(byDate)) {
+      html += `
+        <div class="contraction-date-group">
+          <div class="contraction-date-header">${date} (${contractions.length} contractions)</div>
+          <div class="contraction-list">
+      `;
+
+      contractions.forEach((c, idx) => {
+        const time = new Date(c.start).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+        const duration = formatDuration(c.duration);
+        const frequency = c.frequency ? `${c.frequency} min apart` : 'First';
+
+        html += `
+          <div class="contraction-item">
+            <div class="contraction-time">${time}</div>
+            <div class="contraction-details">
+              <div class="contraction-duration">
+                <i data-lucide="clock" style="width:14px; height:14px;"></i>
+                ${duration}
+              </div>
+              <div class="contraction-frequency">
+                <i data-lucide="activity" style="width:14px; height:14px;"></i>
+                ${frequency}
+              </div>
+            </div>
+            <button class="btn-icon-sm" onclick="deleteContraction(${c.id})" title="Delete">
+              <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
+            </button>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+    lucide.createIcons();
+  }
+
+  /**
+   * Delete a contraction
+   */
+  window.deleteContraction = function(id) {
+    if (!confirm('Delete this contraction?')) return;
+    
+    CONTRACTION.contractions = CONTRACTION.contractions.filter(c => c.id !== id);
+    saveContractions();
+    updateStats();
+    renderContractionHistory();
+  };
+
+  /**
+   * Export contractions as CSV
+   */
+  function exportContractions() {
+    if (CONTRACTION.contractions.length === 0) {
+      alert('No contractions to export');
+      return;
+    }
+
+    // Create CSV content
+    let csv = 'Date,Time,Duration (seconds),Frequency (minutes)\n';
+    
+    CONTRACTION.contractions.slice().reverse().forEach(c => {
+      const date = new Date(c.start).toLocaleDateString('en-US');
+      const time = new Date(c.start).toLocaleTimeString('en-US');
+      const frequency = c.frequency || 'N/A';
+      csv += `${date},${time},${c.duration},${frequency}\n`;
+    });
+
+    // Create download
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `contractions-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Show success message
+    const exportBtn = $('#exportContractionBtn');
+    const originalText = exportBtn.innerHTML;
+    exportBtn.innerHTML = '<i data-lucide="check" class="app-icon-inline"></i> Exported';
+    lucide.createIcons();
+    
+    setTimeout(() => {
+      exportBtn.innerHTML = originalText;
+      lucide.createIcons();
+    }, 2000);
+  }
+
+  /**
+   * Format duration in seconds to readable string
+   */
+  function formatDuration(seconds) {
+    if (seconds < 60) {
+      return `${seconds}s`;
+    } else {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}m ${secs}s`;
+    }
+  }
+
+  /**
+   * Save contractions to localStorage AND Supabase
+   */
+  function saveContractions() {
+    try {
+      localStorage.setItem('mamacare_contractions', JSON.stringify({
+        contractions: CONTRACTION.contractions,
+        lastEndTime: CONTRACTION.lastEndTime
+      }));
+    } catch (e) {
+      console.error('Failed to save contractions to localStorage:', e);
+    }
+    
+    // CRITICAL: Also sync to Supabase for cross-device access and data safety
+    if (window.user && window.supa && CONTRACTION.contractions.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      window.supa.from('contraction_sessions').upsert({
+        user_id: window.user.id,
+        session_date: today,
+        contractions: JSON.stringify(CONTRACTION.contractions),
+        last_end_time: CONTRACTION.lastEndTime,
+        updated_at: new Date().toISOString()
+      }, { 
+        onConflict: 'user_id,session_date' 
+      }).then(() => {
+        console.log('✅ Contractions synced to Supabase');
+      }).catch(err => {
+        console.error('❌ Failed to sync contractions to Supabase:', err);
+      });
+    }
+  }
+
+  /**
+   * Load contractions from Supabase first, then fallback to localStorage
+   */
+  async function loadContractions() {
+    // Try loading from Supabase first (cross-device sync)
+    if (window.user && window.supa) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const { data, error } = await window.supa
+          .from('contraction_sessions')
+          .select('contractions, last_end_time')
+          .eq('user_id', window.user.id)
+          .eq('session_date', today)
+          .maybeSingle();
+        
+        if (!error && data) {
+          CONTRACTION.contractions = JSON.parse(data.contractions || '[]');
+          CONTRACTION.lastEndTime = data.last_end_time || null;
+          
+          // Also save to localStorage for offline access
+          localStorage.setItem('mamacare_contractions', JSON.stringify({
+            contractions: CONTRACTION.contractions,
+            lastEndTime: CONTRACTION.lastEndTime
+          }));
+          
+          console.log('✅ Loaded contractions from Supabase');
+          
+          if (CONTRACTION.contractions.length > 0) {
+            $('#contractionStats').style.display = 'grid';
+            updateStats();
+          }
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to load from Supabase, trying localStorage:', e);
+      }
+    }
+    
+    // Fallback to localStorage
+    try {
+      const saved = localStorage.getItem('mamacare_contractions');
+      if (saved) {
+        const data = JSON.parse(saved);
+        CONTRACTION.contractions = data.contractions || [];
+        CONTRACTION.lastEndTime = data.lastEndTime || null;
+
+        // Show stats if we have contractions
+        if (CONTRACTION.contractions.length > 0) {
+          $('#contractionStats').style.display = 'grid';
+          updateStats();
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load contractions:', e);
+    }
+  }
+
+  /**
+   * Clear all contraction history (for testing/reset)
+   */
+  window.clearContractionHistory = function() {
+    if (!confirm('Clear all contraction history? This cannot be undone.')) return;
+    
+    CONTRACTION.contractions = [];
+    CONTRACTION.lastEndTime = null;
+    saveContractions();
+    updateStats();
+    renderContractionHistory();
+    $('#contractionStats').style.display = 'none';
+    $('#alert511Card').style.display = 'none';
+  };
+
+  /**
+   * Get contraction pattern analysis for sharing with doctor
+   */
+  window.getContractionPattern = function() {
+    if (CONTRACTION.contractions.length === 0) {
+      return 'No contractions tracked yet.';
+    }
+
+    const recent = CONTRACTION.contractions.slice(0, 10);
+    const avgDuration = recent.reduce((sum, c) => sum + c.duration, 0) / recent.length;
+    const withFreq = recent.filter(c => c.frequency !== null);
+    const avgFreq = withFreq.length > 0 
+      ? withFreq.reduce((sum, c) => sum + c.frequency, 0) / withFreq.length 
+      : null;
+
+    return {
+      totalContractions: CONTRACTION.contractions.length,
+      todayCount: CONTRACTION.contractions.filter(c => 
+        new Date(c.start).toDateString() === new Date().toDateString()
+      ).length,
+      averageDuration: Math.round(avgDuration),
+      averageFrequency: avgFreq ? Math.round(avgFreq) : null,
+      lastContraction: CONTRACTION.contractions[0],
+      pattern: check511Pattern() ? '5-1-1 (Active Labor)' : 'Irregular (Early Labor)',
+      recommendation: check511Pattern() 
+        ? 'Call your doctor and prepare to go to hospital'
+        : 'Continue monitoring, stay comfortable'
+    };
+  };
+
+  /**
+   * Check if pattern matches 5-1-1 (non-alerting version)
+   */
+  function check511Pattern() {
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    const recentContractions = CONTRACTION.contractions.filter(c => c.start > oneHourAgo);
+    
+    if (recentContractions.length < 6) return false;
+    
+    return recentContractions.every(c => {
+      const durationOk = c.duration >= 45 && c.duration <= 90;
+      const freqOk = c.frequency !== null && c.frequency >= 3 && c.frequency <= 7;
+      return durationOk && freqOk;
+    });
+  }
+
+  /**
+   * Add note to a contraction
+   */
+  window.addContractionNote = function(id, note) {
+    const contraction = CONTRACTION.contractions.find(c => c.id === id);
+    if (contraction) {
+      contraction.note = note;
+      saveContractions();
+      renderContractionHistory();
+    }
+  };
+
+  /**
+   * Share contraction summary (Web Share API)
+   */
+  window.shareContractionSummary = async function() {
+    const pattern = getContractionPattern();
+    
+    if (typeof pattern === 'string') {
+      alert(pattern);
+      return;
+    }
+
+    const text = `Contraction Summary:\n` +
+      `Total: ${pattern.totalContractions} (${pattern.todayCount} today)\n` +
+      `Average Duration: ${pattern.averageDuration}s\n` +
+      `Average Frequency: ${pattern.averageFrequency || 'N/A'} min\n` +
+      `Pattern: ${pattern.pattern}\n` +
+      `Recommendation: ${pattern.recommendation}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'MamaCare - Contraction Summary',
+          text: text
+        });
+      } catch (err) {
+        // User cancelled or share failed
+        console.log('Share cancelled');
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Summary copied to clipboard!');
+      });
+    }
+  };
+
+  // Helper function (if not already defined)
+  if (!window.$) {
+    window.$ = (sel) => document.querySelector(sel);
+  }
+
+})();
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-pdf-report.js
+// ═══════════════════════════════════════════════════════════
+
+// @ts-nocheck
+/**
+ * MamaCare — PDF Health Report Generator
+ * Export all tracked data for doctor visits (Premium feature)
+ */
+
+/**
+ * Generate comprehensive health report PDF
+ */
+async function generateHealthReportPDF() {
+  if (!window.user || !window.supa) {
+    alert('Please login first');
+    return;
+  }
+
+  // Check premium status
+  if (window.PREMIUM && !window.PREMIUM.isPremium()) {
+    alert('PDF Health Reports are a Premium feature. Upgrade to unlock!');
+    if (window.MC?.goTo) window.MC.goTo('premium');
+    return;
+  }
+
+  // Show loading
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'pdfGenerating';
+  loadingDiv.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;color:white;font-size:18px;font-family:sans-serif';
+  loadingDiv.innerHTML = '<div style="text-align:center"><div style="font-size:48px;margin-bottom:16px">📄</div><div>Generating your health report...</div><div style="font-size:14px;color:#ccc;margin-top:8px">This may take a moment</div></div>';
+  document.body.appendChild(loadingDiv);
+
+  try {
+    // Fetch all data
+    const uid = window.user.id;
+    const today = new Date().toISOString().split('T')[0];
+    const threeMonthsAgo = new Date(Date.now() - 90 * 86400000).toISOString();
+
+    const [profileRes, weightsRes, sleepsRes, moodsRes, kicksRes, apptsRes, medsRes] = await Promise.all([
+      window.supa.from('user_profile').select('*').eq('id', uid).single(),
+      window.supa.from('weight_logs').select('*').eq('user_id', uid).gte('logged_at', threeMonthsAgo).order('logged_at'),
+      window.supa.from('sleep_logs').select('*').eq('user_id', uid).gte('logged_at', threeMonthsAgo).order('logged_at'),
+      window.supa.from('mood_logs').select('*').eq('user_id', uid).gte('logged_at', threeMonthsAgo).order('logged_at'),
+      window.supa.from('kick_logs').select('*').eq('user_id', uid).gte('created_at', threeMonthsAgo).order('session_date'),
+      window.supa.from('appointments').select('*').eq('user_id', uid).gte('appt_date', today).order('appt_date'),
+      window.supa.from('medicines').select('*').eq('user_id', uid).eq('is_active', true)
+    ]);
+
+    const profile = profileRes.data;
+    const weights = weightsRes.data || [];
+    const sleeps = sleepsRes.data || [];
+    const moods = moodsRes.data || [];
+    const kicks = kicksRes.data || [];
+    const appointments = apptsRes.data || [];
+    const medicines = medsRes.data || [];
+
+    // Calculate pregnancy week
+    let week = '—', daysLeft = '—', trimester = '';
+    if (profile.due_date) {
+      const due = new Date(profile.due_date);
+      const now = new Date();
+      const daysFromStart = Math.floor((now.getTime() - (due.getTime() - 280 * 86400000)) / 86400000);
+      week = Math.min(40, Math.floor(daysFromStart / 7) + 1);
+      daysLeft = Math.max(0, Math.round((due.getTime() - now.getTime()) / 86400000));
+      trimester = week <= 13 ? '1st Trimester' : week <= 27 ? '2nd Trimester' : '3rd Trimester';
+    }
+
+    // Load jsPDF library
+    if (!window.jspdf) {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      document.head.appendChild(script);
+      await new Promise(resolve => { script.onload = resolve; });
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Page dimensions
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const contentWidth = pageWidth - 2 * margin;
+    let y = margin;
+
+    // Helper functions
+    const addPage = () => {
+      doc.addPage();
+      y = margin;
+    };
+
+    const checkPageBreak = (needed) => {
+      if (y + needed > pageHeight - margin) {
+        addPage();
+        return true;
+      }
+      return false;
+    };
+
+    const drawLine = () => {
+      doc.setDrawColor(232, 160, 168);
+      doc.setLineWidth(0.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 8;
+    };
+
+    // ===== PAGE 1: HEADER & SUMMARY =====
+    
+    // Header with gradient effect (simulated)
+    doc.setFillColor(232, 160, 168);
+    doc.rect(0, 0, pageWidth, 40, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text('🌸 Pregnancy Health Report', pageWidth / 2, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text('Generated by Mama Gyan', pageWidth / 2, 30, { align: 'center' });
+
+    y = 50;
+
+    // Patient Information
+    doc.setTextColor(74, 44, 42);
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('Patient Information', margin, y);
+    y += 10;
+
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Name: ${profile.name || 'N/A'}`, margin, y);
+    y += 7;
+    doc.text(`Email: ${profile.email || 'N/A'}`, margin, y);
+    y += 7;
+    doc.text(`Phone: ${profile.phone || 'N/A'}`, margin, y);
+    y += 7;
+    doc.text(`Blood Group: ${profile.blood_group || 'N/A'}`, margin, y);
+    y += 7;
+    doc.text(`Due Date: ${profile.due_date ? new Date(profile.due_date).toLocaleDateString('en-IN') : 'N/A'}`, margin, y);
+    y += 10;
+
+    // Pregnancy Summary Box
+    doc.setFillColor(253, 246, 240);
+    doc.roundedRect(margin, y, contentWidth, 35, 3, 3, 'F');
+    
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text('Current Status', margin + 10, y + 12);
+    
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Week ${week} of 40 | ${trimester}`, margin + 10, y + 20);
+    doc.text(`${daysLeft} days until due date`, margin + 10, y + 28);
+    y += 45;
+
+    drawLine();
+
+    // ===== WEIGHT TRENDS =====
+    if (weights.length > 0) {
+      checkPageBreak(60);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('⚖️  Weight Tracking (Last 3 Months)', margin, y);
+      y += 8;
+
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      
+      const startWeight = weights[0].weight_kg;
+      const currentWeight = weights[weights.length - 1].weight_kg;
+      const gain = (currentWeight - startWeight).toFixed(1);
+
+      doc.text(`Starting: ${startWeight} kg`, margin, y);
+      y += 6;
+      doc.text(`Current: ${currentWeight} kg`, margin, y);
+      y += 6;
+      doc.text(`Total Gain: ${gain >= 0 ? '+' : ''}${gain} kg`, margin, y);
+      y += 6;
+      doc.text(`Logs: ${weights.length} entries`, margin, y);
+      y += 10;
+
+      // Recent weights table
+      doc.autoTable({
+        startY: y,
+        head: [['Date', 'Weight (kg)', 'Week']],
+        body: weights.slice(-10).map(w => [
+          new Date(w.logged_at).toLocaleDateString('en-IN'),
+          w.weight_kg,
+          w.pregnancy_week || '—'
+        ]),
+        margin: { left: margin, right: margin },
+        theme: 'grid',
+        headStyles: { fillColor: [232, 160, 168], textColor: [255, 255, 255] },
+        styles: { fontSize: 9 }
+      });
+      
+      y = doc.lastAutoTable.finalY + 10;
+      drawLine();
+    }
+
+    // ===== SLEEP PATTERNS =====
+    if (sleeps.length > 0) {
+      checkPageBreak(50);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('🌙 Sleep Patterns', margin, y);
+      y += 8;
+
+      const avgSleep = (sleeps.reduce((sum, s) => sum + s.sleep_hours, 0) / sleeps.length).toFixed(1);
+      const avgQuality = (sleeps.reduce((sum, s) => sum + parseInt(s.quality), 0) / sleeps.length).toFixed(1);
+
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Average Sleep: ${avgSleep} hours/night`, margin, y);
+      y += 6;
+      doc.text(`Average Quality: ${avgQuality}/3 (${avgQuality >= 2.5 ? 'Good' : avgQuality >= 1.5 ? 'Fair' : 'Poor'})`, margin, y);
+      y += 6;
+      doc.text(`Logs: ${sleeps.length} entries`, margin, y);
+      y += 10;
+
+      // Common sleep issues
+      const issues = {};
+      sleeps.forEach(s => {
+        if (s.issue) {
+          issues[s.issue] = (issues[s.issue] || 0) + 1;
+        }
+      });
+
+      if (Object.keys(issues).length > 0) {
+        doc.text('Common Issues:', margin, y);
+        y += 6;
+        Object.entries(issues)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .forEach(([issue, count]) => {
+            doc.text(`  • ${issue} (${count}x)`, margin + 5, y);
+            y += 5;
+          });
+        y += 5;
+      }
+
+      drawLine();
+    }
+
+    // ===== MOOD SUMMARY =====
+    if (moods.length > 0) {
+      checkPageBreak(50);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('💗 Mood & Emotional Health', margin, y);
+      y += 8;
+
+      const moodCounts = {};
+      moods.forEach(m => {
+        moodCounts[m.mood_type] = (moodCounts[m.mood_type] || 0) + 1;
+      });
+
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Total Logs: ${moods.length} entries`, margin, y);
+      y += 6;
+      
+      doc.text('Most Common Moods:', margin, y);
+      y += 6;
+      
+      Object.entries(moodCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .forEach(([mood, count]) => {
+          const pct = ((count / moods.length) * 100).toFixed(0);
+          doc.text(`  • ${mood.charAt(0).toUpperCase() + mood.slice(1)}: ${count}x (${pct}%)`, margin + 5, y);
+          y += 5;
+        });
+      
+      y += 5;
+      drawLine();
+    }
+
+    // ===== KICK COUNTS =====
+    if (kicks.length > 0) {
+      checkPageBreak(40);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('👶 Fetal Movement (Kick Counts)', margin, y);
+      y += 8;
+
+      const avgKicks = (kicks.reduce((sum, k) => sum + k.kick_count, 0) / kicks.length).toFixed(1);
+      const normalDays = kicks.filter(k => k.kick_count >= 10).length;
+      const normalPct = ((normalDays / kicks.length) * 100).toFixed(0);
+
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Average Kicks: ${avgKicks} per session`, margin, y);
+      y += 6;
+      doc.text(`Normal Days (≥10 kicks): ${normalDays}/${kicks.length} (${normalPct}%)`, margin, y);
+      y += 6;
+      doc.text(`Tracking Since: ${new Date(kicks[0].session_date).toLocaleDateString('en-IN')}`, margin, y);
+      y += 10;
+
+      drawLine();
+    }
+
+    // ===== MEDICATIONS =====
+    if (medicines.length > 0) {
+      checkPageBreak(40);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('💊 Current Medications', margin, y);
+      y += 10;
+
+      doc.autoTable({
+        startY: y,
+        head: [['Medicine', 'Dosage', 'Time', 'Notes']],
+        body: medicines.map(m => [
+          m.name,
+          m.dose || '—',
+          m.time_of_day || '—',
+          m.notes || '—'
+        ]),
+        margin: { left: margin, right: margin },
+        theme: 'grid',
+        headStyles: { fillColor: [232, 160, 168], textColor: [255, 255, 255] },
+        styles: { fontSize: 9 }
+      });
+      
+      y = doc.lastAutoTable.finalY + 10;
+      drawLine();
+    }
+
+    // ===== UPCOMING APPOINTMENTS =====
+    if (appointments.length > 0) {
+      checkPageBreak(40);
+      
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('📅 Upcoming Appointments', margin, y);
+      y += 10;
+
+      doc.autoTable({
+        startY: y,
+        head: [['Date', 'Title', 'Doctor', 'Location']],
+        body: appointments.map(a => [
+          new Date(a.appt_date).toLocaleDateString('en-IN'),
+          a.title,
+          a.doctor_name || '—',
+          a.location || '—'
+        ]),
+        margin: { left: margin, right: margin },
+        theme: 'grid',
+        headStyles: { fillColor: [232, 160, 168], textColor: [255, 255, 255] },
+        styles: { fontSize: 9 }
+      });
+      
+      y = doc.lastAutoTable.finalY + 10;
+    }
+
+    // ===== FOOTER =====
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(
+        `Page ${i} of ${pageCount} | Generated: ${new Date().toLocaleDateString('en-IN')} | Mama Gyan - mamacare.gyanam.shop`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+
+    // Save PDF
+    const fileName = `MamaGyan-Health-Report-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+
+    // Remove loading
+    loadingDiv.remove();
+
+    // Show success message
+    alert(`✅ Health report generated successfully!\n\nFile: ${fileName}\n\nShare this with your doctor at your next appointment.`);
+
+    // Track analytics
+    if (window.supa) {
+      window.supa.from('analytics_events').insert({
+        user_id: uid,
+        event_name: 'pdf_health_report_generated',
+        event_properties: {
+          weeks_data: {
+            weight: weights.length,
+            sleep: sleeps.length,
+            mood: moods.length,
+            kicks: kicks.length
+          }
+        }
+      }).then(() => {}).catch(() => {});
+    }
+
+  } catch (error) {
+    console.error('PDF generation error:', error);
+    document.getElementById('pdfGenerating')?.remove();
+    alert('Failed to generate PDF. Please try again.');
+  }
+}
+
+// Export to window
+window.generateHealthReportPDF = generateHealthReportPDF;
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-asha-chatbot.js
+// ═══════════════════════════════════════════════════════════
+
+// @ts-nocheck
+/**
+ * MamaCare — ASHA/ANM Chatbot Mode
+ * Simplified AI assistant for frontline health workers
+ * Helps with common pregnancy questions, symptom triage, and referrals
+ */
+
+const ASHA_MODE = {
+  isActive: false,
+  chatHistory: [],
+  currentLanguage: 'hinglish'
+};
+
+/**
+ * Initialize ASHA chatbot mode
+ */
+window.initASHAChatbot = function() {
+  renderASHAInterface();
+  setupASHAEventListeners();
+};
+
+/**
+ * Render ASHA chatbot interface
+ */
+function renderASHAInterface() {
+  const container = document.getElementById('ashaPage');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="padding:20px 0 8px">
+      <div class="sec-label">For Health Workers</div>
+      <div class="sec-title">ASHA/ANM Assistant 🩺</div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card" style="background:rgba(106,184,154,.08);border:1.5px solid var(--green)">
+      <h3 style="font-size:15px;font-weight:600;color:var(--green);margin-bottom:10px">
+        👋 Welcome, Health Worker!
+      </h3>
+      <p style="font-size:13px;color:var(--warm);line-height:1.7;margin-bottom:12px">
+        Yeh tool frontline health workers (ASHA, ANM, Anganwadi) ke liye hai. 
+        Pregnancy-related common questions, symptom assessment, aur referral guidelines ke liye AI assistant.
+      </p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6;background:white;padding:10px;border-radius:8px">
+        ⚠️ <strong>Important:</strong> Yeh diagnostic tool NAHI hai. Serious cases mein turant qualified medical professional ko refer karein.
+      </p>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--warm)">Select Language:</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <button class="lang-btn-asha active" data-lang="hinglish" onclick="ASHA.setLanguage('hinglish')">
+          Hinglish
+        </button>
+        <button class="lang-btn-asha" data-lang="hindi" onclick="ASHA.setLanguage('hindi')">
+          हिंदी
+        </button>
+        <button class="lang-btn-asha" data-lang="english" onclick="ASHA.setLanguage('english')">
+          English
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--warm)">Quick Topics:</div>
+      <div style="display:grid;gap:8px">
+        ${ASHA_QUICK_TOPICS.map(topic => `
+          <button class="btn btn-g btn-sm" style="text-align:left;justify-content:flex-start;padding:12px" onclick="ASHA.askQuickTopic('${topic.query}')">
+            <span style="font-size:18px;margin-right:10px">${topic.icon}</span>
+            <span>${topic.label}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--warm)">Ask a Question:</div>
+      <div class="chat-box" id="ashaChatBox" style="min-height:280px;max-height:400px">
+        <div class="msg bot">
+          Namaste! 🙏 Main ASHA/ANM Assistant hun. Aap pregnancy se related koi bhi sawal pooch sakte hain.
+          <br><br>
+          Examples:
+          <br>• "39 weeks ki patient ko backache aur spotting hai. Kya karein?"
+          <br>• "High BP ke symptoms kya hain?"
+          <br>• "Anemia ki mahila ko kya diet suggest karein?"
+        </div>
+      </div>
+      <div class="chat-row" style="margin-top:10px">
+        <input id="ashaInput" type="text" placeholder="Type your question..." onkeydown="if(event.key==='Enter')ASHA.sendMessage()"/>
+        <button class="btn btn-p btn-sm" onclick="ASHA.sendMessage()">
+          <i data-lucide="send" class="app-icon-inline"></i> Ask
+        </button>
+      </div>
+    </div>
+
+    <!-- Referral Guidelines -->
+    <div class="card" style="background:rgba(232,160,168,.08)">
+      <h3 style="font-size:15px;font-weight:600;color:var(--rose);margin-bottom:10px">
+        🚨 Immediate Referral Required:
+      </h3>
+      <ul style="font-size:12px;color:var(--warm);line-height:1.8;padding-left:20px;margin:0">
+        <li>Severe bleeding (any trimester)</li>
+        <li>Severe headache with vision changes</li>
+        <li>Severe abdominal pain</li>
+        <li>High fever (>100.4°F / 38°C)</li>
+        <li>No fetal movement (after 28 weeks)</li>
+        <li>Water breaking before 37 weeks</li>
+        <li>Seizures or loss of consciousness</li>
+        <li>Chest pain or difficulty breathing</li>
+        <li>Excessive vomiting (can't keep fluids down)</li>
+        <li>Blood pressure >140/90</li>
+      </ul>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+/**
+ * Quick topics for ASHA workers
+ */
+const ASHA_QUICK_TOPICS = [
+  { icon: '🩸', label: 'Anemia Detection & Management', query: 'Pregnancy mein anemia ke symptoms kya hain aur kaise manage karein? ASHA worker ko kya guidance deni chahiye?' },
+  { icon: '🤰', label: 'High-Risk Pregnancy Signs', query: 'High-risk pregnancy ke warning signs kya hain? Kis condition mein immediately refer karna chahiye?' },
+  { icon: '💊', label: 'Iron & Folic Acid Distribution', query: 'IFA tablets distribute karte waqt kya instructions dein? Side effects kya ho sakte hain?' },
+  { icon: '📏', label: 'Weight & BP Monitoring', query: 'Pregnancy mein normal weight gain aur BP range kya hoti hai? Red flags kya hain?' },
+  { icon: '🍎', label: 'Nutrition Counseling', query: 'Pregnant mahila ke liye budget-friendly nutrition advice kya de sakte hain? Village mein kya available hai?' },
+  { icon: '👶', label: 'Danger Signs in Labor', query: 'Labor ke dauran dangerous signs kya hain? Kab PHC/hospital le jana zaruri hai?' },
+  { icon: '💉', label: 'Vaccination Schedule', query: 'Pregnancy mein kaun se vaccines zaruri hain aur kab lagane chahiye (TT, etc)?' },
+  { icon: '🏥', label: 'When to Refer to PHC/CHC', query: 'Kis situation mein village se PHC ya CHC refer karna chahiye? Emergency vs non-emergency?' }
+];
+
+/**
+ * Setup event listeners
+ */
+function setupASHAEventListeners() {
+  // Enter key in input
+  const input = document.getElementById('ashaInput');
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendASHAMessage();
+    });
+  }
+}
+
+/**
+ * Set language for ASHA mode
+ */
+function setASHALanguage(lang) {
+  ASHA_MODE.currentLanguage = lang;
+  
+  // Update active button
+  document.querySelectorAll('.lang-btn-asha').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // Update greeting based on language
+  const greetings = {
+    hinglish: 'Namaste! 🙏 Main ASHA/ANM Assistant hun. Pregnancy se related koi bhi sawal pooch sakte hain.',
+    hindi: 'नमस्ते! 🙏 मैं ASHA/ANM सहायक हूँ। गर्भावस्था से संबंधित कोई भी सवाल पूछ सकते हैं।',
+    english: 'Hello! 🙏 I am the ASHA/ANM Assistant. Ask me any pregnancy-related question.'
+  };
+
+  const chatBox = document.getElementById('ashaChatBox');
+  if (chatBox && chatBox.children.length === 1) {
+    chatBox.children[0].innerHTML = greetings[lang] + `
+      <br><br>Examples:
+      <br>• "39 weeks pregnant with backache and spotting. What to do?"
+      <br>• "What are symptoms of high BP in pregnancy?"
+      <br>• "Diet advice for anemic pregnant woman?"
+    `;
+  }
+}
+
+/**
+ * Ask a quick topic
+ */
+function askQuickTopic(query) {
+  const input = document.getElementById('ashaInput');
+  if (input) {
+    input.value = query;
+    sendASHAMessage();
+  }
+}
+
+/**
+ * Send message to ASHA chatbot
+ */
+async function sendASHAMessage() {
+  const input = document.getElementById('ashaInput');
+  const text = input?.value?.trim();
+  if (!text) return;
+
+  input.value = '';
+  appendASHAMessage(text, 'user');
+  ASHA_MODE.chatHistory.push({ role: 'user', content: text });
+
+  const typing = appendASHAMessage('...💭', 'bot', true);
+
+  try {
+    const { data, error } = await window.supa.functions.invoke('claude-proxy', {
+      body: {
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        system: getASHASystemPrompt(),
+        messages: ASHA_MODE.chatHistory
+      }
+    });
+
+    typing.remove();
+    if (error) throw error;
+
+    const reply = data?.content?.[0]?.text || '🌸 Connection issue. Dobara try karo.';
+    appendASHAMessage(reply, 'bot');
+    ASHA_MODE.chatHistory.push({ role: 'assistant', content: reply });
+
+    // Track analytics
+    if (window.supa && window.user) {
+      window.supa.from('analytics_events').insert({
+        user_id: window.user.id,
+        event_name: 'asha_chatbot_query',
+        event_properties: { language: ASHA_MODE.currentLanguage, query_length: text.length }
+      }).then(() => {}).catch(() => {});
+    }
+
+  } catch (e) {
+    typing.remove();
+    appendASHAMessage('🌸 Connection issue. Dobara try karo.', 'bot');
+    console.error('ASHA chatbot error:', e);
+  }
+}
+
+/**
+ * Get system prompt for ASHA mode based on language
+ */
+function getASHASystemPrompt() {
+  const prompts = {
+    hinglish: `You are an AI assistant for ASHA (Accredited Social Health Activist) and ANM (Auxiliary Nurse Midwife) workers in rural India. Your role is to provide practical, evidence-based guidance for frontline health workers managing pregnancy cases.
+
+IMPORTANT GUIDELINES:
+1. Always prioritize patient safety - recommend immediate referral for serious symptoms
+2. Provide practical advice suitable for rural/resource-limited settings
+3. Use simple, clear language (Hinglish preferred)
+4. Include specific action steps and red flags
+5. Mention government schemes when relevant (JSY, PMSMA, etc.)
+6. Never diagnose - guide on when to refer
+7. Be culturally sensitive to Indian rural context
+
+FORMAT YOUR RESPONSE:
+🔴 URGENCY: [Normal / Refer Soon / Immediate Referral]
+📋 ASSESSMENT: [2-3 lines explaining the situation]
+✅ ACTION STEPS: [Practical steps the health worker can take]
+🚨 RED FLAGS: [Warning signs that require immediate referral]
+💡 COUNSELING TIPS: [What to tell the pregnant woman/family]
+
+Language: Respond in Hinglish (Hindi + English mix) unless specified otherwise.`,
+
+    hindi: `आप ग्रामीण भारत में ASHA (मान्यता प्राप्त सामाजिक स्वास्थ्य कार्यकर्ता) और ANM (सहायक नर्स दाई) कार्यकर्ताओं के लिए AI सहायक हैं। आपकी भूमिका गर्भावस्था के मामलों के प्रबंधन में फ्रंटलाइन स्वास्थ्य कार्यकर्ताओं को व्यावहारिक, साक्ष्य-आधारित मार्गदर्शन प्रदान करना है।
+
+महत्वपूर्ण दिशानिर्देश:
+1. रोगी की सुरक्षा को हमेशा प्राथमिकता दें
+2. ग्रामीण/संसाधन-सीमित सेटिंग्स के लिए उपयुक्त सलाह
+3. सरल, स्पष्ट भाषा का उपयोग करें
+4. विशिष्ट कार्रवाई कदम और खतरे के संकेत शामिल करें
+5. कभी निदान न करें - केवल मार्गदर्शन दें
+
+भाषा: हिंदी में जवाब दें।`,
+
+    english: `You are an AI assistant for ASHA (Accredited Social Health Activist) and ANM (Auxiliary Nurse Midwife) workers in rural India. Provide practical, evidence-based guidance for frontline health workers managing pregnancy cases.
+
+GUIDELINES:
+1. Prioritize patient safety - recommend referral for serious symptoms
+2. Provide practical advice for rural/resource-limited settings
+3. Use simple, clear English
+4. Include specific action steps and red flags
+5. Mention government schemes when relevant
+6. Never diagnose - guide on when to refer
+
+FORMAT:
+🔴 URGENCY: [Normal / Refer Soon / Immediate Referral]
+📋 ASSESSMENT: [Situation explanation]
+✅ ACTION STEPS: [What the health worker should do]
+🚨 RED FLAGS: [Warning signs requiring immediate referral]
+💡 COUNSELING: [What to tell the woman/family]
+
+Language: Respond in English.`
+  };
+
+  return prompts[ASHA_MODE.currentLanguage] || prompts.hinglish;
+}
+
+/**
+ * Append message to ASHA chat
+ */
+function appendASHAMessage(text, role, isTyping = false) {
+  const box = document.getElementById('ashaChatBox');
+  if (!box) return null;
+
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  
+  // Convert markdown
+  div.innerHTML = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  
+  if (isTyping) div.style.cssText = 'font-style:italic;color:var(--muted)';
+  
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  
+  return div;
+}
+
+/**
+ * Clear chat history
+ */
+function clearASHAChat() {
+  ASHA_MODE.chatHistory = [];
+  const box = document.getElementById('ashaChatBox');
+  if (box) {
+    box.innerHTML = '<div class="msg bot">Namaste! 🙏 Nayi conversation shuru karte hain. Kya sawal hai?</div>';
+  }
+}
+
+// Export to window
+window.ASHA = {
+  init: initASHAChatbot,
+  setLanguage: setASHALanguage,
+  askQuickTopic: askQuickTopic,
+  sendMessage: sendASHAMessage,
+  clear: clearASHAChat
+};
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-breastfeeding.js
+// ═══════════════════════════════════════════════════════════
+
+// @ts-nocheck
+/**
+ * MamaCare — Breastfeeding/Lactation Tracker
+ * Post-delivery feature for tracking feeds, duration, and latch quality
+ */
+
+const BF = {
+  activeSession: null,
+  startTime: null,
+  timerInterval: null,
+  currentBreast: null,
+  todayFeeds: [],
+  history: []
+};
+
+/**
+ * Initialize breastfeeding tracker
+ */
+window.initBreastfeedingTracker = function() {
+  loadTodayFeeds();
+  loadFeedHistory();
+  renderBreastfeedingUI();
+  setupBreastfeedingListeners();
+};
+
+/**
+ * Render breastfeeding tracker UI
+ */
+function renderBreastfeedingUI() {
+  const container = document.getElementById('bfPage');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="padding:20px 0 8px">
+      <div class="sec-label">Postpartum Care</div>
+      <div class="sec-title">Breastfeeding Tracker 🍼</div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card" style="background:rgba(106,184,154,.08)">
+      <p style="font-size:13px;color:var(--warm);line-height:1.7;margin:0">
+        Track baby's feeding sessions — left/right breast, duration, latch quality. 
+        Helps establish feeding routine and identify any issues early.
+      </p>
+    </div>
+
+    <!-- Active Session Card -->
+    <div class="card" id="bfActiveSession" style="display:none;background:linear-gradient(135deg,rgba(106,184,154,.12),rgba(106,184,154,.08))">
+      <div style="text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">🍼</div>
+        <div style="font-size:14px;font-weight:600;color:var(--green);margin-bottom:8px">
+          Feeding in Progress
+        </div>
+        <div style="font-size:32px;font-weight:700;color:var(--green);font-family:'Courier New',monospace;margin-bottom:8px" id="bfTimer">
+          00:00
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="bfBreastLabel">
+          Left Breast
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <button class="btn btn-g" onclick="BF.switchBreast()">
+            <i data-lucide="repeat" class="app-icon-inline"></i> Switch
+          </button>
+          <button class="btn btn-p" onclick="BF.endSession()">
+            <i data-lucide="check" class="app-icon-inline"></i> End Feed
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start New Session -->
+    <div class="card" id="bfStartCard">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--warm)">
+        Start New Feed
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button class="btn btn-p" onclick="BF.startFeed('left')" style="padding:20px">
+          <div style="font-size:24px;margin-bottom:4px">👈</div>
+          <div>Left Breast</div>
+        </button>
+        <button class="btn btn-p" onclick="BF.startFeed('right')" style="padding:20px">
+          <div style="font-size:24px;margin-bottom:4px">👉</div>
+          <div>Right Breast</div>
+        </button>
+      </div>
+      <button class="btn btn-g" onclick="BF.startFeed('both')" style="width:100%;margin-top:10px;padding:20px">
+        <div style="font-size:24px;margin-bottom:4px">👐</div>
+        <div>Both Breasts</div>
+      </button>
+    </div>
+
+    <!-- Today's Summary -->
+    <div class="card">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--warm)">
+        Today's Summary
+      </div>
+      <div class="g3" id="bfTodayStats">
+        <div style="text-align:center;padding:16px;background:rgba(106,184,154,.08);border-radius:12px">
+          <div style="font-size:24px;font-weight:700;color:var(--green)" id="bfTotalFeeds">0</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Total Feeds</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:rgba(106,184,154,.08);border-radius:12px">
+          <div style="font-size:24px;font-weight:700;color:var(--green)" id="bfTotalDuration">0m</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Total Time</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:rgba(106,184,154,.08);border-radius:12px">
+          <div style="font-size:24px;font-weight:700;color:var(--green)" id="bfAvgDuration">0m</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Avg Duration</div>
+        </div>
+      </div>
+      
+      <!-- Feeding Intervals -->
+      <div style="margin-top:16px;padding:12px;background:rgba(106,184,154,.06);border-radius:10px">
+        <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:6px">
+          Last Feed:
+        </div>
+        <div style="font-size:13px;color:var(--warm)" id="bfLastFeed">
+          No feeds recorded today
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Feed Log -->
+    <div class="card">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--warm)">
+        Today's Feeds
+      </div>
+      <div id="bfTodayLog"></div>
+    </div>
+
+    <!-- Quick Tips -->
+    <div class="card" style="background:rgba(212,168,83,.06)">
+      <h3 style="font-size:14px;font-weight:600;color:var(--gold);margin-bottom:10px">
+        💡 Feeding Tips
+      </h3>
+      <ul style="font-size:12px;color:var(--warm);line-height:1.8;padding-left:20px;margin:0">
+        <li><strong>Newborns (0-4 weeks):</strong> Feed 8-12 times per day (every 2-3 hours)</li>
+        <li><strong>1-2 months:</strong> 7-9 times per day</li>
+        <li><strong>2-6 months:</strong> 6-8 times per day</li>
+        <li><strong>Good latch:</strong> Baby's mouth covers most of areola, not just nipple</li>
+        <li><strong>Switch breasts:</strong> When baby slows/stops sucking on first breast</li>
+        <li><strong>Duration:</strong> Typically 10-20 minutes per breast</li>
+        <li><strong>Wet diapers:</strong> 6+ wet diapers per day = good milk intake</li>
+      </ul>
+    </div>
+
+    <!-- Weekly History -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:600;color:var(--warm)">
+          Last 7 Days
+        </div>
+        <button class="btn btn-g btn-sm" onclick="BF.exportHistory()">
+          <i data-lucide="download" class="app-icon-inline"></i> Export
+        </button>
+      </div>
+      <canvas id="bfWeeklyChart" height="180"></canvas>
+    </div>
+
+    <!-- Latch Issues -->
+    <div class="card" style="background:#fff5f5;border:1.5px solid #fecaca">
+      <h3 style="font-size:14px;font-weight:600;color:#dc2626;margin-bottom:10px">
+        🚨 When to Contact Lactation Consultant
+      </h3>
+      <ul style="font-size:12px;color:#991b1b;line-height:1.8;padding-left:20px;margin:0">
+        <li>Severe nipple pain that doesn't improve</li>
+        <li>Baby not gaining weight adequately</li>
+        <li>Fewer than 6 wet diapers per day after day 5</li>
+        <li>Baby seems hungry after every feed</li>
+        <li>Hard, painful lumps in breast (possible mastitis)</li>
+        <li>Baby falling asleep within 5 minutes every feed</li>
+        <li>Persistent latch difficulties</li>
+      </ul>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+  renderTodayFeeds();
+  renderWeeklyChart();
+}
+
+/**
+ * Setup event listeners
+ */
+function setupBreastfeedingListeners() {
+  // Auto-refresh every minute when session active
+  setInterval(() => {
+    if (BF.activeSession) {
+      updateFeedTimer();
+    }
+  }, 1000);
+}
+
+/**
+ * Start a feeding session
+ */
+function startFeed(breast) {
+  if (BF.activeSession) {
+    alert('Please end current session first');
+    return;
+  }
+
+  BF.activeSession = true;
+  BF.startTime = Date.now();
+  BF.currentBreast = breast;
+
+  // Update UI
+  document.getElementById('bfActiveSession').style.display = 'block';
+  document.getElementById('bfStartCard').style.display = 'none';
+  
+  const breastLabels = {
+    left: 'Left Breast 👈',
+    right: 'Right Breast 👉',
+    both: 'Both Breasts 👐'
+  };
+  document.getElementById('bfBreastLabel').textContent = breastLabels[breast];
+
+  // Start timer
+  BF.timerInterval = setInterval(updateFeedTimer, 1000);
+  updateFeedTimer();
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+/**
+ * Update feed timer display
+ */
+function updateFeedTimer() {
+  if (!BF.activeSession || !BF.startTime) return;
+
+  const elapsed = Math.floor((Date.now() - BF.startTime) / 1000);
+  const minutes = Math.floor(elapsed / 60);
+  const seconds = elapsed % 60;
+
+  const timerEl = document.getElementById('bfTimer');
+  if (timerEl) {
+    timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+}
+
+/**
+ * Switch breast during feed
+ */
+function switchBreast() {
+  if (!BF.activeSession) return;
+
+  const switchMap = {
+    left: 'right',
+    right: 'left',
+    both: 'both'
+  };
+
+  BF.currentBreast = switchMap[BF.currentBreast] || 'left';
+  
+  const breastLabels = {
+    left: 'Left Breast 👈',
+    right: 'Right Breast 👉',
+    both: 'Both Breasts 👐'
+  };
+  
+  document.getElementById('bfBreastLabel').textContent = breastLabels[BF.currentBreast];
+  
+  // Show notification
+  const notification = document.createElement('div');
+  notification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:white;padding:12px 24px;border-radius:50px;font-size:14px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.2)';
+  notification.textContent = `Switched to ${breastLabels[BF.currentBreast]}`;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 2000);
+}
+
+/**
+ * End feeding session
+ */
+async function endFeedSession() {
+  if (!BF.activeSession || !window.user || !window.supa) return;
+
+  clearInterval(BF.timerInterval);
+  
+  const duration = Math.floor((Date.now() - BF.startTime) / 60000); // minutes
+  
+  // Show latch quality dialog
+  const latchQuality = await promptLatchQuality();
+  const notes = await promptFeedNotes();
+
+  try {
+    // Save to database
+    const now = new Date();
+    const { error } = await window.supa.from('breastfeeding_logs').insert({
+      user_id: window.user.id,
+      session_date: now.toISOString().split('T')[0],
+      session_time: now.toTimeString().split(' ')[0],
+      breast_side: BF.currentBreast,
+      duration_minutes: duration,
+      latch_quality: latchQuality,
+      notes: notes || null
+    });
+
+    if (error) throw error;
+
+    // Reset state
+    BF.activeSession = null;
+    BF.startTime = null;
+    BF.currentBreast = null;
+
+    // Update UI
+    document.getElementById('bfActiveSession').style.display = 'none';
+    document.getElementById('bfStartCard').style.display = 'block';
+
+    // Reload data
+    await loadTodayFeeds();
+    await loadFeedHistory();
+    renderTodayFeeds();
+    renderWeeklyChart();
+
+    // Track analytics
+    window.supa.from('analytics_events').insert({
+      user_id: window.user.id,
+      event_name: 'breastfeeding_session_logged',
+      event_properties: { duration_minutes: duration, latch_quality: latchQuality }
+    }).then(() => {}).catch(() => {});
+
+  } catch (error) {
+    console.error('Error saving feed:', error);
+    alert('Failed to save feeding session. Please try again.');
+  }
+}
+
+/**
+ * Prompt for latch quality
+ */
+function promptLatchQuality() {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px';
+    modal.innerHTML = `
+      <div style="background:white;border-radius:20px;padding:28px;max-width:400px;width:100%">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#4a2c2a;margin-bottom:16px;text-align:center">
+          How was the latch?
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-p" onclick="this.parentElement.parentElement.parentElement.remove();window.BF._latchResolve('good')" style="padding:16px;font-size:15px">
+            😊 Good - No pain, baby feeding well
+          </button>
+          <button class="btn btn-g" onclick="this.parentElement.parentElement.parentElement.remove();window.BF._latchResolve('okay')" style="padding:16px;font-size:15px">
+            😐 Okay - Some discomfort but manageable
+          </button>
+          <button class="btn" onclick="this.parentElement.parentElement.parentElement.remove();window.BF._latchResolve('poor')" style="padding:16px;font-size:15px;background:#fecaca;color:#991b1b">
+            😣 Poor - Painful, baby struggling
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    window.BF._latchResolve = (quality) => {
+      resolve(quality);
+      delete window.BF._latchResolve;
+    };
+  });
+}
+
+/**
+ * Prompt for feed notes
+ */
+function promptFeedNotes() {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px';
+    modal.innerHTML = `
+      <div style="background:white;border-radius:20px;padding:28px;max-width:400px;width:100%">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#4a2c2a;margin-bottom:12px">
+          Any notes? (Optional)
+        </h3>
+        <p style="font-size:13px;color:#666;margin-bottom:16px">
+          e.g., "Baby sleepy", "Right breast feels full", etc.
+        </p>
+        <textarea id="bfNotesInput" rows="3" placeholder="Type here..." style="width:100%;padding:12px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:14px;margin-bottom:12px"></textarea>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-g" onclick="window.BF._notesResolve('');this.parentElement.parentElement.parentElement.remove()" style="flex:1">
+            Skip
+          </button>
+          <button class="btn btn-p" onclick="window.BF._notesResolve(document.getElementById('bfNotesInput').value);this.parentElement.parentElement.parentElement.remove()" style="flex:1">
+            Save
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    window.BF._notesResolve = (notes) => {
+      resolve(notes);
+      delete window.BF._notesResolve;
+    };
+  });
+}
+
+/**
+ * Load today's feeds
+ */
+async function loadTodayFeeds() {
+  if (!window.user || !window.supa) return;
+
+  const today = new Date().toISOString().split('T')[0];
+  const { data, error } = await window.supa
+    .from('breastfeeding_logs')
+    .select('*')
+    .eq('user_id', window.user.id)
+    .eq('session_date', today)
+    .order('session_time', { ascending: false });
+
+  if (!error && data) {
+    BF.todayFeeds = data;
+  }
+}
+
+/**
+ * Load feed history (last 7 days)
+ */
+async function loadFeedHistory() {
+  if (!window.user || !window.supa) return;
+
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0];
+  const { data, error } = await window.supa
+    .from('breastfeeding_logs')
+    .select('*')
+    .eq('user_id', window.user.id)
+    .gte('session_date', weekAgo)
+    .order('session_date');
+
+  if (!error && data) {
+    BF.history = data;
+  }
+}
+
+/**
+ * Render today's feeds
+ */
+function renderTodayFeeds() {
+  const totalFeeds = BF.todayFeeds.length;
+  const totalDuration = BF.todayFeeds.reduce((sum, f) => sum + f.duration_minutes, 0);
+  const avgDuration = totalFeeds > 0 ? Math.round(totalDuration / totalFeeds) : 0;
+
+  // Update stats
+  document.getElementById('bfTotalFeeds').textContent = totalFeeds;
+  document.getElementById('bfTotalDuration').textContent = totalDuration + 'm';
+  document.getElementById('bfAvgDuration').textContent = avgDuration + 'm';
+
+  // Update last feed
+  const lastFeedEl = document.getElementById('bfLastFeed');
+  if (BF.todayFeeds.length > 0) {
+    const lastFeed = BF.todayFeeds[0];
+    const timeAgo = getTimeAgo(lastFeed.session_time);
+    const breastIcons = { left: '👈', right: '👉', both: '👐' };
+    lastFeedEl.textContent = `${timeAgo} • ${breastIcons[lastFeed.breast_side]} ${lastFeed.breast_side} • ${lastFeed.duration_minutes}min`;
+  } else {
+    lastFeedEl.textContent = 'No feeds recorded today';
+  }
+
+  // Render feed log
+  const logEl = document.getElementById('bfTodayLog');
+  if (!logEl) return;
+
+  if (BF.todayFeeds.length === 0) {
+    logEl.innerHTML = '<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px">No feeds logged yet today</p>';
+    return;
+  }
+
+  logEl.innerHTML = BF.todayFeeds.map(feed => {
+    const breastIcons = { left: '👈', right: '👉', both: '👐' };
+    const latchColors = { good: '#16a34a', okay: '#d97706', poor: '#dc2626' };
+    const latchLabels = { good: 'Good', okay: 'Okay', poor: 'Poor' };
+    
+    return `
+      <div style="padding:12px;border-bottom:1px solid #f0e0e0;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--warm);margin-bottom:4px">
+            ${breastIcons[feed.breast_side]} ${feed.breast_side.charAt(0).toUpperCase() + feed.breast_side.slice(1)} Breast
+          </div>
+          <div style="font-size:12px;color:var(--muted)">
+            ${formatTime(feed.session_time)} • ${feed.duration_minutes} min
+            ${feed.latch_quality ? ` • <span style="color:${latchColors[feed.latch_quality]}">${latchLabels[feed.latch_quality]} latch</span>` : ''}
+          </div>
+          ${feed.notes ? `<div style="font-size:11px;color:#666;margin-top:4px;font-style:italic">"${feed.notes}"</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * Render weekly chart
+ */
+function renderWeeklyChart() {
+  const canvas = document.getElementById('bfWeeklyChart');
+  if (!canvas || !window.Chart) return;
+
+  // Group by date
+  const dateGroups = {};
+  BF.history.forEach(feed => {
+    const date = feed.session_date;
+    if (!dateGroups[date]) {
+      dateGroups[date] = { count: 0, duration: 0 };
+    }
+    dateGroups[date].count++;
+    dateGroups[date].duration += feed.duration_minutes;
+  });
+
+  // Get last 7 days
+  const labels = [];
+  const feedCounts = [];
+  const durations = [];
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(Date.now() - i * 86400000).toISOString().split('T')[0];
+    const dayName = new Date(date).toLocaleDateString('en-IN', { weekday: 'short' });
+    labels.push(dayName);
+    
+    const data = dateGroups[date] || { count: 0, duration: 0 };
+    feedCounts.push(data.count);
+    durations.push(data.duration);
+  }
+
+  // Destroy existing chart
+  if (canvas.chart) {
+    canvas.chart.destroy();
+  }
+
+  // Create new chart
+  canvas.chart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Feeds per Day',
+        data: feedCounts,
+        backgroundColor: 'rgba(106,184,154,0.6)',
+        borderColor: 'rgba(106,184,154,1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 2 }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            afterLabel: function(context) {
+              const idx = context.dataIndex;
+              return `Total: ${durations[idx]} minutes`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Export feed history
+ */
+function exportFeedHistory() {
+  if (BF.history.length === 0) {
+    alert('No feed data to export');
+    return;
+  }
+
+  // Create CSV
+  const headers = ['Date', 'Time', 'Breast', 'Duration (min)', 'Latch Quality', 'Notes'];
+  const rows = BF.history.map(feed => [
+    feed.session_date,
+    feed.session_time,
+    feed.breast_side,
+    feed.duration_minutes,
+    feed.latch_quality || '',
+    feed.notes || ''
+  ]);
+
+  const csv = [headers, ...rows]
+    .map(row => row.map(cell => `"${cell}"`).join(','))
+    .join('\n');
+
+  // Download
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `breastfeeding-log-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Helper: Format time
+ */
+function formatTime(timeStr) {
+  const [h, m] = timeStr.split(':');
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${m} ${ampm}`;
+}
+
+/**
+ * Helper: Get time ago
+ */
+function getTimeAgo(timeStr) {
+  const now = new Date();
+  const feedTime = new Date(`${now.toISOString().split('T')[0]}T${timeStr}`);
+  const diffMinutes = Math.floor((now - feedTime) / 60000);
+  
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  const hours = Math.floor(diffMinutes / 60);
+  return `${hours}h ago`;
+}
+
+// Export to window
+window.BF = {
+  startFeed: startFeed,
+  switchBreast: switchBreast,
+  endSession: endFeedSession,
+  exportHistory: exportFeedHistory
+};
+
+window.initBreastfeedingTracker = initBreastfeedingTracker;
 

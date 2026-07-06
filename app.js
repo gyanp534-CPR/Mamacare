@@ -5,6 +5,27 @@
 'use strict';
 
 // ══════════════════════════════════════
+// XSS PROTECTION: HTML ESCAPING
+// ══════════════════════════════════════
+/**
+ * Escape HTML to prevent XSS attacks
+ * Use this for ALL user-entered content before inserting into DOM
+ */
+window.escapeHTML = function(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\//g, '&#x2F;');
+};
+
+// Alias for convenience
+const escapeHTML = window.escapeHTML;
+
+// ══════════════════════════════════════
 // SUPABASE CONFIG (WITH FAILSAFE)
 // ══════════════════════════════════════
 const SUPA_URL = 'https://denspwxohwxconxfbaor.supabase.co';
@@ -1862,7 +1883,7 @@ function renderAppointments(){
   const el=$('apptList');if(!el)return;
   const upcoming=apptList.filter(a=>!a.is_completed);const done=apptList.filter(a=>a.is_completed);
   if(!apptList.length){el.innerHTML='<p style="font-size:13px;color:var(--muted);text-align:center;padding:14px">Koi appointment nahi. Upar se add karein!</p>';return;}
-  el.innerHTML=[...upcoming,...done].map(a=>{const d=new Date(a.appt_date);return`<div class="appt-item" style="opacity:${a.is_completed?'.6':'1'}"><div class="appt-date-box" style="${a.is_completed?'background:var(--blush); color:var(--muted)':''}"><div class="appt-day">${d.getDate()}</div><div class="appt-mon">${d.toLocaleDateString('en-IN',{month:'short'})}</div></div><div class="appt-info"><div class="appt-title" style="${a.is_completed?'text-decoration:line-through':''}">${a.title}</div><div class="appt-sub">${[a.doctor_name,a.hospital,a.appt_time].filter(Boolean).join(' • ')}</div>${a.notes?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${a.notes}</div>`:''}</div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><button onclick="MC.toggleApptDone('${a.id}')" style="padding:5px 11px;border-radius:50px;font-size:11.5px;cursor:pointer;border:1.5px solid ${a.is_completed?'var(--green)':'var(--blush)'};background:${a.is_completed?'var(--green)':'white'};color:${a.is_completed?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${a.is_completed?'<i data-lucide="check" class="app-icon-inline"></i>':'Done?'}</button><button onclick="MC.deleteAppt('${a.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`;}).join('');
+  el.innerHTML=[...upcoming,...done].map(a=>{const d=new Date(a.appt_date);return`<div class="appt-item" style="opacity:${a.is_completed?'.6':'1'}"><div class="appt-date-box" style="${a.is_completed?'background:var(--blush); color:var(--muted)':''}"><div class="appt-day">${d.getDate()}</div><div class="appt-mon">${d.toLocaleDateString('en-IN',{month:'short'})}</div></div><div class="appt-info"><div class="appt-title" style="${a.is_completed?'text-decoration:line-through':''}">${escapeHTML(a.title)}</div><div class="appt-sub">${[escapeHTML(a.doctor_name),escapeHTML(a.hospital),a.appt_time].filter(Boolean).join(' • ')}</div>${a.notes?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${escapeHTML(a.notes)}</div>`:''}</div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><button onclick="MC.toggleApptDone('${a.id}')" style="padding:5px 11px;border-radius:50px;font-size:11.5px;cursor:pointer;border:1.5px solid ${a.is_completed?'var(--green)':'var(--blush)'};background:${a.is_completed?'var(--green)':'white'};color:${a.is_completed?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${a.is_completed?'<i data-lucide="check" class="app-icon-inline"></i>':'Done?'}</button><button onclick="MC.deleteAppt('${a.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`;}).join('');
   renderIcons();
 }
 
@@ -2041,7 +2062,7 @@ async function delEC(i){myContacts.splice(i,1);if(user && supa)await supa.from('
 
 function renderContacts(){
   const el=$('customContacts');if(!el)return;
-  el.innerHTML=myContacts.length?myContacts.map((c,i)=>`<div class="sos-contact"><div><div class="sname"><i data-lucide="user" class="app-icon-inline"></i> ${c.name} <span style="font-size:11px;color:var(--muted)">(${c.relation})</span></div><div class="snum">${c.phone}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${c.phone}" style="padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i></a><button onclick="MC.delEC(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:12.5px;color:var(--muted);text-align:center;padding:8px">Koi personal contact nahi.</p>';
+  el.innerHTML=myContacts.length?myContacts.map((c,i)=>`<div class="sos-contact"><div><div class="sname"><i data-lucide="user" class="app-icon-inline"></i> ${escapeHTML(c.name)} <span style="font-size:11px;color:var(--muted)">(${escapeHTML(c.relation)})</span></div><div class="snum">${escapeHTML(c.phone)}</div></div><div style="display:flex;gap:6px;align-items:center"><a href="tel:${escapeHTML(c.phone)}" style="padding:7px 14px;border-radius:50px;background:linear-gradient(135deg,var(--green),#4da888);color:white;text-decoration:none;font-size:12px;font-weight:600"><i data-lucide="phone" class="app-icon-inline"></i></a><button onclick="MC.delEC(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:12.5px;color:var(--muted);text-align:center;padding:8px">Koi personal contact nahi.</p>';
   renderIcons();
 }
 

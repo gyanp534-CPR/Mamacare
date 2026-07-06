@@ -19,13 +19,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
 
-  <!-- Template Helper System -->
+  <!-- All app modules are now bundled into bundle.js (see build.js) -->
+  <!-- Individual scripts commented out to reduce HTTP requests (16 → 1) -->
+  <!--
   <script src="app-templates.js"></script>
-
-  <!-- New Features -->
   <script src="app-pdf-report.js"></script>
   <script src="app-asha-chatbot.js"></script>
   <script src="app-breastfeeding.js"></script>
+  -->
 
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="/manifest.json" />
@@ -1024,13 +1025,14 @@
     <button onclick="dismissInstallBanner()" style="background:none;border:none;color:rgba(255,255,255,0.8);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;">✕</button>
   </div>
 
-  <!-- MamaCare v8.0 — Photo Storage Module (must load before bundle) -->
+  <!-- MamaCare v8.0 — All app modules bundled -->
+  <!-- Individual scripts commented out (now in bundle.js): -->
+  <!--
   <script src="app-photo-storage.js"></script>
-  
-  <!-- MamaCare v8.1 — Contraction Timer Module -->
   <script src="app-contractions.js"></script>
+  -->
   
-  <!-- MamaCare v8.0 — Bundled Scripts -->
+  <!-- MamaCare v8.0 — Single Bundled Script (reduces 16 HTTP requests to 1) -->
   <script src="bundle.js"></script>
 
   <script>

@@ -18,7 +18,8 @@ console.log('══════════════════════�
 
 // Entry point order matters (dependencies first)
 const sourceFiles = [
-  'app.js',              // Core (must be first)
+  'app-templates.js',    // Template helpers (MUST be first)
+  'app.js',              // Core (must be second)
   'app-improvements.js', // Enhancements
   'app-push.js',         // Push notifications
   'meal-plans-indian.js',// Data
@@ -31,7 +32,12 @@ const sourceFiles = [
   'app-onboard.js',      // Onboarding
   'app-smart.js',        // Smart features
   'app-tracker.js',      // Trackers
-  'app-enhancements.js'  // UI enhancements
+  'app-enhancements.js', // UI enhancements
+  'app-photo-storage.js',// Photo uploads
+  'app-contractions.js', // Contraction timer
+  'app-pdf-report.js',   // PDF export
+  'app-asha-chatbot.js', // ASHA mode
+  'app-breastfeeding.js' // Breastfeeding tracker
 ];
 
 // Verify all files exist

@@ -17,9 +17,9 @@
 'use strict';
 
 // ── CONFIG (update these in your Razorpay dashboard) ──
-const RAZORPAY_KEY_ID   = 'rzp_live_XXXXXXXXXXXXXX'; // Replace with your key
-const PLAN_MONTHLY_ID   = 'plan_XXXXXXXXXXXXXX';      // ₹99/month plan ID
-const PLAN_YEARLY_ID    = 'plan_XXXXXXXXXXXXXX';      // ₹799/year plan ID
+const RAZORPAY_KEY_ID   = 'rzp_test_TAUVN0OTKXoQnR'; // Test key - replace with live key in production
+const PLAN_MONTHLY_ID   = 'plan_XXXXXXXXXXXXXX';      // ₹99/month plan ID (create in Razorpay Dashboard)
+const PLAN_YEARLY_ID    = 'plan_XXXXXXXXXXXXXX';      // ₹799/year plan ID (create in Razorpay Dashboard)
 
 // Feature limits for free tier
 const FREE_LIMITS = {
@@ -148,7 +148,7 @@ function showUpgradePrompt(featureName, reason = '') {
 }
 
 // ════════════════════════════════════════
-// RAZORPAY CHECKOUT
+// RAZORPAY CHECKOUT (Standard + Subscription)
 // ════════════════════════════════════════
 async function subscribe(plan) {
   if (!window.user) { alert('Pehle login karein'); return; }
@@ -166,17 +166,43 @@ async function subscribe(plan) {
   const amount  = plan === 'yearly' ? 79900 : 9900; // paise
   const planLabel = plan === 'yearly' ? '₹799/year' : '₹99/month';
 
-  // Create Razorpay subscription via Edge Function
+  // Try subscription flow first (if plan IDs are configured)
   let subscriptionId = null;
-  try {
-    const { data, error } = await window.supa.functions.invoke('razorpay-subscription', {
-      body: { action: 'create', plan_id: planId, user_id: window.user.id }
-    });
-    if (error) throw error;
-    subscriptionId = data?.subscription_id;
-  } catch (err) {
-    console.error('Subscription create error:', err);
-    // Fallback: one-time payment order
+  if (planId && !planId.includes('XXXX')) {
+    try {
+      const { data, error } = await window.supa.functions.invoke('razorpay-subscription', {
+        body: { action: 'create', plan_id: planId, user_id: window.user.id }
+      });
+      if (error) throw error;
+      subscriptionId = data?.subscription_id;
+    } catch (err) {
+      console.error('Subscription create error:', err);
+      // Fall through to one-time payment
+    }
+  }
+
+  // Fallback: one-time payment order (Standard Checkout)
+  let orderId = null;
+  if (!subscriptionId) {
+    try {
+      const { data, error } = await window.supa.functions.invoke('razorpay-create-order', {
+        body: { 
+          amount,
+          currency: 'INR',
+          receipt: `order_${plan}_${Date.now()}`,
+          notes: {
+            user_id: window.user.id,
+            plan,
+          }
+        }
+      });
+      if (error) throw error;
+      orderId = data?.order_id;
+    } catch (err) {
+      console.error('Order create error:', err);
+      alert('Payment setup failed. Please try again or contact support.');
+      return;
+    }
   }
 
   const options = {
@@ -187,8 +213,9 @@ async function subscribe(plan) {
     description: `Premium ${planLabel}`,
     image: '/mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/1024.png',
     ...(subscriptionId ? { subscription_id: subscriptionId } : {}),
+    ...(orderId ? { order_id: orderId } : {}),
     handler: async (response) => {
-      await verifyPayment(response, plan, subscriptionId);
+      await verifyPayment(response, plan, subscriptionId, orderId);
     },
     prefill: {
       email: window.user.email,
@@ -199,29 +226,55 @@ async function subscribe(plan) {
     },
     theme: { color: '#e8a0a8' },
     modal: {
-      ondismiss: () => {},
+      ondismiss: () => {
+        console.log('Payment cancelled by user');
+      },
+      escape: true,
+      backdropclose: false,
     }
   };
 
   const rzp = new window.Razorpay(options);
+  rzp.on('payment.failed', function (response){
+    console.error('Payment failed:', response.error);
+    alert(`Payment failed: ${response.error.description || 'Unknown error'}`);
+  });
+  
   rzp.open();
   document.getElementById('premiumPromptOverlay')?.remove();
 }
 
-async function verifyPayment(response, plan, subscriptionId) {
+async function verifyPayment(response, plan, subscriptionId, orderId) {
   try {
-    // Verify via Edge Function
-    const { data, error } = await window.supa.functions.invoke('razorpay-subscription', {
-      body: {
-        action: 'verify',
-        payment_id: response.razorpay_payment_id,
-        subscription_id: subscriptionId || response.razorpay_subscription_id,
-        signature: response.razorpay_signature,
-        user_id: window.user.id,
-        plan,
-      }
-    });
-    if (error) throw error;
+    // Determine verification endpoint based on payment type
+    const isSubscription = !!subscriptionId;
+    
+    if (isSubscription) {
+      // Verify subscription payment
+      const { data, error } = await window.supa.functions.invoke('razorpay-subscription', {
+        body: {
+          action: 'verify',
+          payment_id: response.razorpay_payment_id,
+          subscription_id: subscriptionId || response.razorpay_subscription_id,
+          signature: response.razorpay_signature,
+          user_id: window.user.id,
+          plan,
+        }
+      });
+      if (error) throw error;
+    } else {
+      // Verify one-time payment
+      const { data, error } = await window.supa.functions.invoke('razorpay-verify-payment', {
+        body: {
+          payment_id: response.razorpay_payment_id,
+          order_id: response.razorpay_order_id || orderId,
+          signature: response.razorpay_signature,
+          user_id: window.user.id,
+          plan,
+        }
+      });
+      if (error) throw error;
+    }
 
     // Update local state
     premiumStatus = { plan: `premium_${plan}`, status: 'active' };

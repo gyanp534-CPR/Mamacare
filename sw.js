@@ -55,6 +55,13 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (url.hostname.includes('supabase.co')) return;
   if (url.hostname.includes('anthropic.com')) return;
+  
+  // CRITICAL: Never cache external CDN scripts and stylesheets
+  if (url.hostname.includes('unpkg.com')) return;
+  if (url.hostname.includes('cdn.jsdelivr.net')) return;
+  if (url.hostname.includes('cdnjs.cloudflare.com')) return;
+  if (url.hostname.includes('fonts.googleapis.com')) return;
+  if (url.hostname.includes('fonts.gstatic.com')) return;
 
   // Static assets — cache first
   if (

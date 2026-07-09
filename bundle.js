@@ -1,6 +1,6 @@
 // MamaCare v8.0 — Bundled App
 // Combined from 20 source files
-// Build: 2026-07-07T05:14:27.424Z
+// Build: 2026-07-09T06:25:13.494Z
 
 
 // ═══════════════════════════════════════════════════════════
@@ -543,9 +543,8 @@ const LANG = {
     sympHint:'लक्षणे शोधा...',sympDisc:'⚠️ सामान्य माहितीसाठी — गंभीर लक्षणांसाठी डॉक्टरांना भेटा.',
     sosDesc:'आणीबाणीत हे बटण दाबा — GPS जवळचे रुग्णालय शोधेल',
     logoutQ:'तुम्हाला लॉगआउट करायचे आहे का?',synced:'सिंक झाले',savedOff:'जतन झाले',
-  bind('authVerifyBtn', 'click', verifyOTP);
-  for(let i=0; i<=5; i++) bind('otp'+i, 'input', function() { otpInput(this, i); });
-  setupOTPPaste();
+    m_anxious:'चिंतित',m_sad:'उदास',m_angry:'गुस्सा',m_tired:'थकान',
+    m_nauseous:'मतली',m_overwhelmed:'अभिभूत',m_scared:'डरा हुआ',
     m_lonely:'एकटे',m_happy:'आनंदी',m_excited:'उत्साहित',
     t1:'पहिली',t2:'दुसरी',t3:'तिसरी',tri:'तिमाही',wk:'आठवडा',
     days:'दिवस बाकी',done:'पूर्ण',baby:'बाळ',body:'शरीर',tip:'टिप',mTip:'मूड टिप',
@@ -580,23 +579,50 @@ const LANG = {
     m_lonely:'ఒంటరితనం',m_happy:'సంతోషం',m_excited:'ఉత్సాహం',
     t1:'మొదటి',t2:'రెండవ',t3:'మూడవ',tri:'త్రైమాసికం',wk:'వారం',
     days:'రోజులు మిగిలాయి',done:'పూర్తయింది',baby:'శిశువు',body:'శరీరం',tip:'చిట్కా',mTip:'మూడ్ చిట్కా',
+  }
+};
+
+// ══════════════════════════════════════
+// GLOBAL VARIABLES
+// ══════════════════════════════════════
+let user = null;
+let lang = localStorage.getItem('mc_lang') || 'hinglish';
+let T = LANG[lang] || LANG.hinglish;
+let chatHist = [];
+let breathTimer = null, breathOn = false, breathRounds = 0;
+let affIdx = 0;
+let jMood = 'smile'; // Lucide icon name 
+let photoFile = null;
+let mealTab = 'breakfast';
+let yogaFilterKey = 'all';
+let nameFilterKey = 'all';
+let sympFilterKey = 'all';
+let wtChart = null, slChart = null;
+let waterCount = 0;
+let foodLogs = [], medicines = [], medTaken = {};
+let bagItems = [], savedNames = [], journalList = [], apptList = [];
+
+// ══════════════════════════════════════
+// BIND HELPER
+// ══════════════════════════════════════
+const bind = (id, ev, fn) => { const el = $(id); if (el) el.addEventListener(ev, fn); };
+
+// ══════════════════════════════════════
+// EVENT BINDING (CENTRALIZED)
+// ══════════════════════════════════════
+function bindStaticEvents() {
+  // Auth events
+  bind('authSendBtn', 'click', sendOTP);
+  bind('authVerifyBtn', 'click', verifyOTP);
+  for(let i=0; i<=5; i++) bind('otp'+i, 'input', function() { otpInput(this, i); });
+  bind('authBackBtn', 'click', () => showStep(1));
+  bind('authResendBtn', 'click', sendOTP);
+  bind('logoutBtn', 'click', logout);
+
   // Names & Symptoms
   bind('nameSearch', 'keyup', renderNames);
   bind('symptomSearch', 'keyup', filterSymptoms);
 
-  // Journal
-  bind('triggerPhotoBtn', 'click', () => $('photoUpload')?.click());
-  bind('photoUpload', 'change', function() { handlePhoto(this); });
-  bind('saveJournalBtn', 'click', saveJournalEntry);
-
-  // Appointments
-  bind('saveApptBtn', 'click', addAppointment);
-
-  // SOS
-  bind('findHospBtn', 'click', findHospital);
-  bind('addContactBtn', 'click', addEC);
-
-  // ALL Navigation Routing
   // Journal
   bind('triggerPhotoBtn', 'click', () => $('photoUpload')?.click());
   bind('photoUpload', 'change', function() { handlePhoto(this); });
@@ -1018,11 +1044,22 @@ window.addEventListener('DOMContentLoaded', async () => {
   const getStartedBtn = document.getElementById('getStartedBtn');
   if (getStartedBtn) {
     getStartedBtn.addEventListener('click', () => {
+      console.log('Get Started clicked'); // Debug log
       const splash = document.getElementById('splashScreen');
       const auth   = document.getElementById('authScreen');
-      if (splash) splash.classList.add('hidden');
-      if (auth)   auth.style.display = 'flex';
+      console.log('Splash element:', splash); // Debug log
+      console.log('Auth element:', auth); // Debug log
+      if (splash) {
+        splash.classList.add('hidden');
+        splash.style.display = 'none'; // Force hide
+      }
+      if (auth) {
+        auth.style.display = 'flex';
+        auth.style.visibility = 'visible'; // Ensure visible
+      }
     });
+  } else {
+    console.error('getStartedBtn not found!'); // Debug log
   }
 
   // ── Auth "Back to Splash" button ──

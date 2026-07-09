@@ -1032,6 +1032,28 @@
   <script src="app-contractions.js"></script>
   -->
   
+  <!-- Emergency Fix: Get Started button handler (before bundle.js loads) -->
+  <script>
+    // This runs immediately when DOM is ready, before bundle.js
+    document.addEventListener('DOMContentLoaded', function() {
+      const getStartedBtn = document.getElementById('getStartedBtn');
+      if (getStartedBtn) {
+        getStartedBtn.addEventListener('click', function() {
+          console.log('[Emergency Fix] Get Started clicked');
+          const splash = document.getElementById('splashScreen');
+          const auth = document.getElementById('authScreen');
+          if (splash) {
+            splash.style.display = 'none';
+            splash.classList.add('hidden');
+          }
+          if (auth) {
+            auth.style.display = 'flex';
+          }
+        });
+      }
+    });
+  </script>
+  
   <!-- MamaCare v8.0 — Single Bundled Script (reduces 16 HTTP requests to 1) -->
   <script src="bundle.js"></script>
 

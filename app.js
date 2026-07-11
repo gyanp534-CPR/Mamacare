@@ -318,217 +318,6 @@ function bindStaticEvents() {
   // SOS
   bind('findHospBtn', 'click', findHospital);
   bind('addContactBtn', 'click', addEC);
-
-  // ALL Navigation Routing
-  document.querySelectorAll('.top-tab, .bn-item, .more-item, .feature-item').forEach(btn => {
-let user = null;
-let lang = localStorage.getItem('mc_lang') || 'hinglish';
-let T = LANG[lang] || LANG.hinglish;
-let chatHist = [];
-let breathTimer = null, breathOn = false, breathRounds = 0;
-let affIdx = 0;
-let jMood = 'smile'; // Lucide icon name 
-let photoFile = null;
-let mealTab = 'breakfast';
-let yogaFilterKey = 'all';
-let nameFilterKey = 'all';
-let sympFilterKey = 'all';
-let wtChart = null, slChart = null;
-let waterCount = 0;
-let foodLogs = [], medicines = [], medTaken = {};
-let bagItems = [], savedNames = [], journalList = [], apptList = [];
-
-// ══════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════
-const $ = id => document.getElementById(id);
-const setText = (id, v) => { const e=$(id); if(e) e.textContent=v; };
-const setHTML = (id, v) => { const e=$(id); if(e) e.innerHTML=window.DOMPurify ? DOMPurify.sanitize(v) : v; };
-function flash(id, msg) {
-  const e = $(id); if(!e) return;
-  if(msg) e.innerHTML = `<i data-lucide="cloud-lightning" class="app-icon-inline"></i> ${msg}`;
-  e.classList.add('show');
-  renderIcons();
-  setTimeout(()=>e.classList.remove('show'), 2000);
-}
-const fmtDate = d => { try { return new Date(d).toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'}); } catch { return d||''; }};
-const todayStr = () => new Date().toISOString().split('T')[0];
-
-// ══════════════════════════════════════
-// LANGUAGE 
-// ══════════════════════════════════════
-function applyLang(l) {
-  lang = l; T = LANG[l] || LANG.hinglish;
-  localStorage.setItem('mc_lang', l);
-  document.getElementById('htmlRoot').lang = {hi:'hi',mr:'hi',ta:'ta',bn:'bn',te:'te'}[l]||'en';
-
-  const M = {
-    moodHeroText:       {html: T.moodHero},
-function otpInput(el, idx) {
-  el.value=el.value.replace(/\D/g,'');
-  if(el.value&&idx<5) $('otp'+(idx+1))?.focus();
-  if(idx===5&&el.value) verifyOTP();
-}
-
-// Handle OTP paste — fills all 6 boxes from a pasted 6-digit code
-function setupOTPPaste() {
-  for(let i=0;i<6;i++){
-    const inp=$('otp'+i);
-    if(!inp) continue;
-    inp.addEventListener('paste', e=>{
-      e.preventDefault();
-      const text=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
-      if(!text) return;
-      for(let j=0;j<6;j++){
-        const box=$('otp'+j);
-        if(box) box.value=text[j]||'';
-      }
-      $('otp'+(Math.min(text.length,5)))?.focus();
-      if(text.length===6) verifyOTP();
-    });
-    // Also handle backspace to go back
-    inp.addEventListener('keydown', e=>{
-      if(e.key==='Backspace'&&!inp.value&&i>0) $('otp'+(i-1))?.focus();
-    });
-  }
-}
-
-async function onLogin(u) { all 6 boxes from a pasted 6-digit code
-function setupOTPPaste() {
-  for(let i=0;i<6;i++){
-    const inp=$('otp'+i);
-    if(!inp) continue;
-    inp.addEventListener('paste', e=>{
-      e.preventDefault();
-      const text=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
-      if(!text) return;
-      for(let j=0;j<6;j++){
-        const box=$('otp'+j);
-        if(box) box.value=text[j]||'';
-      }
-      $('otp'+(Math.min(text.length,5)))?.focus();
-      if(text.length===6) verifyOTP();
-    });
-    // Also handle backspace to go back
-    inp.addEventListener('keydown', e=>{
-      if(e.key==='Backspace'&&!inp.value&&i>0) $('otp'+(i-1))?.focus();
-    });
-  }
-}
-
-// Handle OTP paste — fills all 6 boxes from a pasted 6-digit code
-function setupOTPPaste() {
-  for(let i=0;i<6;i++){
-    const inp=$('otp'+i);
-    if(!inp) continue;
-    inp.addEventListener('paste', e=>{
-      e.preventDefault();
-      const text=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
-      if(!text) return;
-      for(let j=0;j<6;j++){
-        const box=$('otp'+j);
-        if(box) box.value=text[j]||'';
-      }
-  if (window.TRACKER)  window.TRACKER.initTrackers();
-  if (window.ONBOARD)  window.ONBOARD.checkOnboarding(u);
-  // Schedule push reminders if permission already granted
-  if (Notification.permission === 'granted') {
-    if (window.scheduleDailyWaterReminders) window.scheduleDailyWaterReminders();
-    if (window.scheduleWeeklyUpdate) window.scheduleWeeklyUpdate();
-  }
-    });
-    // Also handle backspace to go back
-    inp.addEventListener('keydown', e=>{
-      if(e.key==='Backspace'&&!inp.value&&idx>0) $('otp'+(idx-1))?.focus();
-    });
-  }
-}   affirmTitle:        {text: T.affirmTitle},
-    affirmBtn:          {html: `<i data-lucide="sparkles" class="app-icon-inline"></i> ${T.affirmBtn}`},
-    chatTitle:          {text: T.chatTitle},
-    chatInput:          {ph: T.chatHint},
-    chatSendBtn:        {html: `<i data-lucide="send" class="app-icon-inline"></i> ${T.chatSend}`},
-    lmpLabel:           {text: T.lmpLbl},
-    dueDateLabel:       {text: T.dueLbl},
-    startLabel:         {text: T.startLbl},
-    endLabel:           {text: T.endLbl},
-  initYogaFilters(); initNutrition(); initBirthPlan(); initPostpartum();
-  initSOS(); initSymptoms(); initAppointmentChecklist(); initJournal();
-  initSupplementGuide(); renderDashboard();
-  
-  // Call plugins if they exist
-  if (window.TRACKER)  window.TRACKER.initTrackers();
-  if (window.ONBOARD)  window.ONBOARD.checkOnboarding(u);
-  // Schedule push reminders if permission already granted
-  if (Notification.permission === 'granted') {
-    if (window.scheduleDailyWaterReminders) window.scheduleDailyWaterReminders();
-    if (window.scheduleWeeklyUpdate) scheduleWeeklyUpdate();
-  }
-    qualityLabel:       {text: T.qualLbl},
-    issueLabel:         {text: T.issueLbl},
-    sleepLogBtn:        {html: `<i data-lucide="moon" class="app-icon-inline"></i> ${T.sleepAdd}`},
-    waterGoalText:      {text: T.waterGoal},
-    foodAddBtn:         {html: `<i data-lucide="plus" class="app-icon-inline"></i> ${T.foodAdd}`},
-    mealPlanTitle:      {text: T.mealTitle},
-    addMedBtn:          {html: `<i data-lucide="plus" class="app-icon-inline"></i> ${T.medAdd}`},
-    saveMedBtn:         {text: T.medSave},
-    bagResetBtn:        {html: `<i data-lucide="rotate-ccw" class="app-icon-inline"></i> ${T.bagReset}`},
-    bagAddBtn:          {html: `<i data-lucide="plus" class="app-icon-inline"></i> ${T.bagAdd}`},
-    jWeekLabel:         {text: T.jWkLbl},
-    jDateLabel:         {text: T.jDtLbl},
-    jMoodLabel:         {text: T.jMoodLbl},
-    jTextLabel:         {text: T.jTxtLbl},
-    jPhotoLabel:        {text: T.jPhotoLbl},
-    photoUploadText:    {text: T.jPhotoBtn},
-    saveJournalBtn:     {html: `<i data-lucide="heart" class="app-icon-inline" style="fill:currentColor"></i> ${T.jSave}`},
-    journalTimelineTitle:{text: T.jTimeline},
-    addApptBtn:         {html: `<i data-lucide="calendar-plus" class="app-icon-inline"></i> ${T.apptAdd}`},
-    apptUpcomingTitle:  {text: T.apptTitle},
-    bpNote:             {text: T.bpNote},
-    ppCongrats:         {text: T.ppCongrats},
-    ppSubtext:          {text: T.ppSub},
-    sympDisclaimer:     {text: T.sympDisc},
-    symptomSearch:      {ph: T.sympHint},
-    sosDesc:            {text: T.sosDesc},
-  };
-  Object.entries(M).forEach(([id, op]) => {
-    const el = $(id); if(!el) return;
-    if(op.html) el.innerHTML = op.html;
-    else if(op.text !== undefined) el.textContent = op.text;
-    else if(op.ph) el.placeholder = op.ph;
-  });
-
-  renderMoodGrid();
-  renderYogaGrid();
-  renderIcons();
-  if(user && supa) { supa.from('user_profile').update({language:l}).eq('id',user.id).then(()=>{}); }
-  if (window.BABY)     window.BABY.initBaby();
-  if (window.INDIA)    window.INDIA.initIndia();
-  if (window.SMART)    window.SMART.initSmart();
-  
-  renderIcons();
-
-  // Dispatch login event for push notifications and onboarding
-  window.dispatchEvent(new CustomEvent('mc:loggedin', { detail: u }));
-}
-
-async function logout(){
-  // Auth 
-  // Call plugins if they exist
-  if (window.TRACKER)  window.TRACKER.initTrackers();
-  if (window.ONBOARD)  window.ONBOARD.checkOnboarding(u);
-  if (window.PREMIUM)  { window.PREMIUM.load().then(() => { window.PREMIUM.loadBadge(); window.PREMIUM.updatePage(); }); }
-  if (window.BABY)     window.BABY.initBaby();
-  if (window.INDIA)    window.INDIA.initIndia();
-  if (window.SMART)    window.SMART.initSmart();
-  
-  renderIcons();
-
-  // Dispatch login event for app-push.js and other modules
-  window.dispatchEvent(new CustomEvent('mc:loggedin', { detail: u }));
-} if (window.initAllReminders) window.initAllReminders();
-
-  renderIcons();
-
   // Mood & Chat
   bind('breathBtn', 'click', startBreathing);
   bind('affirmBtn', 'click', newAffirmation);
@@ -556,22 +345,6 @@ async function logout(){
   // Hospital Bag
   bind('resetBagBtn', 'click', resetBag);
   bind('addCustomBagBtn', 'click', addCustomBagItem);
-
-  // Names & Symptoms
-  bind('nameSearch', 'keyup', renderNames);
-  bind('symptomSearch', 'keyup', filterSymptoms);
-
-  // Journal
-  bind('triggerPhotoBtn', 'click', () => $('photoUpload')?.click());
-  bind('photoUpload', 'change', function() { handlePhoto(this); });
-  bind('saveJournalBtn', 'click', saveJournalEntry);
-
-  // Appointments
-  bind('saveApptBtn', 'click', addAppointment);
-
-  // SOS
-  bind('findHospBtn', 'click', findHospital);
-  bind('addContactBtn', 'click', addEC);
 
   // ALL Navigation Routing
   document.querySelectorAll('.top-tab, .bn-item, .more-item, .feature-item').forEach(btn => {
@@ -610,7 +383,81 @@ async function logout(){
       m.style.display = 'none';
     }
   });
+}
 
+// ══════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════
+const $ = id => document.getElementById(id);
+const setText = (id, v) => { const e=$(id); if(e) e.textContent=v; };
+const setHTML = (id, v) => { const e=$(id); if(e) e.innerHTML=window.DOMPurify ? DOMPurify.sanitize(v) : v; };
+function flash(id, msg) {
+  const e = $(id); if(!e) return;
+  if(msg) e.innerHTML = `<i data-lucide="cloud-lightning" class="app-icon-inline"></i> ${msg}`;
+  e.classList.add('show');
+  renderIcons();
+  setTimeout(()=>e.classList.remove('show'), 2000);
+}
+const fmtDate = d => { try { return new Date(d).toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'}); } catch { return d||''; }};
+const todayStr = () => new Date().toISOString().split('T')[0];
+
+// ══════════════════════════════════════
+// LANGUAGE 
+// ══════════════════════════════════════
+function applyLang(l) {
+  lang = l; T = LANG[l] || LANG.hinglish;
+  localStorage.setItem('mc_lang', l);
+  document.getElementById('htmlRoot').lang = {hi:'hi',mr:'hi',ta:'ta',bn:'bn',te:'te'}[l]||'en';
+
+  const M = {
+    moodHeroText:       {html: T.moodHero},
+    affirmBtn:          {html: `<i data-lucide="sparkles" class="app-icon-inline"></i> ${T.affirmBtn}`},
+    chatTitle:          {text: T.chatTitle},
+    chatInput:          {ph: T.chatHint},
+    chatSendBtn:        {html: `<i data-lucide="send" class="app-icon-inline"></i> ${T.chatSend}`},
+    lmpLabel:           {text: T.lmpLbl},
+    dueDateLabel:       {text: T.dueLbl},
+    startLabel:         {text: T.startLbl},
+    endLabel:           {text: T.endLbl},
+    qualityLabel:       {text: T.qualLbl},
+    issueLabel:         {text: T.issueLbl},
+    sleepLogBtn:        {html: `<i data-lucide="moon" class="app-icon-inline"></i> ${T.sleepAdd}`},
+    waterGoalText:      {text: T.waterGoal},
+    foodAddBtn:         {html: `<i data-lucide="plus" class="app-icon-inline"></i> ${T.foodAdd}`},
+    mealPlanTitle:      {text: T.mealTitle},
+    addMedBtn:          {html: `<i data-lucide="plus" class="app-icon-inline"></i> ${T.medAdd}`},
+    saveMedBtn:         {text: T.medSave},
+    bagResetBtn:        {html: `<i data-lucide="rotate-ccw" class="app-icon-inline"></i> ${T.bagReset}`},
+    bagAddBtn:          {html: `<i data-lucide="plus" class="app-icon-inline"></i> ${T.bagAdd}`},
+    jWeekLabel:         {text: T.jWkLbl},
+    jDateLabel:         {text: T.jDtLbl},
+    jMoodLabel:         {text: T.jMoodLbl},
+    jTextLabel:         {text: T.jTxtLbl},
+    jPhotoLabel:        {text: T.jPhotoLbl},
+    photoUploadText:    {text: T.jPhotoBtn},
+    saveJournalBtn:     {html: `<i data-lucide="heart" class="app-icon-inline" style="fill:currentColor"></i> ${T.jSave}`},
+    journalTimelineTitle:{text: T.jTimeline},
+    addApptBtn:         {html: `<i data-lucide="calendar-plus" class="app-icon-inline"></i> ${T.apptAdd}`},
+    apptUpcomingTitle:  {text: T.apptTitle},
+    bpNote:             {text: T.bpNote},
+    ppCongrats:         {text: T.ppCongrats},
+    ppSubtext:          {text: T.ppSub},
+    sympDisclaimer:     {text: T.sympDisc},
+    symptomSearch:      {ph: T.sympHint},
+    sosDesc:            {text: T.sosDesc},
+  };
+  Object.entries(M).forEach(([id, op]) => {
+    const el = $(id); if(!el) return;
+    if(op.html) el.innerHTML = op.html;
+    else if(op.text !== undefined) el.textContent = op.text;
+    else if(op.ph) el.placeholder = op.ph;
+  });
+
+  renderMoodGrid();
+  renderYogaGrid();
+  renderIcons();
+  if(user && supa) { supa.from('user_profile').update({language:l}).eq('id',user.id).then(()=>{}); }
+}
 
 // ══════════════════════════════════════
 // AUTH
@@ -648,6 +495,29 @@ function otpInput(el, idx) {
   el.value=el.value.replace(/\D/g,'');
   if(el.value&&idx<5) $('otp'+(idx+1))?.focus();
   if(idx===5&&el.value) verifyOTP();
+}
+
+// Handle OTP paste — fills all 6 boxes from a pasted 6-digit code
+function setupOTPPaste() {
+  for(let i=0;i<6;i++){
+    const inp=$('otp'+i);
+    if(!inp) continue;
+    inp.addEventListener('paste', e=>{
+      e.preventDefault();
+      const text=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+      if(!text) return;
+      for(let j=0;j<6;j++){
+        const box=$('otp'+j);
+        if(box) box.value=text[j]||'';
+      }
+      $('otp'+(Math.min(text.length,5)))?.focus();
+      if(text.length===6) verifyOTP();
+    });
+    // Also handle backspace to go back
+    inp.addEventListener('keydown', e=>{
+      if(e.key==='Backspace'&&!inp.value&&i>0) $('otp'+(i-1))?.focus();
+    });
+  }
 }
 
 async function onLogin(u) {
@@ -697,6 +567,15 @@ async function onLogin(u) {
   if (window.initASHAChatbot) window.initASHAChatbot();
   if (window.initBreastfeedingTracker) window.initBreastfeedingTracker();
   
+  // Schedule push reminders if permission already granted
+  if (Notification.permission === 'granted') {
+    if (window.scheduleDailyWaterReminders) window.scheduleDailyWaterReminders();
+    if (window.scheduleWeeklyUpdate) window.scheduleWeeklyUpdate();
+  }
+  if (window.initAllReminders) window.initAllReminders();
+
+  // Notify other modules (e.g. push notifications) that login is complete
+  window.dispatchEvent(new CustomEvent('mc:loggedin', { detail: u }));
   renderIcons();
 }
 
@@ -1279,19 +1158,7 @@ function renderYogaGrid(){
       </div>
     </div>
   `).join('');
-async function loadMedicines(){
-  if(!user || !supa) return;
-  const {data:meds}=await supa.from('medicines').select('*').eq('user_id',user.id).eq('is_active',true).order('time_of_day');
-  const {data:logs}=await supa.from('medicine_logs').select('medicine_id').eq('user_id',user.id).eq('taken_date',todayStr());
-  medicines=meds||[];medTaken={};(logs||[]).forEach(l=>medTaken[l.medicine_id]=true);
-  renderMedicines();
-  // Re-schedule reminders for all active medicines
-  if(window.scheduleMedicineReminders && medicines.length){
-    const medsForSchedule=medicines.map(m=>({...m,reminder_time:m.time_of_day}));
-    window.scheduleMedicineReminders(medsForSchedule);
-  }
 }
-
 function startYogaPose(idx){
   const filtered=yogaFilterKey==='all'?YOGA:YOGA.filter(y=>y.cat.includes(yogaFilterKey));
   const pose=filtered[idx];
@@ -1302,32 +1169,9 @@ function startYogaPose(idx){
   modal.innerHTML=`
     <div class="yoga-modal-content">
       <button class="yoga-modal-close" onclick="this.closest('.yoga-modal').remove()">
-async function addMedicine(){
-  const name=$('medName')?.value.trim();if(!name){alert('Name daalo');return;}
-  if(!user || !supa) return;
-  await supa.from('medicines').insert({user_id:user.id,name,dose:$('medDose').value||'1 tablet',time_of_day:$('medTime').value||'08:00',icon:$('medIcon').value,notes:$('medNotes').value,is_active:true});
-  ['medName','medDose','medNotes'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  toggleAddMedForm();flash('med-save',T.synced);loadMedicines();
-  // Schedule local reminder for this medicine
-  if(window.scheduleMedicineReminders){
-    const newMed={name,dose:$('medDose')?.value||'1 tablet',reminder_time:$('medTime')?.value||'08:00',notes:$('medNotes')?.value||''};
-    window.scheduleMedicineReminders([newMed]);
-  }
-}       <div style="font-size:13px;color:var(--text-muted)">${pose.dur} • ${pose.lvl}</div>
+       <div style="font-size:13px;color:var(--text-muted)">${pose.dur} • ${pose.lvl}</div>
       </div>
       
-async function loadMedicines(){
-  if(!user || !supa) return;
-  const {data:meds}=await supa.from('medicines').select('*').eq('user_id',user.id).eq('is_active',true).order('time_of_day');
-  const {data:logs}=await supa.from('medicine_logs').select('medicine_id').eq('user_id',user.id).eq('taken_date',todayStr());
-  medicines=meds||[];medTaken={};(logs||[]).forEach(l=>medTaken[l.medicine_id]=true);
-  renderMedicines();
-  // Re-schedule reminders for all active medicines
-  if(window.scheduleMedicineReminders && medicines.length){
-    const medsForSchedule=medicines.map(m=>({...m,reminder_time:m.time_of_day}));
-    window.scheduleMedicineReminders(medsForSchedule);
-  }
-}
         <div style="font-weight:700;margin-bottom:12px;color:var(--text-main)">Hold for:</div>
         <div class="yoga-timer-display" id="yogaTimer">0:00</div>
         <div class="yoga-timer-controls">
@@ -1346,18 +1190,7 @@ async function loadMedicines(){
       <div class="yoga-steps-modal">
         <div style="font-weight:700;margin-bottom:12px;color:var(--text-main);display:flex;align-items:center;gap:6px">
           <i data-lucide="list" class="app-icon-inline"></i> Instructions
-async function addMedicine(){
-  const name=$('medName')?.value.trim();if(!name){alert('Name daalo');return;}
-  if(!user || !supa) return;
-  await supa.from('medicines').insert({user_id:user.id,name,dose:$('medDose').value||'1 tablet',time_of_day:$('medTime').value||'08:00',icon:$('medIcon').value,notes:$('medNotes').value,is_active:true});
-  ['medName','medDose','medNotes'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  toggleAddMedForm();flash('med-save',T.synced);loadMedicines();
-  // Schedule local reminder for this medicine
-  if(window.scheduleMedicineReminders){
-    const newMed={name,dose:$('medDose')?.value||'1 tablet',reminder_time:$('medTime')?.value||'08:00',notes:$('medNotes')?.value||''};
-    window.scheduleMedicineReminders([newMed]);
-  }
-}       `).join('')}
+          ${pose.steps.map((step, i) => `<div class="yoga-step-modal"><div class="yoga-step-num-modal">${i+1}</div><div style="font-size:13px;line-height:1.6;color:var(--text-muted)">${step}</div></div>`).join('')}
       </div>
       
       <div class="yoga-benefits-modal">
@@ -1535,13 +1368,24 @@ async function loadFoodLog(){
 }
 
 function renderFoodLog(){
-function handlePhoto(input){
-  const file=input.files[0];if(!file)return;photoFile=file;
-  const reader=new FileReader();
-  reader.onload=e=>{const p=$('photoPreview');if(p){p.src=e.target.result;p.style.display='block';}};
-  reader.readAsDataURL(file);
+  const list = mealTab && mealTab !== 'all' ? foodLogs.filter(f => f.meal_type === mealTab) : foodLogs;
+  const el = $('foodList'); if(!el) return;
+  el.innerHTML = list.length ? list.map(f => `<div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:13px;margin-bottom:8px"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${escapeHTML(f.food_name)}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${f.calories||0} kcal${f.meal_type?' • '+escapeHTML(f.meal_type):''}</div></div><button onclick="MC.deleteFood('${f.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="x" class="app-icon-inline"></i></button></div>`).join('') : '<p style="font-size:13px;color:var(--muted);padding:10px 0">Koi food logged nahi. Neeche se add karein.</p>';
+  renderIcons();
 }
+
+async function addFood(){
+  const name = $('foodInput')?.value.trim();
+  const cal = parseInt($('foodCalSel')?.value) || 0;
+  if(!name){ alert('Food ka naam likhein!'); return; }
+  if(!user || !supa) return;
+  const meal = (mealTab && mealTab !== 'all') ? mealTab : 'breakfast';
+  await supa.from('food_logs').insert({user_id:user.id, food_name:name, calories:cal, meal_type:meal, food_date:todayStr()});
+  if($('foodInput')) $('foodInput').value='';
+  flash('food-save', T.synced);
+  loadFoodLog();
 }
+
 async function uploadPhotoToSupabase(file, week, date) {
   if (!supa || !user) return null;
   try {
@@ -1558,68 +1402,11 @@ async function uploadPhotoToSupabase(file, week, date) {
     const { data: urlData } = supa.storage.from('journal-photos').getPublicUrl(path);
     return urlData?.publicUrl || null;
   } catch(e) {
-function renderJournal(){
-  const html = journalList.length ? journalList.map(e=>{
-    const moodIcon = e.mood || 'smile';
-    const photoHtml = e.photo_url
-      ? `<img src="${e.photo_url}" style="width:100%;border-radius:10px;margin-top:8px;max-height:200px;object-fit:cover;" loading="lazy" />`
-      : '';
-    
-    // Using Templates.listItem from app-templates.js
-    return Templates.listItem({
-      icon: moodIcon,
-      title: fmtDate(e.entry_date),
-      subtitle: e.content_text ? e.content_text.replace(/\n/g,'<br>') : '',
-      meta: photoHtml,
-      actions: `
-        ${e.week_number ? Templates.badge({ text: `W${e.week_number}` }) : ''}
-        ${Templates.iconButton({
-          icon: 'trash-2',
-          onClick: `MC.deleteJournalEntry('${e.id}')`,
-          title: 'Delete'
-        })}
-      `
-    });
-  }).join('') : Templates.emptyState({
-    icon: 'flower-2',
-    message: 'Koi entry nahi. Pehli yaad likho!'
-  });
-  
-  const el=$('journalEntries'); if(el){ el.innerHTML=html; }
-  const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }
-  renderIcons();
-} if(!user || !supa)return;
-
-  let photoUrl = null;
-  if (photoFile) {
-    // Try Supabase Storage first
-    photoUrl = await uploadPhotoToSupabase(photoFile, week, date);
-    if (!photoUrl) {
-      // Fallback: download to device
-      const url = URL.createObjectURL(photoFile);
-      const a = document.createElement('a');
-      a.href = url; a.download = `mamacare-w${week||'bump'}-${date||todayStr()}.jpg`;
-      a.click(); URL.revokeObjectURL(url);
-    }
+    console.warn('Photo upload error:', e);
+    return null;
   }
-  }
-  await supa.from('journal_entries').insert({
-    user_id: user.id,
-    week_number: week||null,
-    entry_date: date||todayStr(),
-    mood: jMood,
-    content_text: text||null,
-    photo_url: photoUrl,
-  });
-
-  photoFile=null;
-  const p=$('photoPreview');if(p){p.style.display='none';p.src='';}
-  if($('photoUpload'))$('photoUpload').value='';
-  if($('jText'))$('jText').value='';
-  if($('jWeek'))$('jWeek').value='';
-  flash('journal-save',T.synced);
-  loadJournal();
-}async function deleteFood(id){if(supa) await supa.from('food_logs').delete().eq('id',id);foodLogs=foodLogs.filter(f=>f.id!==id);renderFoodLog();updateNutriBars();}
+}
+async function deleteFood(id){if(supa) await supa.from('food_logs').delete().eq('id',id);foodLogs=foodLogs.filter(f=>f.id!==id);renderFoodLog();updateNutriBars();}
 
 // ══════════════════════════════════════
 // MEDICINES
@@ -1630,6 +1417,11 @@ async function loadMedicines(){
   const {data:logs}=await supa.from('medicine_logs').select('medicine_id').eq('user_id',user.id).eq('taken_date',todayStr());
   medicines=meds||[];medTaken={};(logs||[]).forEach(l=>medTaken[l.medicine_id]=true);
   renderMedicines();
+  // Re-schedule reminders for all active medicines
+  if(window.scheduleMedicineReminders && medicines.length){
+    const medsForSchedule=medicines.map(m=>({...m,reminder_time:m.time_of_day}));
+    window.scheduleMedicineReminders(medsForSchedule);
+  }
 }
 
 function renderMedicines(){
@@ -1653,6 +1445,11 @@ async function addMedicine(){
   await supa.from('medicines').insert({user_id:user.id,name,dose:$('medDose').value||'1 tablet',time_of_day:$('medTime').value||'08:00',icon:$('medIcon').value,notes:$('medNotes').value,is_active:true});
   ['medName','medDose','medNotes'].forEach(id=>{const e=$(id);if(e)e.value='';});
   toggleAddMedForm();flash('med-save',T.synced);loadMedicines();
+  // Schedule local reminder for this medicine
+  if(window.scheduleMedicineReminders){
+    const newMed={name,dose:$('medDose')?.value||'1 tablet',reminder_time:$('medTime')?.value||'08:00',notes:$('medNotes')?.value||''};
+    window.scheduleMedicineReminders([newMed]);
+  }
 }
 
 async function deleteMed(id){if(!confirm('Delete karein?'))return;if(supa) await supa.from('medicines').delete().eq('id',id);loadMedicines();}

@@ -344,7 +344,7 @@ function saveMoodNote(btn) {
 // ══════════════════════════════════════
 // ROTATING AFFIRMATIONS
 // ══════════════════════════════════════
-const AFFIRMATIONS = [
+const ROTATING_AFFIRMATIONS = [
   "I trust my body to grow and nurture my baby.",
   "I am strong, capable, and ready for motherhood.",
   "My baby and I are healthy and safe.",
@@ -360,12 +360,12 @@ const AFFIRMATIONS = [
 let currentAffirmationIndex = 0;
 
 function rotateAffirmation() {
-  currentAffirmationIndex = (currentAffirmationIndex + 1) % AFFIRMATIONS.length;
+  currentAffirmationIndex = (currentAffirmationIndex + 1) % ROTATING_AFFIRMATIONS.length;
   const affirmText = document.getElementById('affirmText');
   if (affirmText) {
     affirmText.style.opacity = '0';
     setTimeout(() => {
-      affirmText.textContent = AFFIRMATIONS[currentAffirmationIndex];
+      affirmText.textContent = ROTATING_AFFIRMATIONS[currentAffirmationIndex];
       affirmText.style.opacity = '1';
     }, 300);
   }

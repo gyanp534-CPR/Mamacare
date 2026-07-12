@@ -1,27 +1,15 @@
 /**
  * MamaCare — Service Worker (sw.js)
  * Offline caching + background sync + Web Push
- * Version: v11.0
+ * Version: v12.0 — Bundle Fix
  */
 
-const CACHE_NAME = 'mamacare-v11.0';
+const CACHE_NAME = 'mamacare-v12.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/app.js',
-  '/app-improvements.js',
-  '/app-push.js',
-  '/meal-plans-indian.js',
-  '/app-baby.js',
-  '/app-coach.js',
-  '/app-extra.js',
-  '/app-features.js',
-  '/app-india.js',
-  '/app-monetize.js',
-  '/app-onboard.js',
-  '/app-smart.js',
-  '/app-tracker.js',
-  '/app-enhancements.js',
+  '/bundle.js',          // Bundled app scripts (v8.0+)
+  '/bundle.min.js',      // Minified bundle
   '/style.css',
   '/manifest.json',
   '/mcAppIcons/android/mipmap-xxxhdpi/icon.png',

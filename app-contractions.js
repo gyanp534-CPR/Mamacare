@@ -24,10 +24,15 @@
     renderContractionHistory();
     
     // Set up event listeners
-    $('#startContractionBtn')?.addEventListener('click', startContraction);
-    $('#endContractionBtn')?.addEventListener('click', endContraction);
-    $('#resetContractionBtn')?.addEventListener('click', resetContractionTimer);
-    $('#exportContractionBtn')?.addEventListener('click', exportContractions);
+    const startBtn = document.getElementById('startContractionBtn');
+    const endBtn = document.getElementById('endContractionBtn');
+    const resetBtn = document.getElementById('resetContractionBtn');
+    const exportBtn = document.getElementById('exportContractionBtn');
+    
+    if (startBtn) startBtn.addEventListener('click', startContraction);
+    if (endBtn) endBtn.addEventListener('click', endContraction);
+    if (resetBtn) resetBtn.addEventListener('click', resetContractionTimer);
+    if (exportBtn) exportBtn.addEventListener('click', exportContractions);
   };
 
   /**
@@ -41,13 +46,17 @@
     CONTRACTION.elapsedTime = 0;
 
     // Update UI
-    $('#startContractionBtn').style.display = 'none';
-    $('#endContractionBtn').style.display = 'block';
-    $('#resetContractionBtn').style.display = 'block';
-    $('#contractionTimerLabel').textContent = 'Contracting...';
+    const startBtn = document.getElementById('startContractionBtn');
+    const endBtn = document.getElementById('endContractionBtn');
+    const resetBtn = document.getElementById('resetContractionBtn');
+    const label = document.getElementById('contractionTimerLabel');
+    const circle = document.getElementById('contractionCircle');
     
-    // Add pulsing animation
-    $('#contractionCircle').classList.add('timer-active');
+    if (startBtn) startBtn.style.display = 'none';
+    if (endBtn) endBtn.style.display = 'block';
+    if (resetBtn) resetBtn.style.display = 'block';
+    if (label) label.textContent = 'Contracting...';
+    if (circle) circle.classList.add('timer-active');
 
     // Start timer display
     CONTRACTION.timerInterval = setInterval(updateTimerDisplay, 100);
@@ -85,13 +94,18 @@
     saveContractions();
 
     // Update UI
-    $('#startContractionBtn').style.display = 'block';
-    $('#endContractionBtn').style.display = 'none';
-    $('#contractionCircle').classList.remove('timer-active');
-    $('#contractionTimerLabel').textContent = 'Contraction Ended';
+    const startBtn = document.getElementById('startContractionBtn');
+    const endBtn = document.getElementById('endContractionBtn');
+    const circle = document.getElementById('contractionCircle');
+    const label = document.getElementById('contractionTimerLabel');
+    const stats = document.getElementById('contractionStats');
     
-    // Show stats
-    $('#contractionStats').style.display = 'grid';
+    if (startBtn) startBtn.style.display = 'block';
+    if (endBtn) endBtn.style.display = 'none';
+    if (circle) circle.classList.remove('timer-active');
+    if (label) label.textContent = 'Contraction Ended';
+    if (stats) stats.style.display = 'grid';
+    
     updateStats();
     renderContractionHistory();
 
@@ -100,8 +114,10 @@
 
     // Reset for next contraction
     setTimeout(() => {
-      $('#contractionTimerDisplay').textContent = '00:00';
-      $('#contractionTimerLabel').textContent = 'Press Start';
+      const display = document.getElementById('contractionTimerDisplay');
+      const label = document.getElementById('contractionTimerLabel');
+      if (display) display.textContent = '00:00';
+      if (label) label.textContent = 'Press Start';
     }, 2000);
   }
 
@@ -117,12 +133,12 @@
     CONTRACTION.startTime = null;
     CONTRACTION.elapsedTime = 0;
 
-    $('#contractionTimerDisplay').textContent = '00:00';
-    $('#contractionTimerLabel').textContent = 'Press Start';
-    $('#startContractionBtn').style.display = 'block';
-    $('#endContractionBtn').style.display = 'none';
-    $('#resetContractionBtn').style.display = 'none';
-    $('#contractionCircle').classList.remove('timer-active');
+    document.getElementById('contractionTimerDisplay').textContent = '00:00';
+    document.getElementById('contractionTimerLabel').textContent = 'Press Start';
+    document.getElementById('startContractionBtn').style.display = 'block';
+    document.getElementById('endContractionBtn').style.display = 'none';
+    document.getElementById('resetContractionBtn').style.display = 'none';
+    document.getElementById('contractionCircle').classList.remove('timer-active');
   }
 
   /**
@@ -134,7 +150,7 @@
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
 
-    $('#contractionTimerDisplay').textContent = 
+    document.getElementById('contractionTimerDisplay').textContent = 
       `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   }
 
@@ -148,19 +164,19 @@
 
     // Last duration
     const lastDuration = formatDuration(recent[0].duration);
-    $('#statLastDuration').textContent = lastDuration;
+    document.getElementById('statLastDuration').textContent = lastDuration;
 
     // Average duration
     const avgDuration = recent.reduce((sum, c) => sum + c.duration, 0) / recent.length;
-    $('#statAvgDuration').textContent = formatDuration(Math.round(avgDuration));
+    document.getElementById('statAvgDuration').textContent = formatDuration(Math.round(avgDuration));
 
     // Frequency (avg time between contractions)
     const withFreq = recent.filter(c => c.frequency !== null);
     if (withFreq.length > 0) {
       const avgFreq = withFreq.reduce((sum, c) => sum + c.frequency, 0) / withFreq.length;
-      $('#statFrequency').textContent = `${Math.round(avgFreq)} min`;
+      document.getElementById('statFrequency').textContent = `${Math.round(avgFreq)} min`;
     } else {
-      $('#statFrequency').textContent = '-';
+      document.getElementById('statFrequency').textContent = '-';
     }
 
     // Total count today
@@ -168,7 +184,7 @@
     const todayCount = CONTRACTION.contractions.filter(c => 
       new Date(c.start).toDateString() === today
     ).length;
-    $('#statCount').textContent = todayCount;
+    document.getElementById('statCount').textContent = todayCount;
   }
 
   /**
@@ -192,7 +208,7 @@
     });
 
     if (meets511) {
-      const alertCard = $('#alert511Card');
+      const alertCard = document.getElementById('alert511Card');
       if (alertCard) alertCard.style.display = 'block';
       
       // Vibrate if supported
@@ -216,7 +232,7 @@
    * Dismiss 5-1-1 alert
    */
   window.dismissAlert511 = function() {
-    const alertCard = $('#alert511Card');
+    const alertCard = document.getElementById('alert511Card');
     if (alertCard) alertCard.style.display = 'none';
   };
 
@@ -235,7 +251,7 @@
    * Render contraction history
    */
   function renderContractionHistory() {
-    const container = $('#contractionHistory');
+    const container = document.getElementById('contractionHistory');
     if (!container) return;
 
     if (CONTRACTION.contractions.length === 0) {
@@ -349,7 +365,7 @@
     URL.revokeObjectURL(url);
 
     // Show success message
-    const exportBtn = $('#exportContractionBtn');
+    const exportBtn = document.getElementById('exportContractionBtn');
     const originalText = exportBtn.innerHTML;
     exportBtn.innerHTML = '<i data-lucide="check" class="app-icon-inline"></i> Exported';
     lucide.createIcons();
@@ -433,7 +449,7 @@
           console.log('✅ Loaded contractions from Supabase');
           
           if (CONTRACTION.contractions.length > 0) {
-            $('#contractionStats').style.display = 'grid';
+            document.getElementById('contractionStats').style.display = 'grid';
             updateStats();
           }
           return;
@@ -453,7 +469,7 @@
 
         // Show stats if we have contractions
         if (CONTRACTION.contractions.length > 0) {
-          $('#contractionStats').style.display = 'grid';
+          document.getElementById('contractionStats').style.display = 'grid';
           updateStats();
         }
       }
@@ -473,8 +489,8 @@
     saveContractions();
     updateStats();
     renderContractionHistory();
-    $('#contractionStats').style.display = 'none';
-    $('#alert511Card').style.display = 'none';
+    document.getElementById('contractionStats').style.display = 'none';
+    document.getElementById('alert511Card').style.display = 'none';
   };
 
   /**
@@ -577,3 +593,4 @@
   }
 
 })();
+

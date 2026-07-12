@@ -1,6 +1,6 @@
 // MamaCare v8.0 — Bundled App
-// Combined from 20 source files
-// Build: 2026-07-11T17:34:14.963Z
+// Combined from 22 source files
+// Build: 2026-07-12T06:15:45.467Z
 
 
 // ═══════════════════════════════════════════════════════════
@@ -9469,6 +9469,907 @@ window.ONBOARD = {
   calcDueFromLMP,
   checkOnboarding,
 };
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-onboarding-v2.js
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * MamaCare - Enhanced Onboarding Flow v2.0
+ * Beautiful, engaging first-time user experience
+ */
+
+const ONBOARDING_V2 = {
+  steps: [
+    {
+      id: 'welcome',
+      title: 'Welcome to MamaCare! 🌸',
+      subtitle: 'Your complete pregnancy companion',
+      content: 'Track your journey, connect with your baby, and get personalized care — all in one place.',
+      icon: '💗',
+      action: 'Get Started',
+      image: 'mcAppIcons/Assets.xcassets/AppIcon.appiconset/_/512.png'
+    },
+    {
+      id: 'due-date',
+      title: 'When is your due date? 📅',
+      subtitle: 'This helps us personalize your experience',
+      content: 'We\'ll show you week-by-week updates tailored to your pregnancy.',
+      icon: '🗓️',
+      action: 'Continue',
+      input: 'date'
+    },
+    {
+      id: 'features',
+      title: 'Everything you need in one app ✨',
+      subtitle: 'Explore key features',
+      content: '',
+      icon: '🎯',
+      action: 'Continue',
+      cards: [
+        { icon: '📊', title: 'Smart Tracking', desc: 'Weight, sleep, nutrition, mood' },
+        { icon: '⏱️', title: 'Contraction Timer', desc: '5-1-1 rule detection for labor' },
+        { icon: '💬', title: 'AI Coach', desc: '24/7 pregnancy guidance' },
+        { icon: '👶', title: 'Baby Updates', desc: 'Week-by-week development' },
+        { icon: '🧘', title: 'Yoga & Wellness', desc: 'Safe exercises for pregnancy' },
+        { icon: '📸', title: 'Journal & Memories', desc: 'Document your journey' }
+      ]
+    },
+    {
+      id: 'notifications',
+      title: 'Never miss important moments 🔔',
+      subtitle: 'Enable reminders and updates',
+      content: 'Get medicine reminders, kick count alerts, and weekly baby updates.',
+      icon: '⏰',
+      action: 'Enable Notifications',
+      optional: true
+    },
+    {
+      id: 'ready',
+      title: 'You\'re all set! 🎉',
+      subtitle: 'Your personalized dashboard is ready',
+      content: 'We\'ve prepared everything based on your due date. Let\'s start tracking!',
+      icon: '🌟',
+      action: 'Start My Journey',
+      confetti: true
+    }
+  ]
+};
+
+// ══════════════════════════════════════
+// ONBOARDING STATE
+// ══════════════════════════════════════
+let currentStep = 0;
+let onboardingData = {
+  due_date: null,
+  lmp_date: null,
+  notifications_enabled: false,
+  completed_at: null
+};
+
+// ══════════════════════════════════════
+// INIT ONBOARDING
+// ══════════════════════════════════════
+function initOnboardingV2() {
+  // Check if user needs onboarding
+  const user = window.user;
+  if (!user) return;
+
+  const profile = JSON.parse(localStorage.getItem('mc_profile') || '{}');
+  const hasCompletedOnboarding = profile.onboarding_completed || false;
+  const hasDueDate = profile.due_date || false;
+
+  if (!hasCompletedOnboarding || !hasDueDate) {
+    showOnboarding();
+  }
+}
+
+// ══════════════════════════════════════
+// SHOW ONBOARDING OVERLAY
+// ══════════════════════════════════════
+function showOnboarding() {
+  const overlay = document.createElement('div');
+  overlay.id = 'onboardingOverlay';
+  overlay.className = 'onboarding-overlay';
+  
+  overlay.innerHTML = `
+    <div class="onboarding-container">
+      <div class="onboarding-progress">
+        <div class="onboarding-progress-bar" id="obProgress"></div>
+      </div>
+      <div class="onboarding-content" id="obContent"></div>
+      <div class="onboarding-nav">
+        <button class="btn btn-g" id="obSkip" style="opacity:0.7">Skip for now</button>
+        <button class="btn btn-p" id="obNext">Next</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  // Event listeners
+  document.getElementById('obNext').addEventListener('click', nextStep);
+  document.getElementById('obSkip').addEventListener('click', skipOnboarding);
+  
+  // Show first step
+  renderStep();
+  
+  // Animate in
+  setTimeout(() => overlay.classList.add('active'), 100);
+}
+
+// ══════════════════════════════════════
+// RENDER CURRENT STEP
+// ══════════════════════════════════════
+function renderStep() {
+  const step = ONBOARDING_V2.steps[currentStep];
+  const content = document.getElementById('obContent');
+  const nextBtn = document.getElementById('obNext');
+  const skipBtn = document.getElementById('obSkip');
+  
+  // Update progress bar
+  const progress = ((currentStep + 1) / ONBOARDING_V2.steps.length) * 100;
+  document.getElementById('obProgress').style.width = progress + '%';
+  
+  // Update button text
+  nextBtn.textContent = step.action;
+  skipBtn.style.display = step.optional ? 'block' : 'none';
+  
+  // Render step content
+  let html = '';
+  
+  if (step.id === 'welcome') {
+    html = `
+      <div class="ob-step ob-welcome">
+        <img src="${step.image}" alt="MamaCare" class="ob-logo" />
+        <h1 class="ob-title">${step.title}</h1>
+        <p class="ob-subtitle">${step.subtitle}</p>
+        <p class="ob-text">${step.content}</p>
+        <div class="ob-features-preview">
+          <div class="ob-feature-badge">📊 Smart Tracking</div>
+          <div class="ob-feature-badge">💬 AI Coach</div>
+          <div class="ob-feature-badge">⏱️ Contraction Timer</div>
+        </div>
+      </div>
+    `;
+  }
+  
+  else if (step.id === 'due-date') {
+    html = `
+      <div class="ob-step ob-due-date">
+        <div class="ob-icon">${step.icon}</div>
+        <h2 class="ob-title">${step.title}</h2>
+        <p class="ob-subtitle">${step.subtitle}</p>
+        
+        <div class="ob-input-group">
+          <label class="ob-label">Select your due date</label>
+          <input type="date" id="obDueDate" class="ob-date-input" 
+            min="${new Date().toISOString().split('T')[0]}"
+            max="${new Date(Date.now() + 280*24*60*60*1000).toISOString().split('T')[0]}" />
+          
+          <div class="ob-or-divider">or</div>
+          
+          <label class="ob-label">Enter your last menstrual period (LMP)</label>
+          <input type="date" id="obLMP" class="ob-date-input" 
+            max="${new Date().toISOString().split('T')[0]}" />
+        </div>
+        
+        <p class="ob-hint">💡 Your due date helps us provide personalized weekly updates</p>
+      </div>
+    `;
+  }
+  
+  else if (step.id === 'features') {
+    html = `
+      <div class="ob-step ob-features">
+        <div class="ob-icon">${step.icon}</div>
+        <h2 class="ob-title">${step.title}</h2>
+        <p class="ob-subtitle">${step.subtitle}</p>
+        
+        <div class="ob-feature-grid">
+          ${step.cards.map(card => `
+            <div class="ob-feature-card">
+              <div class="ob-card-icon">${card.icon}</div>
+              <h3 class="ob-card-title">${card.title}</h3>
+              <p class="ob-card-desc">${card.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+  
+  else if (step.id === 'notifications') {
+    html = `
+      <div class="ob-step ob-notifications">
+        <div class="ob-icon">${step.icon}</div>
+        <h2 class="ob-title">${step.title}</h2>
+        <p class="ob-subtitle">${step.subtitle}</p>
+        <p class="ob-text">${step.content}</p>
+        
+        <div class="ob-notification-preview">
+          <div class="ob-notif-item">
+            <span class="ob-notif-icon">💊</span>
+            <div>
+              <strong>Medicine Reminder</strong>
+              <p>Time to take your prenatal vitamins</p>
+            </div>
+          </div>
+          <div class="ob-notif-item">
+            <span class="ob-notif-icon">💧</span>
+            <div>
+              <strong>Hydration Reminder</strong>
+              <p>Drink a glass of water</p>
+            </div>
+          </div>
+          <div class="ob-notif-item">
+            <span class="ob-notif-icon">👶</span>
+            <div>
+              <strong>Baby Update</strong>
+              <p>Your baby is the size of a mango this week!</p>
+            </div>
+          </div>
+        </div>
+        
+        <p class="ob-hint">✨ You can customize notification settings anytime</p>
+      </div>
+    `;
+  }
+  
+  else if (step.id === 'ready') {
+    html = `
+      <div class="ob-step ob-ready">
+        <div class="ob-icon ob-icon-large">${step.icon}</div>
+        <h2 class="ob-title">${step.title}</h2>
+        <p class="ob-subtitle">${step.subtitle}</p>
+        <p class="ob-text">${step.content}</p>
+        
+        <div class="ob-ready-preview">
+          <div class="ob-ready-item">
+            <span class="ob-ready-check">✓</span>
+            <span>Due date configured</span>
+          </div>
+          <div class="ob-ready-item">
+            <span class="ob-ready-check">✓</span>
+            <span>Personalized dashboard ready</span>
+          </div>
+          <div class="ob-ready-item">
+            <span class="ob-ready-check">✓</span>
+            <span>Weekly updates enabled</span>
+          </div>
+          ${onboardingData.notifications_enabled ? `
+            <div class="ob-ready-item">
+              <span class="ob-ready-check">✓</span>
+              <span>Notifications enabled</span>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+  
+  content.innerHTML = html;
+  
+  // Animate in
+  content.classList.remove('ob-fade-in');
+  setTimeout(() => content.classList.add('ob-fade-in'), 10);
+  
+  // Auto-focus date inputs
+  if (step.id === 'due-date') {
+    const dueDateInput = document.getElementById('obDueDate');
+    const lmpInput = document.getElementById('obLMP');
+    
+    dueDateInput.addEventListener('change', (e) => {
+      if (e.target.value) lmpInput.value = '';
+      onboardingData.due_date = e.target.value;
+    });
+    
+    lmpInput.addEventListener('change', (e) => {
+      if (e.target.value) {
+        dueDateInput.value = '';
+        // Calculate due date from LMP (add 280 days)
+        const lmp = new Date(e.target.value);
+        const dueDate = new Date(lmp.getTime() + 280 * 24 * 60 * 60 * 1000);
+        onboardingData.lmp_date = e.target.value;
+        onboardingData.due_date = dueDate.toISOString().split('T')[0];
+      }
+    });
+  }
+  
+  // Confetti on final step
+  if (step.confetti && window.triggerConfetti) {
+    setTimeout(() => window.triggerConfetti(), 500);
+  }
+}
+
+// ══════════════════════════════════════
+// NEXT STEP
+// ══════════════════════════════════════
+async function nextStep() {
+  const step = ONBOARDING_V2.steps[currentStep];
+  
+  // Validate current step
+  if (step.id === 'due-date') {
+    if (!onboardingData.due_date && !onboardingData.lmp_date) {
+      alert('Please select your due date or enter your LMP to continue');
+      return;
+    }
+  }
+  
+  // Handle notifications step
+  if (step.id === 'notifications') {
+    if (window.requestPushPermission) {
+      const granted = await window.requestPushPermission();
+      onboardingData.notifications_enabled = granted;
+    }
+  }
+  
+  // Save data on final step
+  if (step.id === 'ready') {
+    await completeOnboarding();
+    return;
+  }
+  
+  // Move to next step
+  currentStep++;
+  if (currentStep < ONBOARDING_V2.steps.length) {
+    renderStep();
+  }
+}
+
+// ══════════════════════════════════════
+// SKIP ONBOARDING
+// ══════════════════════════════════════
+function skipOnboarding() {
+  if (confirm('Are you sure you want to skip? We recommend completing setup for the best experience.')) {
+    closeOnboarding();
+  }
+}
+
+// ══════════════════════════════════════
+// COMPLETE ONBOARDING
+// ══════════════════════════════════════
+async function completeOnboarding() {
+  const user = window.user;
+  if (!user) return;
+  
+  onboardingData.completed_at = new Date().toISOString();
+  
+  // Save to Supabase
+  if (window.supa) {
+    await window.supa.from('user_profile').update({
+      due_date: onboardingData.due_date,
+      lmp_date: onboardingData.lmp_date,
+      onboarding_completed: true,
+      onboarding_completed_at: onboardingData.completed_at
+    }).eq('id', user.id);
+  }
+  
+  // Save to localStorage
+  const profile = JSON.parse(localStorage.getItem('mc_profile') || '{}');
+  Object.assign(profile, {
+    due_date: onboardingData.due_date,
+    lmp_date: onboardingData.lmp_date,
+    onboarding_completed: true
+  });
+  localStorage.setItem('mc_profile', JSON.stringify(profile));
+  
+  // Track completion
+  if (window.trackEvent) {
+    window.trackEvent('onboarding_completed', {
+      has_due_date: !!onboardingData.due_date,
+      has_lmp: !!onboardingData.lmp_date,
+      notifications_enabled: onboardingData.notifications_enabled
+    });
+  }
+  
+  // Show success and close
+  closeOnboarding();
+  
+  // Refresh dashboard with new data
+  if (window.MC && window.MC.calcDue) {
+    window.MC.calcDue();
+  }
+  
+  // Show welcome toast
+  setTimeout(() => {
+    if (window.showToast) {
+      window.showToast('Welcome to MamaCare! Your journey begins now. 🌸', 'success');
+    }
+  }, 500);
+}
+
+// ══════════════════════════════════════
+// CLOSE ONBOARDING
+// ══════════════════════════════════════
+function closeOnboarding() {
+  const overlay = document.getElementById('onboardingOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+    setTimeout(() => overlay.remove(), 300);
+  }
+}
+
+// ══════════════════════════════════════
+// CONFETTI ANIMATION
+// ══════════════════════════════════════
+window.triggerConfetti = function() {
+  const colors = ['#E879A0', '#A855C8', '#7C3AED', '#F9A8C9'];
+  const confettiCount = 50;
+  
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + '%';
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animationDelay = Math.random() * 3 + 's';
+    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => confetti.remove(), 5000);
+  }
+};
+
+// ══════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════
+window.ONBOARDING_V2 = {
+  init: initOnboardingV2,
+  show: showOnboarding,
+  close: closeOnboarding
+};
+
+// Auto-init on login
+window.addEventListener('mc:loggedin', (e) => {
+  setTimeout(() => initOnboardingV2(), 1000);
+});
+
+
+// ═══════════════════════════════════════════════════════════
+// SOURCE: app-referral.js
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * MamaCare - Referral Program
+ * Reward users for inviting friends
+ */
+
+const REFERRAL_REWARDS = {
+  per_referral: 7, // days of premium
+  max_referrals: 12, // max 12 referrals = 84 days (~3 months)
+  bonus_milestone: {
+    3: 14, // 3 referrals = extra 2 weeks
+    5: 30, // 5 referrals = extra 1 month
+    10: 60  // 10 referrals = extra 2 months
+  }
+};
+
+// ══════════════════════════════════════
+// GENERATE REFERRAL CODE
+// ══════════════════════════════════════
+async function generateReferralCode() {
+  const user = window.user;
+  if (!user) return null;
+  
+  // Check if user already has a code
+  const { data: profile } = await window.supa
+    .from('user_profile')
+    .select('referral_code')
+    .eq('id', user.id)
+    .single();
+  
+  if (profile?.referral_code) {
+    return profile.referral_code;
+  }
+  
+  // Generate new code: first name + random 4 digits
+  const name = user.email.split('@')[0].slice(0, 6).toUpperCase();
+  const random = Math.floor(1000 + Math.random() * 9000);
+  const code = `${name}${random}`;
+  
+  // Save to database
+  await window.supa
+    .from('user_profile')
+    .update({ referral_code: code })
+    .eq('id', user.id);
+  
+  return code;
+}
+
+// ══════════════════════════════════════
+// GET REFERRAL STATS
+// ══════════════════════════════════════
+async function getReferralStats() {
+  const user = window.user;
+  if (!user) return null;
+  
+  const { data: profile } = await window.supa
+    .from('user_profile')
+    .select('referral_code, referral_count, premium_expires_at')
+    .eq('id', user.id)
+    .single();
+  
+  if (!profile) return null;
+  
+  // Calculate rewards earned
+  const referrals = profile.referral_count || 0;
+  const baseReward = Math.min(referrals, REFERRAL_REWARDS.max_referrals) * REFERRAL_REWARDS.per_referral;
+  
+  // Add milestone bonuses
+  let bonusReward = 0;
+  Object.entries(REFERRAL_REWARDS.bonus_milestone).forEach(([milestone, bonus]) => {
+    if (referrals >= parseInt(milestone)) {
+      bonusReward += bonus;
+    }
+  });
+  
+  const totalReward = baseReward + bonusReward;
+  const nextMilestone = Object.keys(REFERRAL_REWARDS.bonus_milestone)
+    .map(Number)
+    .find(m => m > referrals);
+  
+  return {
+    code: profile.referral_code,
+    referrals: referrals,
+    max_referrals: REFERRAL_REWARDS.max_referrals,
+    days_earned: totalReward,
+    next_milestone: nextMilestone,
+    next_milestone_bonus: nextMilestone ? REFERRAL_REWARDS.bonus_milestone[nextMilestone] : 0,
+    premium_expires_at: profile.premium_expires_at,
+    is_premium: profile.premium_expires_at && new Date(profile.premium_expires_at) > new Date()
+  };
+}
+
+// ══════════════════════════════════════
+// TRACK REFERRAL (Called on signup)
+// ══════════════════════════════════════
+async function trackReferral(referralCode) {
+  if (!referralCode) return;
+  
+  // Find referrer
+  const { data: referrer } = await window.supa
+    .from('user_profile')
+    .select('id, referral_count, premium_expires_at')
+    .eq('referral_code', referralCode)
+    .single();
+  
+  if (!referrer) return;
+  
+  // Increment referral count
+  const newCount = (referrer.referral_count || 0) + 1;
+  
+  // Calculate reward (7 days per referral, up to 12 referrals)
+  if (newCount <= REFERRAL_REWARDS.max_referrals) {
+    let rewardDays = REFERRAL_REWARDS.per_referral;
+    
+    // Add milestone bonus
+    if (REFERRAL_REWARDS.bonus_milestone[newCount]) {
+      rewardDays += REFERRAL_REWARDS.bonus_milestone[newCount];
+    }
+    
+    // Calculate new expiry
+    const currentExpiry = referrer.premium_expires_at 
+      ? new Date(referrer.premium_expires_at) 
+      : new Date();
+    
+    // If expired, start from today
+    if (currentExpiry < new Date()) {
+      currentExpiry.setTime(Date.now());
+    }
+    
+    currentExpiry.setDate(currentExpiry.getDate() + rewardDays);
+    
+    // Update referrer's premium
+    await window.supa
+      .from('user_profile')
+      .update({
+        referral_count: newCount,
+        premium_expires_at: currentExpiry.toISOString(),
+        subscription_type: 'referral'
+      })
+      .eq('id', referrer.id);
+    
+    // Send notification to referrer
+    if (window.sendPushNotification) {
+      window.sendPushNotification(referrer.id, {
+        title: '🎉 New Referral!',
+        body: `Someone joined using your code! You earned ${rewardDays} days of premium.`,
+        tag: 'referral-reward'
+      });
+    }
+  }
+  
+  // Track referral in analytics
+  if (window.trackEvent) {
+    window.trackEvent('referral_tracked', {
+      referrer_id: referrer.id,
+      new_count: newCount
+    });
+  }
+}
+
+// ══════════════════════════════════════
+// RENDER REFERRAL PAGE
+// ══════════════════════════════════════
+async function renderReferralPage() {
+  const user = window.user;
+  if (!user) return;
+  
+  // Generate code if needed
+  let code = await generateReferralCode();
+  const stats = await getReferralStats();
+  
+  if (!stats) return;
+  
+  const referralUrl = `https://mamacare.gyanam.shop?ref=${stats.code}`;
+  const shareText = `Join me on MamaCare - the best pregnancy companion app! Use my code ${stats.code} and we both get rewards. 💗`;
+  
+  const container = document.getElementById('page-referral');
+  if (!container) return;
+  
+  const progressPercent = (stats.referrals / stats.max_referrals) * 100;
+  
+  container.innerHTML = `
+    <!-- Hero Card -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(232, 121, 160, 0.12), rgba(168, 85, 200, 0.08)); border: none; text-align: center; padding: 32px 20px;">
+      <div class="referral-hero-icon">🎁</div>
+      <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin: 16px 0 8px; color: var(--warm);">
+        Invite Friends, Get Premium!
+      </h1>
+      <p style="font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 400px; margin: 0 auto;">
+        Share MamaCare with friends and earn <strong>${REFERRAL_REWARDS.per_referral} days of premium</strong> for each signup.
+        Up to ${REFERRAL_REWARDS.max_referrals * REFERRAL_REWARDS.per_referral} days total!
+      </p>
+    </div>
+    
+    <!-- Your Stats -->
+    <div class="card">
+      <div class="sec-label">Your Referral Stats</div>
+      <div class="referral-stats-grid">
+        <div class="referral-stat-box">
+          <div class="referral-stat-value">${stats.referrals}</div>
+          <div class="referral-stat-label">Friends Referred</div>
+        </div>
+        <div class="referral-stat-box">
+          <div class="referral-stat-value">${stats.days_earned}</div>
+          <div class="referral-stat-label">Days Earned</div>
+        </div>
+        <div class="referral-stat-box">
+          <div class="referral-stat-value">${stats.max_referrals - stats.referrals}</div>
+          <div class="referral-stat-label">Remaining</div>
+        </div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div style="margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">Progress</span>
+          <span style="font-size: 13px; font-weight: 700; color: var(--accent);">${stats.referrals}/${stats.max_referrals}</span>
+        </div>
+        <div class="timeline-bar" style="margin: 0;">
+          <div class="timeline-fill" style="width: ${progressPercent}%; background: linear-gradient(90deg, #6AB89A, #5DA88C);"></div>
+        </div>
+      </div>
+      
+      ${stats.next_milestone ? `
+        <div class="referral-milestone-hint">
+          <i data-lucide="trophy" class="app-icon-inline" style="color: #d4a853;"></i>
+          <span>
+            Invite <strong>${stats.next_milestone - stats.referrals} more ${stats.next_milestone - stats.referrals === 1 ? 'friend' : 'friends'}</strong> 
+            to unlock <strong>+${stats.next_milestone_bonus} bonus days!</strong>
+          </span>
+        </div>
+      ` : `
+        <div class="referral-milestone-hint" style="background: rgba(106, 184, 154, 0.1); border-color: #6AB89A;">
+          <i data-lucide="check-circle" class="app-icon-inline" style="color: #6AB89A;"></i>
+          <span>You've reached the maximum! Enjoy your premium access. 🎉</span>
+        </div>
+      `}
+    </div>
+    
+    <!-- Your Referral Code -->
+    <div class="card">
+      <div class="sec-label">Your Referral Code</div>
+      <div class="referral-code-box">
+        <div class="referral-code-display">${stats.code}</div>
+        <button class="btn btn-g" onclick="REFERRAL.copyCode('${stats.code}')">
+          <i data-lucide="copy" class="app-icon-inline"></i> Copy
+        </button>
+      </div>
+      
+      <div style="margin-top: 16px; padding: 12px; background: rgba(232, 121, 160, 0.05); border-radius: 12px; font-size: 13px; color: var(--muted);">
+        <i data-lucide="info" class="app-icon-inline"></i>
+        Friends can enter this code during signup or use your link below
+      </div>
+    </div>
+    
+    <!-- Share Options -->
+    <div class="card">
+      <div class="sec-label">Share Your Link</div>
+      <div class="referral-share-buttons">
+        <button class="referral-share-btn whatsapp" onclick="REFERRAL.shareWhatsApp('${shareText}', '${referralUrl}')">
+          <span class="referral-share-icon">💬</span>
+          <span>WhatsApp</span>
+        </button>
+        <button class="referral-share-btn link" onclick="REFERRAL.copyLink('${referralUrl}')">
+          <span class="referral-share-icon">🔗</span>
+          <span>Copy Link</span>
+        </button>
+        <button class="referral-share-btn email" onclick="REFERRAL.shareEmail('${shareText}', '${referralUrl}')">
+          <span class="referral-share-icon">📧</span>
+          <span>Email</span>
+        </button>
+        <button class="referral-share-btn more" onclick="REFERRAL.shareNative('${shareText}', '${referralUrl}')">
+          <span class="referral-share-icon">📤</span>
+          <span>More</span>
+        </button>
+      </div>
+      
+      <div class="referral-link-box">
+        <input type="text" readonly value="${referralUrl}" class="referral-link-input" id="referralLinkInput" />
+      </div>
+    </div>
+    
+    <!-- How It Works -->
+    <div class="card">
+      <div class="sec-label">How It Works</div>
+      <div class="referral-how-it-works">
+        <div class="referral-step">
+          <div class="referral-step-num">1</div>
+          <div>
+            <strong>Share your code</strong>
+            <p>Send your unique referral code or link to friends</p>
+          </div>
+        </div>
+        <div class="referral-step">
+          <div class="referral-step-num">2</div>
+          <div>
+            <strong>They sign up</strong>
+            <p>Friend creates account using your code</p>
+          </div>
+        </div>
+        <div class="referral-step">
+          <div class="referral-step-num">3</div>
+          <div>
+            <strong>You both win!</strong>
+            <p>You get ${REFERRAL_REWARDS.per_referral} days premium, they get a warm welcome 🎉</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bonus Milestones -->
+    <div class="card">
+      <div class="sec-label">Bonus Milestones 🏆</div>
+      <div class="referral-milestones">
+        ${Object.entries(REFERRAL_REWARDS.bonus_milestone).map(([count, bonus]) => {
+          const achieved = stats.referrals >= parseInt(count);
+          return `
+            <div class="referral-milestone ${achieved ? 'achieved' : ''}">
+              <div class="referral-milestone-icon">${achieved ? '✓' : count}</div>
+              <div>
+                <strong>${count} Referrals</strong>
+                <p>Unlock <strong>+${bonus} bonus days</strong> of premium</p>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  // Render icons
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+// ══════════════════════════════════════
+// SHARING FUNCTIONS
+// ══════════════════════════════════════
+const REFERRAL = {
+  // Copy code
+  copyCode: (code) => {
+    navigator.clipboard.writeText(code).then(() => {
+      if (window.showToast) {
+        window.showToast('Referral code copied! 📋', 'success');
+      } else {
+        alert('Code copied: ' + code);
+      }
+    });
+    
+    if (window.trackEvent) {
+      window.trackEvent('referral_code_copied', { code });
+    }
+  },
+  
+  // Copy link
+  copyLink: (url) => {
+    navigator.clipboard.writeText(url).then(() => {
+      if (window.showToast) {
+        window.showToast('Link copied! Share it with friends. 🔗', 'success');
+      } else {
+        alert('Link copied!');
+      }
+    });
+    
+    if (window.trackEvent) {
+      window.trackEvent('referral_link_copied');
+    }
+  },
+  
+  // Share via WhatsApp
+  shareWhatsApp: (text, url) => {
+    const message = encodeURIComponent(`${text}\n\n${url}`);
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+    
+    if (window.trackEvent) {
+      window.trackEvent('referral_shared', { platform: 'whatsapp' });
+    }
+  },
+  
+  // Share via Email
+  shareEmail: (text, url) => {
+    const subject = encodeURIComponent('Join me on MamaCare! 💗');
+    const body = encodeURIComponent(`${text}\n\n${url}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    
+    if (window.trackEvent) {
+      window.trackEvent('referral_shared', { platform: 'email' });
+    }
+  },
+  
+  // Native share
+  shareNative: async (text, url) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join MamaCare',
+          text: text,
+          url: url
+        });
+        
+        if (window.trackEvent) {
+          window.trackEvent('referral_shared', { platform: 'native' });
+        }
+      } catch (err) {
+        console.log('Share cancelled');
+      }
+    } else {
+      REFERRAL.copyLink(url);
+    }
+  },
+  
+  // Render page
+  render: renderReferralPage,
+  
+  // Track referral (called on signup)
+  track: trackReferral,
+  
+  // Get stats
+  getStats: getReferralStats
+};
+
+// ══════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════
+window.REFERRAL = REFERRAL;
+
+// Check for referral code in URL on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const ref = urlParams.get('ref');
+  if (ref) {
+    localStorage.setItem('mc_referral_code', ref);
+    // Show toast
+    setTimeout(() => {
+      if (window.showToast) {
+        window.showToast(`Referral code ${ref} applied! Sign up to activate. 🎁`, 'success');
+      }
+    }, 1000);
+  }
+});
 
 
 // ═══════════════════════════════════════════════════════════

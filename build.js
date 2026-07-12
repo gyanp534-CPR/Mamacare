@@ -29,7 +29,9 @@ const sourceFiles = [
   'app-features.js',     // Features
   'app-india.js',        // India-specific
   'app-monetize.js',     // Premium
-  'app-onboard.js',      // Onboarding
+  'app-onboard.js',      // Onboarding (old)
+  'app-onboarding-v2.js',// Onboarding v2 (NEW)
+  'app-referral.js',     // Referral program (NEW)
   'app-smart.js',        // Smart features
   'app-tracker.js',      // Trackers
   'app-enhancements.js', // UI enhancements

@@ -1,6 +1,6 @@
 // MamaCare v8.0 — Bundled App
 // Combined from 22 source files
-// Build: 2026-07-12T14:58:02.833Z
+// Build: 2026-07-12T15:34:59.208Z
 
 
 // ═══════════════════════════════════════════════════════════
@@ -581,6 +581,31 @@ const LANG = {
     days:'రోజులు మిగిలాయి',done:'పూర్తయింది',baby:'శిశువు',body:'శరీరం',tip:'చిట్కా',mTip:'మూడ్ చిట్కా',
   }
 };
+
+// ══════════════════════════════════════
+// GLOBAL ERROR HANDLER
+// ══════════════════════════════════════
+// Catch unhandled promise rejections (async errors that weren't caught)
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  // Prevent default console error
+  event.preventDefault();
+  // Show user-friendly message
+  if (!navigator.onLine) {
+    alert('Internet connection nahi hai. Data save nahi hua. Online hone par phir se try karein.');
+  } else {
+    alert('Kuch galat ho gaya. Page refresh karein aur phir se try karein.');
+  }
+});
+
+// Catch global JavaScript errors
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error);
+  // Only show alert for critical errors, not resource loading errors
+  if (event.error && !event.filename.includes('http')) {
+    alert('Technical error aayi hai. Page refresh karein.');
+  }
+});
 
 // ══════════════════════════════════════
 // GLOBAL VARIABLES
@@ -1744,7 +1769,8 @@ function renderMedicines(){
   const taken=Object.keys(medTaken).length,total=medicines.length,pct=total?Math.round(taken/total*100):0;
   if ($('medStats')) $('medStats').innerHTML=`<div class="stat"><div class="stat-v">${taken}</div><div class="stat-l">Liya</div></div><div class="stat"><div class="stat-v">${total-taken}</div><div class="stat-l">Baaki</div></div><div class="stat"><div class="stat-v">${pct}%</div><div class="stat-l">Done</div></div>`;
   if ($('medProgressBar')) $('medProgressBar').style.width=pct+'%';
-  if ($('medList')) $('medList').innerHTML=medicines.length?medicines.map(m=>`<div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:13px;margin-bottom:8px"><div style="width:42px;height:42px;border-radius:12px;background:${medTaken[m.id]?'#e8f5e9':'#fce8e8'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${m.icon}</div><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${m.name}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${m.dose||''}${m.notes?' • '+m.notes:''}</div><div style="font-size:11.5px;color:var(--accent);margin-top:2px"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${m.time_of_day||'—'}</div></div><div style="display:flex;gap:6px"><button onclick="MC.toggleMedTaken('${m.id}')" style="padding:6px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid ${medTaken[m.id]?'var(--green)':'var(--blush)'};background:${medTaken[m.id]?'var(--green)':'white'};color:${medTaken[m.id]?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${medTaken[m.id]?'✓ Liya':'Liya?'}</button><button onclick="MC.deleteMed('${m.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:10px 0">Koi medicine nahi. Neeche se add karein.</p>';
+  // XSS FIX: Escape medicine name and notes using html.escape()
+  if ($('medList')) $('medList').innerHTML=medicines.length?medicines.map(m=>`<div style="display:flex;align-items:center;gap:12px;background:white;border-radius:14px;padding:13px;margin-bottom:8px"><div style="width:42px;height:42px;border-radius:12px;background:${medTaken[m.id]?'#e8f5e9':'#fce8e8'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${m.icon}</div><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${html.escape(m.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:1px">${html.escape(m.dose||'')}${m.notes?' • '+html.escape(m.notes):''}</div><div style="font-size:11.5px;color:var(--accent);margin-top:2px"><i data-lucide="clock" class="app-icon-inline" style="width:12px;height:12px"></i> ${m.time_of_day||'—'}</div></div><div style="display:flex;gap:6px"><button onclick="MC.toggleMedTaken('${m.id}')" style="padding:6px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid ${medTaken[m.id]?'var(--green)':'var(--blush)'};background:${medTaken[m.id]?'var(--green)':'white'};color:${medTaken[m.id]?'white':'var(--muted)'};font-family:'DM Sans',sans-serif">${medTaken[m.id]?'✓ Liya':'Liya?'}</button><button onclick="MC.deleteMed('${m.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px"><i data-lucide="x" class="app-icon-inline"></i></button></div></div>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:10px 0">Koi medicine nahi. Neeche se add karein.</p>';
   renderIcons();
 }
 
@@ -1954,13 +1980,16 @@ async function loadJournal(){
 async function deleteJournalEntry(id){if(!confirm('Delete karein?'))return;if(supa) await supa.from('journal_entries').delete().eq('id',id);journalList=journalList.filter(e=>e.id!==id);renderJournal();}
 
 function renderJournal(){
-  const html = journalList.length ? journalList.map(e=>{
+  // XSS FIX: Escape journal content using html.escape() before inserting into innerHTML
+  const htmlContent = journalList.length ? journalList.map(e=>{
     const moodIcon = e.mood || 'smile';
-    const photoHtml = e.photo_url ? `<div style="margin-top:12px"><img src="${e.photo_url}" alt="Journal photo" style="width:100%;max-width:400px;border-radius:12px;border:2px solid var(--blush)" onclick="window.open('${e.photo_url}','_blank')" /></div>` : '';
-    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text||e.photo_url?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${e.content_text?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${e.content_text.replace(/\n/g,'<br>')}</p>`:''}${photoHtml}</div>`;
+    const photoHtml = e.photo_url ? `<div style="margin-top:12px"><img src="${html.escape(e.photo_url)}" alt="Journal photo" style="width:100%;max-width:400px;border-radius:12px;border:2px solid var(--blush)" onclick="window.open('${html.escape(e.photo_url)}','_blank')" /></div>` : '';
+    // Escape content_text and convert newlines to <br> AFTER escaping to prevent XSS
+    const safeContent = e.content_text ? html.escape(e.content_text).replace(/\n/g,'<br>') : '';
+    return `<div style="background:white;border-radius:14px;padding:14px;margin-bottom:9px;border:1.5px solid rgba(232,160,168,.15)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${e.content_text||e.photo_url?'8px':'0'}"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="${moodIcon}" style="width:18px;height:18px;color:var(--accent)"></i><span style="font-size:12px;color:var(--muted)">${fmtDate(e.entry_date)}</span></div><div style="display:flex;align-items:center;gap:8px">${e.week_number?`<span style="font-size:11px;background:var(--blush);color:var(--accent);padding:2px 9px;border-radius:50px;font-weight:500">W${e.week_number}</span>`:''}<button onclick="MC.deleteJournalEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px"><i data-lucide="trash-2" class="app-icon-inline"></i></button></div></div>${safeContent?`<p style="font-size:13px;line-height:1.7;color:var(--warm)">${safeContent}</p>`:''}${photoHtml}</div>`;
   }).join('') : '<p style="text-align:center;color:var(--muted);font-size:13px;padding:18px">Koi entry nahi. Pehli yaad likho! <i data-lucide="flower-2" class="app-icon-inline" style="color:var(--rose)"></i></p>';
-  const el=$('journalEntries'); if(el){ el.innerHTML=html; }
-  const el2=$('journalEntries2'); if(el2){ el2.innerHTML=html; }
+  const el=$('journalEntries'); if(el){ el.innerHTML=htmlContent; }
+  const el2=$('journalEntries2'); if(el2){ el2.innerHTML=htmlContent; }
   renderIcons();
 }
 
@@ -4514,24 +4543,48 @@ function updateBabyAgeDisplay() {
 // ════════════════════════════════════════
 // FEED LOG
 // ════════════════════════════════════════
+// ERROR HANDLER
+// ════════════════════════════════════════
+function handleAsyncError(error, userMessage = 'Kuch galat ho gaya. Phir se try karein.') {
+  console.error('Async error:', error);
+  alert(userMessage);
+  // Optional: Send to error tracking service
+  if (window.supa && window.user) {
+    window.supa.from('error_logs').insert({
+      user_id: window.user.id,
+      error_message: error.message || String(error),
+      error_stack: error.stack || null,
+      page: 'baby',
+      created_at: new Date().toISOString()
+    }).catch(() => {}); // Silent fail on error logging
+  }
+}
+
+// ════════════════════════════════════════
+// FEED LOG
+// ════════════════════════════════════════
 async function addBabyFeed() {
-  if (!window.user || !babyDOB) { alert('Baby ka DOB pehle set karo'); return; }
-  const type     = document.getElementById('feedType').value;
-  const side     = document.getElementById('feedSide')?.value || null;
-  const duration = parseInt(document.getElementById('feedDuration').value) || null;
-  const amount   = parseFloat(document.getElementById('feedAmount').value) || null;
-  await window.supa.from('baby_feeds').insert({
-    user_id: window.user.id,
-    feed_type: type,
-    side,
-    duration_min: duration,
-    amount_ml: amount,
-    fed_at: new Date().toISOString(),
-  });
-  document.getElementById('feedDuration').value = '';
-  document.getElementById('feedAmount').value = '';
-  renderBabyFeedLog();
-  flashBaby('feed-save');
+  try {
+    if (!window.user || !babyDOB) { alert('Baby ka DOB pehle set karo'); return; }
+    const type     = document.getElementById('feedType').value;
+    const side     = document.getElementById('feedSide')?.value || null;
+    const duration = parseInt(document.getElementById('feedDuration').value) || null;
+    const amount   = parseFloat(document.getElementById('feedAmount').value) || null;
+    await window.supa.from('baby_feeds').insert({
+      user_id: window.user.id,
+      feed_type: type,
+      side,
+      duration_min: duration,
+      amount_ml: amount,
+      fed_at: new Date().toISOString(),
+    });
+    document.getElementById('feedDuration').value = '';
+    document.getElementById('feedAmount').value = '';
+    renderBabyFeedLog();
+    flashBaby('feed-save');
+  } catch (error) {
+    handleAsyncError(error, 'Feed log save nahi hua. Internet check karein aur phir se try karein.');
+  }
 }
 
 async function renderBabyFeedLog() {
@@ -4561,11 +4614,15 @@ async function renderBabyFeedLog() {
 // DIAPER LOG
 // ════════════════════════════════════════
 async function addBabyDiaper(type) {
-  if (!window.user || !babyDOB) { alert('Baby DOB set karo pehle'); return; }
-  await window.supa.from('baby_diapers').insert({ user_id: window.user.id, diaper_type: type, changed_at: new Date().toISOString() });
-  renderBabyDiaperLog();
-  // Haptic
-  if (navigator.vibrate) navigator.vibrate(60);
+  try {
+    if (!window.user || !babyDOB) { alert('Baby DOB set karo pehle'); return; }
+    await window.supa.from('baby_diapers').insert({ user_id: window.user.id, diaper_type: type, changed_at: new Date().toISOString() });
+    renderBabyDiaperLog();
+    // Haptic
+    if (navigator.vibrate) navigator.vibrate(60);
+  } catch (error) {
+    handleAsyncError(error, 'Diaper log save nahi hua. Internet check karein.');
+  }
 }
 
 async function renderBabyDiaperLog() {
@@ -7468,18 +7525,21 @@ function generatePartnerLink() {
   const email = document.getElementById('partnerEmail').value.trim();
   const userRef = window.user;
   if (!userRef) { alert('Pehle login karein'); return; }
-  // Generate a shareable token (simple base64 of user id)
-  const token = btoa(userRef.id + ':' + Date.now());
+  // SECURITY FIX: Generate a cryptographically secure token instead of base64(userId:timestamp)
+  const token = crypto.randomUUID(); // e.g. "550e8400-e29b-41d4-a716-446655440000"
+  // Token expires in 90 days (configurable)
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
   const perms = PARTNER_PERMS.filter(p => document.getElementById('perm_' + p.id)?.checked).map(p => p.id).join(',');
   const domain = window.location.origin;
   const link = `${domain}?partner_view=${token}&perms=${perms}`;
   document.getElementById('partnerLinkText').value = link;
   document.getElementById('partnerLinkBox').style.display = 'block';
-  // Save to Supabase profile
+  // Save to Supabase profile with expiration
   if (window.supa && userRef) {
     window.supa.from('user_profile').update({
       partner_email: email,
       partner_token: token,
+      partner_token_expires_at: expiresAt,
       partner_perms: perms
     }).eq('id', userRef.id).then(() => {});
     flashSaveBadge('partner-save');
@@ -8713,9 +8773,14 @@ window.INDIA = {
  */
 
 // ── CONFIG (update these in your Razorpay dashboard) ──
-const RAZORPAY_KEY_ID   = 'rzp_test_TAUVN0OTKXoQnR'; // Test key - replace with live key in production
-const PLAN_MONTHLY_ID   = 'plan_XXXXXXXXXXXXXX';      // ₹99/month plan ID (create in Razorpay Dashboard)
-const PLAN_YEARLY_ID    = 'plan_XXXXXXXXXXXXXX';      // ₹799/year plan ID (create in Razorpay Dashboard)
+// ⚠️  IMPORTANT: Replace these with your actual Razorpay production credentials
+// Step 1: Go to Razorpay Dashboard → Settings → API Keys → Generate Live Key
+// Step 2: Go to Products → Subscriptions → Create Plans for ₹99/month and ₹799/year
+// Step 3: Replace the placeholder values below with your actual live key and plan IDs
+const RAZORPAY_KEY_ID   = 'rzp_test_TAUVN0OTKXoQnR'; // TODO: Replace with rzp_live_XXXXX in production
+const PLAN_MONTHLY_ID   = 'plan_XXXXXXXXXXXXXX';      // TODO: ₹99/month plan ID (create in Razorpay → Products → Subscriptions)
+const PLAN_YEARLY_ID    = 'plan_XXXXXXXXXXXXXX';      // TODO: ₹799/year plan ID (create in Razorpay → Products → Subscriptions)
+// After updating, commit and deploy: git add . && git commit -m "Update Razorpay prod keys" && git push
 
 // Feature limits for free tier
 const FREE_LIMITS = {
@@ -10665,8 +10730,16 @@ async function linkDoctor() {
   const email = document.getElementById('doctorEmailInput')?.value?.trim();
   const name  = document.getElementById('doctorNameInput')?.value?.trim();
   if (!email || !email.includes('@')) { alert('Valid email daalo'); return; }
-  const token = btoa(window.user.id + ':doctor:' + Date.now());
-  await window.supa.from('user_profile').update({ doctor_email: email, doctor_name: name || null, doctor_token: token }).eq('id', window.user.id);
+  // SECURITY FIX: Generate a cryptographically secure token instead of base64(userId:doctor:timestamp)
+  const token = crypto.randomUUID(); // e.g. "550e8400-e29b-41d4-a716-446655440000"
+  // Token expires in 180 days (6 months) for doctor access
+  const expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
+  await window.supa.from('user_profile').update({ 
+    doctor_email: email, 
+    doctor_name: name || null, 
+    doctor_token: token,
+    doctor_token_expires_at: expiresAt
+  }).eq('id', window.user.id);
   const link = `${window.location.origin}?doctor_view=${token}`;
   document.getElementById('doctorLinkBox').style.display = 'block';
   document.getElementById('doctorLinkText').value = link;
@@ -11444,24 +11517,31 @@ function checkKickAlert() {
 }
 
 async function kickStop() {
-  if (!kickSession.active || !window.user) return;
-  clearInterval(kickClockInterval);
-  kickSession.active = false;
-  const endTime = new Date();
-  const btn = document.getElementById('kickStartBtn');
-  if (btn) { btn.textContent = '▶️ Session Shuru Karo'; btn.style.background = ''; }
-  // Save to Supabase
-  const today = new Date().toISOString().split('T')[0];
-  await window.supa.from('kick_logs').upsert({
-    user_id: window.user.id,
-    session_date: today,
-    kick_count: kickSession.count,
-    session_start: kickSession.startTime.toISOString(),
-    session_end: endTime.toISOString(),
-    updated_at: new Date().toISOString(),
-  }, { onConflict: 'user_id,session_date' });
-  document.getElementById('kickStatus').textContent = `✅ Session saved — ${kickSession.count} kicks logged.`;
-  await loadKickHistory();
+  try {
+    if (!kickSession.active || !window.user) return;
+    clearInterval(kickClockInterval);
+    kickSession.active = false;
+    const endTime = new Date();
+    const btn = document.getElementById('kickStartBtn');
+    if (btn) { btn.textContent = '▶️ Session Shuru Karo'; btn.style.background = ''; }
+    // Save to Supabase
+    const today = new Date().toISOString().split('T')[0];
+    await window.supa.from('kick_logs').upsert({
+      user_id: window.user.id,
+      session_date: today,
+      kick_count: kickSession.count,
+      session_start: kickSession.startTime.toISOString(),
+      session_end: endTime.toISOString(),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,session_date' });
+    document.getElementById('kickStatus').textContent = `✅ Session saved — ${kickSession.count} kicks logged.`;
+    await loadKickHistory();
+  } catch (error) {
+    console.error('Kick counter save error:', error);
+    alert('Kick counter save nahi hua. Internet check karein aur data dubara try karein.');
+    // Show error in status
+    document.getElementById('kickStatus').textContent = `❌ Save failed — data offline pending`;
+  }
 }
 
 function renderKickHistory(logs) {

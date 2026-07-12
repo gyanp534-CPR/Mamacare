@@ -99,24 +99,48 @@ function updateBabyAgeDisplay() {
 // ════════════════════════════════════════
 // FEED LOG
 // ════════════════════════════════════════
+// ERROR HANDLER
+// ════════════════════════════════════════
+function handleAsyncError(error, userMessage = 'Kuch galat ho gaya. Phir se try karein.') {
+  console.error('Async error:', error);
+  alert(userMessage);
+  // Optional: Send to error tracking service
+  if (window.supa && window.user) {
+    window.supa.from('error_logs').insert({
+      user_id: window.user.id,
+      error_message: error.message || String(error),
+      error_stack: error.stack || null,
+      page: 'baby',
+      created_at: new Date().toISOString()
+    }).catch(() => {}); // Silent fail on error logging
+  }
+}
+
+// ════════════════════════════════════════
+// FEED LOG
+// ════════════════════════════════════════
 async function addBabyFeed() {
-  if (!window.user || !babyDOB) { alert('Baby ka DOB pehle set karo'); return; }
-  const type     = document.getElementById('feedType').value;
-  const side     = document.getElementById('feedSide')?.value || null;
-  const duration = parseInt(document.getElementById('feedDuration').value) || null;
-  const amount   = parseFloat(document.getElementById('feedAmount').value) || null;
-  await window.supa.from('baby_feeds').insert({
-    user_id: window.user.id,
-    feed_type: type,
-    side,
-    duration_min: duration,
-    amount_ml: amount,
-    fed_at: new Date().toISOString(),
-  });
-  document.getElementById('feedDuration').value = '';
-  document.getElementById('feedAmount').value = '';
-  renderBabyFeedLog();
-  flashBaby('feed-save');
+  try {
+    if (!window.user || !babyDOB) { alert('Baby ka DOB pehle set karo'); return; }
+    const type     = document.getElementById('feedType').value;
+    const side     = document.getElementById('feedSide')?.value || null;
+    const duration = parseInt(document.getElementById('feedDuration').value) || null;
+    const amount   = parseFloat(document.getElementById('feedAmount').value) || null;
+    await window.supa.from('baby_feeds').insert({
+      user_id: window.user.id,
+      feed_type: type,
+      side,
+      duration_min: duration,
+      amount_ml: amount,
+      fed_at: new Date().toISOString(),
+    });
+    document.getElementById('feedDuration').value = '';
+    document.getElementById('feedAmount').value = '';
+    renderBabyFeedLog();
+    flashBaby('feed-save');
+  } catch (error) {
+    handleAsyncError(error, 'Feed log save nahi hua. Internet check karein aur phir se try karein.');
+  }
 }
 
 async function renderBabyFeedLog() {
@@ -146,11 +170,15 @@ async function renderBabyFeedLog() {
 // DIAPER LOG
 // ════════════════════════════════════════
 async function addBabyDiaper(type) {
-  if (!window.user || !babyDOB) { alert('Baby DOB set karo pehle'); return; }
-  await window.supa.from('baby_diapers').insert({ user_id: window.user.id, diaper_type: type, changed_at: new Date().toISOString() });
-  renderBabyDiaperLog();
-  // Haptic
-  if (navigator.vibrate) navigator.vibrate(60);
+  try {
+    if (!window.user || !babyDOB) { alert('Baby DOB set karo pehle'); return; }
+    await window.supa.from('baby_diapers').insert({ user_id: window.user.id, diaper_type: type, changed_at: new Date().toISOString() });
+    renderBabyDiaperLog();
+    // Haptic
+    if (navigator.vibrate) navigator.vibrate(60);
+  } catch (error) {
+    handleAsyncError(error, 'Diaper log save nahi hua. Internet check karein.');
+  }
 }
 
 async function renderBabyDiaperLog() {

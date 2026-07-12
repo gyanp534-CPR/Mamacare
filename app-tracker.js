@@ -90,24 +90,31 @@ function checkKickAlert() {
 }
 
 async function kickStop() {
-  if (!kickSession.active || !window.user) return;
-  clearInterval(kickClockInterval);
-  kickSession.active = false;
-  const endTime = new Date();
-  const btn = document.getElementById('kickStartBtn');
-  if (btn) { btn.textContent = '▶️ Session Shuru Karo'; btn.style.background = ''; }
-  // Save to Supabase
-  const today = new Date().toISOString().split('T')[0];
-  await window.supa.from('kick_logs').upsert({
-    user_id: window.user.id,
-    session_date: today,
-    kick_count: kickSession.count,
-    session_start: kickSession.startTime.toISOString(),
-    session_end: endTime.toISOString(),
-    updated_at: new Date().toISOString(),
-  }, { onConflict: 'user_id,session_date' });
-  document.getElementById('kickStatus').textContent = `✅ Session saved — ${kickSession.count} kicks logged.`;
-  await loadKickHistory();
+  try {
+    if (!kickSession.active || !window.user) return;
+    clearInterval(kickClockInterval);
+    kickSession.active = false;
+    const endTime = new Date();
+    const btn = document.getElementById('kickStartBtn');
+    if (btn) { btn.textContent = '▶️ Session Shuru Karo'; btn.style.background = ''; }
+    // Save to Supabase
+    const today = new Date().toISOString().split('T')[0];
+    await window.supa.from('kick_logs').upsert({
+      user_id: window.user.id,
+      session_date: today,
+      kick_count: kickSession.count,
+      session_start: kickSession.startTime.toISOString(),
+      session_end: endTime.toISOString(),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,session_date' });
+    document.getElementById('kickStatus').textContent = `✅ Session saved — ${kickSession.count} kicks logged.`;
+    await loadKickHistory();
+  } catch (error) {
+    console.error('Kick counter save error:', error);
+    alert('Kick counter save nahi hua. Internet check karein aur data dubara try karein.');
+    // Show error in status
+    document.getElementById('kickStatus').textContent = `❌ Save failed — data offline pending`;
+  }
 }
 
 function renderKickHistory(logs) {

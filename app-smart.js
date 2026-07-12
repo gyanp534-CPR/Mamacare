@@ -289,8 +289,16 @@ async function linkDoctor() {
   const email = document.getElementById('doctorEmailInput')?.value?.trim();
   const name  = document.getElementById('doctorNameInput')?.value?.trim();
   if (!email || !email.includes('@')) { alert('Valid email daalo'); return; }
-  const token = btoa(window.user.id + ':doctor:' + Date.now());
-  await window.supa.from('user_profile').update({ doctor_email: email, doctor_name: name || null, doctor_token: token }).eq('id', window.user.id);
+  // SECURITY FIX: Generate a cryptographically secure token instead of base64(userId:doctor:timestamp)
+  const token = crypto.randomUUID(); // e.g. "550e8400-e29b-41d4-a716-446655440000"
+  // Token expires in 180 days (6 months) for doctor access
+  const expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
+  await window.supa.from('user_profile').update({ 
+    doctor_email: email, 
+    doctor_name: name || null, 
+    doctor_token: token,
+    doctor_token_expires_at: expiresAt
+  }).eq('id', window.user.id);
   const link = `${window.location.origin}?doctor_view=${token}`;
   document.getElementById('doctorLinkBox').style.display = 'block';
   document.getElementById('doctorLinkText').value = link;

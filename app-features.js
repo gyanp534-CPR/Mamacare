@@ -517,18 +517,21 @@ function generatePartnerLink() {
   const email = document.getElementById('partnerEmail').value.trim();
   const userRef = window.user;
   if (!userRef) { alert('Pehle login karein'); return; }
-  // Generate a shareable token (simple base64 of user id)
-  const token = btoa(userRef.id + ':' + Date.now());
+  // SECURITY FIX: Generate a cryptographically secure token instead of base64(userId:timestamp)
+  const token = crypto.randomUUID(); // e.g. "550e8400-e29b-41d4-a716-446655440000"
+  // Token expires in 90 days (configurable)
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
   const perms = PARTNER_PERMS.filter(p => document.getElementById('perm_' + p.id)?.checked).map(p => p.id).join(',');
   const domain = window.location.origin;
   const link = `${domain}?partner_view=${token}&perms=${perms}`;
   document.getElementById('partnerLinkText').value = link;
   document.getElementById('partnerLinkBox').style.display = 'block';
-  // Save to Supabase profile
+  // Save to Supabase profile with expiration
   if (window.supa && userRef) {
     window.supa.from('user_profile').update({
       partner_email: email,
       partner_token: token,
+      partner_token_expires_at: expiresAt,
       partner_perms: perms
     }).eq('id', userRef.id).then(() => {});
     flashSaveBadge('partner-save');

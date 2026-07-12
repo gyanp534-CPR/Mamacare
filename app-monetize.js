@@ -17,9 +17,14 @@
 'use strict';
 
 // ── CONFIG (update these in your Razorpay dashboard) ──
-const RAZORPAY_KEY_ID   = 'rzp_test_TAUVN0OTKXoQnR'; // Test key - replace with live key in production
-const PLAN_MONTHLY_ID   = 'plan_XXXXXXXXXXXXXX';      // ₹99/month plan ID (create in Razorpay Dashboard)
-const PLAN_YEARLY_ID    = 'plan_XXXXXXXXXXXXXX';      // ₹799/year plan ID (create in Razorpay Dashboard)
+// ⚠️  IMPORTANT: Replace these with your actual Razorpay production credentials
+// Step 1: Go to Razorpay Dashboard → Settings → API Keys → Generate Live Key
+// Step 2: Go to Products → Subscriptions → Create Plans for ₹99/month and ₹799/year
+// Step 3: Replace the placeholder values below with your actual live key and plan IDs
+const RAZORPAY_KEY_ID   = 'rzp_test_TAUVN0OTKXoQnR'; // TODO: Replace with rzp_live_XXXXX in production
+const PLAN_MONTHLY_ID   = 'plan_XXXXXXXXXXXXXX';      // TODO: ₹99/month plan ID (create in Razorpay → Products → Subscriptions)
+const PLAN_YEARLY_ID    = 'plan_XXXXXXXXXXXXXX';      // TODO: ₹799/year plan ID (create in Razorpay → Products → Subscriptions)
+// After updating, commit and deploy: git add . && git commit -m "Update Razorpay prod keys" && git push
 
 // Feature limits for free tier
 const FREE_LIMITS = {

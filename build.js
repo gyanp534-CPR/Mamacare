@@ -39,7 +39,9 @@ const sourceFiles = [
   'app-contractions.js', // Contraction timer
   'app-pdf-report.js',   // PDF export
   'app-asha-chatbot.js', // ASHA mode
-  'app-breastfeeding.js' // Breastfeeding tracker
+  'app-breastfeeding.js',// Breastfeeding tracker
+  'app-dashboard-v2.js', // Enhanced dashboard with journey thread (NEW v2)
+  'app-weight-tracker-v2.js' // Enhanced weight tracker with chart (NEW v2)
 ];
 
 // Verify all files exist

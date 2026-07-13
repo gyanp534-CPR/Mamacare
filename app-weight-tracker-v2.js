@@ -7,6 +7,7 @@
  * - Grid lines and axis labels
  * - Smooth progress visualization
  * - Empty state handling
+ * - Full page layout matching React design
  */
 
 'use strict';
@@ -40,7 +41,7 @@ function renderWeightChartV2(data) {
   const height = 160;
 
   // Calculate ranges
-  const weeks = data.map(d => d.week);
+  const weeks = data.map(d => d.week || calculateWeekFromDate(d.logged_at));
   const weights = data.map(d => d.weight_kg);
 
   const minWeek = Math.min(14, ...weeks);
@@ -60,7 +61,11 @@ function renderWeightChartV2(data) {
   const getY = (weight) => ((maxWeight - weight) / (maxWeight - minWeight)) * height;
 
   // Generate points for data line
-  const points = data.map(d => `${getX(d.week)},${getY(d.weight_kg)}`).join(' ');
+  const points = data.map((d, i) => {
+    const week = weeks[i];
+    const weight = d.weight_kg;
+    return `${getX(week)},${getY(weight)}`;
+  }).join(' ');
 
   // Healthy weight band (rough approximation: 10-12.5kg total gain)
   const healthyBand = `
@@ -85,61 +90,78 @@ function renderWeightChartV2(data) {
 
   // Build SVG
   let svg = `
-    <svg viewBox="0 0 ${width} ${height}" class="weight-chart-svg">
+    <svg viewBox="0 0 ${width} ${height}" class="weight-chart-svg" style="width:100%;height:100%;overflow:visible">
       <!-- Healthy Band -->
-      <polygon points="${healthyBand}" class="chart-healthy-band" />
+      <polygon points="${healthyBand}" fill="var(--mc-sage-tint)" opacity="0.6" />
       
       <!-- Y-axis grid & labels -->
       ${ySteps.map(w => `
         <g>
-          <line x1="0" y1="${getY(w)}" x2="${width}" y2="${getY(w)}" class="chart-grid-line" />
-          <text x="-12" y="${getY(w) + 4}" class="chart-axis-label" text-anchor="end">${w}</text>
+          <line x1="0" y1="${getY(w)}" x2="${width}" y2="${getY(w)}" stroke="var(--mc-line)" stroke-width="1" stroke-dasharray="4,4" />
+          <text x="-12" y="${getY(w) + 4}" font-size="11" fill="var(--mc-text-soft)" text-anchor="end" font-family="var(--font-body)">${w}</text>
         </g>
       `).join('')}
       
       <!-- X-axis labels -->
       ${xSteps.map(w => `
-        <text x="${getX(w)}" y="${height + 24}" class="chart-axis-label" text-anchor="middle">Wk ${w}</text>
+        <text x="${getX(w)}" y="${height + 24}" font-size="11" fill="var(--mc-text-soft)" text-anchor="middle" font-family="var(--font-body)">Wk ${w}</text>
       `).join('')}
       
       <!-- Data Line -->
-      ${data.length > 1 ? `<polyline points="${points}" class="chart-data-line" />` : ''}
+      ${data.length > 1 ? `<polyline points="${points}" fill="none" stroke="var(--mc-rose)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />` : ''}
       
       <!-- Data Points -->
-      ${data.map((d, i) => `
-        <circle 
-          cx="${getX(d.week)}" 
-          cy="${getY(d.weight_kg)}" 
-          r="4.5" 
-          class="chart-data-point ${i === data.length - 1 ? 'chart-data-point-current' : ''}"
-        />
-      `).join('')}
+      ${data.map((d, i) => {
+        const week = weeks[i];
+        const weight = d.weight_kg;
+        return `
+          <circle 
+            cx="${getX(week)}" 
+            cy="${getY(weight)}" 
+            r="4.5" 
+            fill="var(--mc-surface)"
+            stroke="${i === data.length - 1 ? 'var(--mc-gold)' : 'var(--mc-rose)'}"
+            stroke-width="2.5"
+          />
+        `;
+      }).join('')}
     </svg>
   `;
 
   container.innerHTML = `
-    <div class="flex items-baseline justify-between mb-2" style="margin-bottom:8px">
+    <!-- Chart Header -->
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px">
       <h2 class="font-display" style="font-size:22px;color:var(--mc-text)">Your Progress</h2>
       <span class="badge badge-rose">
         Trimester ${getCurrentTrimester()}
       </span>
     </div>
     
-    <div class="info-box" style="margin-top:8px;margin-bottom:8px">
-      <div class="info-box-icon">
+    <!-- Info Box -->
+    <div style="background:rgba(139,154,122,0.15);border-radius:16px;padding:16px;display:flex;align-items:flex-start;gap:12px;margin-top:8px;margin-bottom:8px;border:1px solid var(--mc-sage-tint)">
+      <div style="flex-shrink:0;margin-top:2px;color:var(--mc-sage)">
         <i data-lucide="info" style="width:20px;height:20px"></i>
       </div>
-      <p class="info-box-text">
-        Your weight is growing steadily. The soft green band shows a healthy range for this stage. <strong style="color:var(--mc-text)">Sab theek chal raha hai!</strong>
+      <p style="font-size:14px;line-height:1.6;color:var(--mc-text-soft);margin:0">
+        Your weight is growing steadily. The soft green band shows a healthy range for this stage. <strong style="color:var(--mc-text);font-weight:600">Sab theek chal raha hai!</strong>
       </p>
     </div>
     
-    <div class="weight-chart-container">
+    <!-- Chart SVG Container -->
+    <div style="position:relative;width:100%;aspect-ratio:1.7;margin-top:24px;margin-bottom:8px;padding-left:24px;padding-right:16px">
       ${svg}
     </div>
   `;
 
   if (window.lucide) window.lucide.createIcons();
+}
+
+function calculateWeekFromDate(dateStr) {
+  if (!userData?.lmp_date) return 24; // default
+  const lmpDate = new Date(userData.lmp_date);
+  const logDate = new Date(dateStr);
+  const diffDays = Math.floor((logDate - lmpDate) / (1000 * 60 * 60 * 24));
+  return Math.floor(diffDays / 7);
 }
 
 function getCurrentTrimester() {
@@ -166,11 +188,7 @@ function renderWeightLogV2(data) {
   if (!container) return;
 
   if (!data || data.length === 0) {
-    container.innerHTML = `
-      <p style="text-align:center;color:var(--mc-text-soft);font-size:13px;padding:18px">
-        Koi entry nahi. Upar se weight log karein!
-      </p>
-    `;
+    container.innerHTML = '';
     return;
   }
 
@@ -180,11 +198,11 @@ function renderWeightLogV2(data) {
   const html = sorted.map((d, i) => {
     const date = new Date(d.logged_at);
     const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-    const week = d.week || Math.floor((date - new Date(userData?.lmp_date || date)) / (1000 * 60 * 60 * 24 * 7));
+    const week = d.week || calculateWeekFromDate(d.logged_at);
 
     return `
-      <div class="flex items-center justify-between p-4 rounded-2xl bg-[var(--mc-surface)] border border-[var(--mc-line)] shadow-sm" style="background:var(--mc-surface);border:1px solid var(--mc-line);border-radius:16px;padding:16px;margin-bottom:12px">
-        <div class="flex items-center gap-4" style="display:flex;align-items:center;gap:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--mc-surface);border:1px solid var(--mc-line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(62,42,41,0.04)">
+        <div style="display:flex;align-items:center;gap:16px">
           <div style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;background:${i === 0 ? 'var(--mc-gold-tint)' : 'var(--mc-rose-tint)'};color:${i === 0 ? 'var(--mc-gold)' : 'var(--mc-rose-dark)'}">
             W${week}
           </div>
@@ -193,14 +211,14 @@ function renderWeightLogV2(data) {
             <div style="font-size:13px;color:var(--mc-text-soft);margin-top:2px">${dateStr}</div>
           </div>
         </div>
-        ${i === 0 ? `<span class="badge badge-gold">Latest</span>` : ''}
+        ${i === 0 ? `<span style="font-size:12px;font-weight:600;color:var(--mc-gold);background:rgba(217,154,43,0.15);padding:4px 12px;border-radius:50px">Latest</span>` : ''}
       </div>
     `;
   }).join('');
 
   container.innerHTML = `
-    <h3 class="section-header-v2">Past Weigh-ins</h3>
-    <div style="display:flex;flex-direction:column;gap:12px">
+    <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:var(--mc-text-soft);font-weight:700;margin-bottom:12px;padding-left:4px;margin-top:32px">Past Weigh-ins</h3>
+    <div style="display:flex;flex-direction:column;gap:0">
       ${html}
     </div>
   `;
@@ -223,17 +241,6 @@ async function enhanceWeightPage() {
     .select('*')
     .eq('user_id', window.user.id)
     .order('logged_at', { ascending: true });
-
-  // Create chart container if it doesn't exist
-  let chartContainer = document.getElementById('weightChartContainer');
-  if (!chartContainer) {
-    const weightChart = document.getElementById('weightChart');
-    if (weightChart) {
-      chartContainer = document.createElement('div');
-      chartContainer.id = 'weightChartContainer';
-      weightChart.parentNode.replaceChild(chartContainer, weightChart);
-    }
-  }
 
   // Render chart and log
   renderWeightChartV2(data || []);
